@@ -39,7 +39,10 @@ protected:
 	void RotateHorizontal(float AxisValue);
 	UFUNCTION()
 	void RotateVertical(float AxisValue);
-	
+	UFUNCTION()
+	void EdgeScroll();
+	UFUNCTION()
+	void GetTerrainPosition(FVector& TerrainPosition) const;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera Settings")
 	float MovementSpeed = 20.0f;

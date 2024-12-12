@@ -3,6 +3,7 @@
 
 #include "Core/DefaultCameraPawn.h"
 
+#include "Blueprint/WidgetLayoutLibrary.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -45,8 +46,10 @@ void ADefaultCameraPawn::MoveForward(float AxisValue)
 		return;
 	}
 
-	FVector ForwardMovement = SpringArm->GetForwardVector() * AxisValue * MovementSpeed;
-	TargetLocation += ForwardMovement;
+	FVector RightMovement = FVector(SpringArm->GetForwardVector().X, SpringArm->GetForwardVector().Y, 0.0f).GetSafeNormal() * AxisValue * MovementSpeed;
+	TargetLocation += RightMovement;
+
+	GetTerrainPosition(TargetLocation);
 }
 
 void ADefaultCameraPawn::MoveRight(float AxisValue)
@@ -56,8 +59,9 @@ void ADefaultCameraPawn::MoveRight(float AxisValue)
 		return;
 	}
 
-	FVector RightMovement = SpringArm->GetRightVector() * AxisValue * MovementSpeed;
+	FVector RightMovement = FVector(SpringArm->GetRightVector().X, SpringArm->GetRightVector().Y, 0.0f).GetSafeNormal() * AxisValue * MovementSpeed;
 	TargetLocation += RightMovement;
+	GetTerrainPosition(TargetLocation);
 }
 
 void ADefaultCameraPawn::Zoom(float AxisValue)
@@ -131,7 +135,56 @@ void ADefaultCameraPawn::CameraBounds()
 	}
 
 	TargetRotation = FRotator(NewPitch, TargetRotation.Yaw, 0);
-	TargetLocation = FVector(TargetLocation.X, TargetLocation.Y, 0);
+}
+
+void ADefaultCameraPawn::EdgeScroll()
+{
+	if (UWorld* WorldContext = GetWorld())
+	{
+		FVector2D MousePosition = UWidgetLayoutLibrary::GetMousePositionOnViewport(WorldContext);
+		const FVector2D ViewportSize = UWidgetLayoutLibrary::GetViewportSize(WorldContext);
+		MousePosition = MousePosition * UWidgetLayoutLibrary::GetViewportScale(WorldContext);
+		MousePosition.X = MousePosition.X/ViewportSize.X;
+		MousePosition.Y = MousePosition.Y/ViewportSize.Y;
+
+		//right/left
+		if (MousePosition.X > 0.98f && MousePosition.X < 1.0f)
+		{
+			MoveRight(1.0f);
+		}
+		else if (MousePosition.X < 0.02f && MousePosition.X > 0.0f)
+		{
+			MoveRight(-1.0f);
+		}
+
+		//forward/backward
+		if (MousePosition.Y > 0.98f && MousePosition.Y < 1.0f)
+		{
+			MoveForward(-1.0f);
+		}
+		else if (MousePosition.Y < 0.02f && MousePosition.Y > 0.0f)
+		{
+			MoveForward(1.0f);
+		}
+	}
+}
+
+void ADefaultCameraPawn::GetTerrainPosition(FVector& TerrainPosition) const
+{
+	FHitResult Hit;
+	FCollisionQueryParams Params;
+	FVector TraceOrigin = TerrainPosition;
+	TraceOrigin.Z += 10000.0f;
+	FVector TraceEnd = TerrainPosition;
+	TraceEnd.Z -= 10000.0f;
+
+	if (UWorld* WorldContext = GetWorld())
+	{
+		if (WorldContext->LineTraceSingleByChannel(Hit, TraceOrigin, TraceEnd, ECC_Visibility, Params))
+		{
+			TerrainPosition = Hit.ImpactPoint;
+		}
+	}
 }
 
 
@@ -139,7 +192,8 @@ void ADefaultCameraPawn::CameraBounds()
 void ADefaultCameraPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	
+	EdgeScroll();
 	CameraBounds();
 
 	const FVector InterpolatedLocation = UKismetMathLibrary::VInterpTo(GetActorLocation(), TargetLocation, DeltaTime, MovementSpeed);
