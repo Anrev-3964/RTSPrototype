@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "SPlayerController.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/Pawn.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -92,4 +93,20 @@ private:
 	UPROPERTY()
 	bool bCanRotate;
 
+	//Mouse Input
+protected:
+
+	UFUNCTION()
+	AActor* GetSelectedObject();
+	UFUNCTION()
+	void MouseLeftPressed();
+	UFUNCTION()
+	void MouseLeftReleased();
+	UFUNCTION()
+	void MouseRightPressed();
+	UFUNCTION()
+	void MouseRightReleased();
+	
+	UPROPERTY()
+	ASPlayerController* SPlayer;
 };

@@ -6,6 +6,7 @@
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
@@ -36,6 +37,8 @@ void ADefaultCameraPawn::BeginPlay()
 
 	const FRotator Rotation = SpringArm->GetRelativeRotation();
 	TargetRotation = FRotator(Rotation.Pitch - 50, Rotation.Yaw, 0);
+
+	SPlayer = Cast<ASPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 	
 }
 
@@ -137,6 +140,69 @@ void ADefaultCameraPawn::CameraBounds()
 	TargetRotation = FRotator(NewPitch, TargetRotation.Yaw, 0);
 }
 
+AActor* ADefaultCameraPawn::GetSelectedObject()
+{
+	if (UWorld* World = GetWorld())
+	{
+		FVector WorldLocation, WorldDirection;
+		SPlayer->DeprojectMousePositionToWorld(WorldLocation, WorldDirection);
+		FVector EndLocation = WorldDirection * 1000000.0f + WorldLocation;
+		FCollisionQueryParams Params;
+		Params.AddIgnoredActor(this);
+
+		FHitResult Hit;
+		if (World->LineTraceSingleByChannel(Hit, WorldLocation, EndLocation, ECC_Visibility, Params))
+		{
+
+			DrawDebugLine(World, WorldLocation, Hit.ImpactPoint, FColor::Green, false, 2.0f, 0, 1.0f);
+			DrawDebugSphere(World, Hit.ImpactPoint, 10.0f, 12, FColor::Red, false, 2.0f);
+			
+			if (AActor* Actor = Hit.GetActor())
+			{
+				return Actor;
+			}
+		}
+		else
+		{
+			// Debug visuals for a missed raycast
+			DrawDebugLine(World, WorldLocation, EndLocation, FColor::Red, false, 2.0f, 0, 1.0f);
+		}
+	}
+
+	return nullptr;
+}
+
+void ADefaultCameraPawn::MouseLeftPressed()
+{
+}
+
+void ADefaultCameraPawn::MouseLeftReleased()
+{
+	if (SPlayer)
+	{
+		AActor* SelectedActor = GetSelectedObject();
+
+		if (SelectedActor)
+		{
+			// Pass the selected actor to the player controller
+			SPlayer->HandleSelection(SelectedActor);
+		}
+		else
+		{
+			// Clear selection if no actor is clicked
+			SPlayer->ClearSelected();
+		}
+	}
+}
+
+void ADefaultCameraPawn::MouseRightPressed()
+{
+}
+
+void ADefaultCameraPawn::MouseRightReleased()
+{
+}
+
 void ADefaultCameraPawn::EdgeScroll()
 {
 	if (UWorld* WorldContext = GetWorld())
@@ -222,6 +288,8 @@ void ADefaultCameraPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	PlayerInputComponent->BindAction("RotateLeft", IE_Pressed, this, &ADefaultCameraPawn::RotateLeft);
 	PlayerInputComponent->BindAction("Rotate", IE_Pressed, this, &ADefaultCameraPawn::EnableRotate);
 	PlayerInputComponent->BindAction("Rotate", IE_Released, this, &ADefaultCameraPawn::DisableRotate);
+	PlayerInputComponent->BindAction("MouseLeft", IE_Pressed, this, &ADefaultCameraPawn::MouseLeftPressed);
+	PlayerInputComponent->BindAction("MouseLeft", IE_Released, this, &ADefaultCameraPawn::MouseLeftReleased);
 
 }
 

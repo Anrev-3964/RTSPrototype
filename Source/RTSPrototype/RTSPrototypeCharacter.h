@@ -3,11 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Core/Selectable.h"
 #include "GameFramework/Character.h"
 #include "RTSPrototypeCharacter.generated.h"
 
 UCLASS(Blueprintable)
-class ARTSPrototypeCharacter : public ACharacter
+class ARTSPrototypeCharacter : public ACharacter, public ISelectable
 {
 	GENERATED_BODY()
 
@@ -30,5 +31,15 @@ private:
 	/** Camera boom positioning the camera above the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;
+
+public:
+	/**ISelectable Interface**/
+	virtual void Select() override;
+	virtual void DeSelect() override;
+	virtual void Highlight(const bool Highlight) override;
+	/**End ISelectable Interface**/
+
+	UPROPERTY()
+	bool bSelected;
 };
 

@@ -49,3 +49,28 @@ void ARTSPrototypeCharacter::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
 }
+
+void ARTSPrototypeCharacter::Select()
+{
+	bSelected = true;
+	Highlight(bSelected);
+}
+
+void ARTSPrototypeCharacter::DeSelect()
+{
+	bSelected = false;
+	Highlight(bSelected);
+}
+
+void ARTSPrototypeCharacter::Highlight(const bool Highlight)
+{
+	TArray<UPrimitiveComponent*> Components;
+	GetComponents<UPrimitiveComponent>(Components);
+	for (UPrimitiveComponent* VisualComponent : Components)
+	{
+		if (UPrimitiveComponent* Prim = Cast<UPrimitiveComponent>(VisualComponent))
+		{
+			Prim->SetRenderCustomDepth(Highlight);
+		}
+	}
+}

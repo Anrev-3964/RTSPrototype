@@ -123,3 +123,5 @@ void ARTSPrototypePlayerController::OnTouchReleased()
 	bIsTouch = false;
 	OnSetDestinationReleased();
 }
+
+
