@@ -19,9 +19,11 @@ public:
 
 	UFUNCTION()
 	void HandleSelection(AActor* ActorToSelect);
-
+	void HandleSelection(TArray<AActor*> ActorsToSelect);
 	UFUNCTION()
 	void ClearSelected();
+	UFUNCTION()
+	FVector GetMousePositionOnTerrain() const;
 
 protected:
 
@@ -29,9 +31,9 @@ protected:
 	
 	UFUNCTION()
 	bool ActorSelected(AActor* ActorToCheck) const;
-
+	UFUNCTION()
+	void SelectGroup(const TArray<AActor*>& ActorsToSelect);
 	
-
 	UPROPERTY()
 	TArray<AActor*> SelectedActors;
 };

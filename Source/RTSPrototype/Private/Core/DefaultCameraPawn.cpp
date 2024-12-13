@@ -5,6 +5,7 @@
 
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Camera/CameraComponent.h"
+#include "Core/SelectionBox.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -39,7 +40,7 @@ void ADefaultCameraPawn::BeginPlay()
 	TargetRotation = FRotator(Rotation.Pitch - 50, Rotation.Yaw, 0);
 
 	SPlayer = Cast<ASPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
-	
+	CreateSelectionBox();
 }
 
 void ADefaultCameraPawn::MoveForward(float AxisValue)
@@ -174,24 +175,39 @@ AActor* ADefaultCameraPawn::GetSelectedObject()
 
 void ADefaultCameraPawn::MouseLeftPressed()
 {
+	if (!SPlayer) return;
+	SPlayer->HandleSelection(nullptr);
+	bBoxSelected = false;
+	LeftMouseHitLocation = SPlayer->GetMousePositionOnTerrain();
+}
+
+void ADefaultCameraPawn::MouseLeftInputHeld(float AxisValue)
+{
+	if (!SPlayer || AxisValue == 0.0f) return;
+	if (SPlayer->GetInputKeyTimeDown(EKeys::LeftMouseButton) >= LeftMouseHoldThreshold)
+	{
+		if (!bBoxSelected && SelectionBox)
+		{
+			SelectionBox->Start(LeftMouseHitLocation, TargetRotation);
+			bBoxSelected = true;
+		}
+	}
 }
 
 void ADefaultCameraPawn::MouseLeftReleased()
 {
 	if (SPlayer)
 	{
-		AActor* SelectedActor = GetSelectedObject();
-
-		if (SelectedActor)
-		{
-			// Pass the selected actor to the player controller
-			SPlayer->HandleSelection(SelectedActor);
-		}
-		else
-		{
-			// Clear selection if no actor is clicked
-			SPlayer->ClearSelected();
-		}
+			if (bBoxSelected && SelectionBox)
+			{
+				SelectionBox->End();
+				bBoxSelected = false;
+			}
+			else
+			{
+				// Pass the selected actor to the player controller
+				SPlayer->HandleSelection(GetSelectedObject());
+			}
 	}
 }
 
@@ -201,6 +217,23 @@ void ADefaultCameraPawn::MouseRightPressed()
 
 void ADefaultCameraPawn::MouseRightReleased()
 {
+}
+
+void ADefaultCameraPawn::CreateSelectionBox()
+{
+	if (!SelectionBoxClass) return;
+	if (UWorld* WorldContext = GetWorld())
+	{
+		FActorSpawnParameters SpawnParameters;
+		SpawnParameters.Owner = this;
+		SpawnParameters.Instigator = this;
+		SelectionBox = WorldContext->SpawnActor<ASelectionBox>(SelectionBoxClass, FVector::ZeroVector,
+			FRotator::ZeroRotator, SpawnParameters);
+		if (SelectionBox)
+		{
+			SelectionBox->SetOwner(this);
+		}
+	}
 }
 
 void ADefaultCameraPawn::EdgeScroll()
@@ -283,6 +316,7 @@ void ADefaultCameraPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	PlayerInputComponent->BindAxis("Zoom", this, &ADefaultCameraPawn::Zoom);
 	PlayerInputComponent->BindAxis("RotateHorizontal", this, &ADefaultCameraPawn::RotateHorizontal);
 	PlayerInputComponent->BindAxis("RotateVertical", this, &ADefaultCameraPawn::RotateVertical);
+	PlayerInputComponent->BindAxis("MouseLeftAxis", this, &ADefaultCameraPawn::MouseLeftInputHeld);
 
 	PlayerInputComponent->BindAction("RotateRight", IE_Pressed, this, &ADefaultCameraPawn::RotateRight);
 	PlayerInputComponent->BindAction("RotateLeft", IE_Pressed, this, &ADefaultCameraPawn::RotateLeft);

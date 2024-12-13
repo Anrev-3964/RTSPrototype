@@ -2,8 +2,6 @@
 
 
 #include "Core/SPlayerController.h"
-
-#include "LightmapResRatioAdjust.h"
 #include "Core/Selectable.h"
 
 ASPlayerController::ASPlayerController(const FObjectInitializer& ObjectInitializer)
@@ -31,6 +29,11 @@ void ASPlayerController::HandleSelection(AActor* ActorToSelect)
 	}
 }
 
+void ASPlayerController::HandleSelection(TArray<AActor*> ActorsToSelect)
+{
+	SelectGroup(ActorsToSelect);
+}
+
 void ASPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
@@ -44,6 +47,26 @@ void ASPlayerController::BeginPlay()
 bool ASPlayerController::ActorSelected(AActor* ActorToCheck) const
 {
 	return SelectedActors.Contains(ActorToCheck);
+}
+
+void ASPlayerController::SelectGroup(const TArray<AActor*>& ActorsToSelect)
+{
+	ClearSelected();
+	TArray<AActor*> ValidActors;
+	for (int i = 0; i < ActorsToSelect.Num(); i++)
+	{
+		if (ActorsToSelect[i])
+		{
+			if (ISelectable* Selectable = Cast<ISelectable>(ActorsToSelect[i]))
+			{
+				ValidActors.Add(ActorsToSelect[i]);
+				Selectable->Select();
+			}
+		}
+	}
+	
+	SelectedActors.Append(ValidActors);
+	ValidActors.Empty();
 }
 
 void ASPlayerController::ClearSelected()
@@ -60,6 +83,23 @@ void ASPlayerController::ClearSelected()
 	}
 
 	SelectedActors.Empty();
+}
+
+FVector ASPlayerController::GetMousePositionOnTerrain() const
+{
+	FVector WorldLocation, WorldDirection;
+	DeprojectMousePositionToWorld(WorldLocation, WorldDirection);
+	FHitResult OutHit;
+	if (GetWorld()->LineTraceSingleByChannel(OutHit, WorldLocation,
+		WorldLocation + (WorldDirection * 100000.0f), ECC_GameTraceChannel1))
+	{
+		if (OutHit.bBlockingHit)
+		{
+				return OutHit.Location;
+		}
+	}
+
+	return FVector::ZeroVector;
 }
 
 

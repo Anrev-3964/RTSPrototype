@@ -3,11 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "SelectionBox.h"
 #include "SPlayerController.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/Pawn.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "DefaultCameraPawn.generated.h"
+
+
 
 UCLASS()
 class RTSPROTOTYPE_API ADefaultCameraPawn : public APawn
@@ -71,25 +74,18 @@ private:
 
 	UFUNCTION()
 	void CameraBounds();
-	
 	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, meta = (AllowPrivateAccess = true))
 	USceneComponent* SceneComponent;
-
 	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, meta = (AllowPrivateAccess = true))
 	USpringArmComponent* SpringArm;
-
 	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, meta = (AllowPrivateAccess = true))
 	UCameraComponent* Camera;
-
 	UPROPERTY()
 	FVector TargetLocation;
-
 	UPROPERTY()
 	FRotator TargetRotation;
-
 	UPROPERTY()
 	float TargetZoom;
-
 	UPROPERTY()
 	bool bCanRotate;
 
@@ -101,12 +97,27 @@ protected:
 	UFUNCTION()
 	void MouseLeftPressed();
 	UFUNCTION()
+	void MouseLeftInputHeld(float AxisValue);
+	UFUNCTION()
 	void MouseLeftReleased();
 	UFUNCTION()
 	void MouseRightPressed();
 	UFUNCTION()
 	void MouseRightReleased();
+	UFUNCTION()
+	void CreateSelectionBox();
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mouse Settings")
+	float LeftMouseHoldThreshold = 0.1f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mouse Settings")
+	TSubclassOf<ASelectionBox> SelectionBoxClass;
 	
 	UPROPERTY()
 	ASPlayerController* SPlayer;
+	UPROPERTY()
+	ASelectionBox* SelectionBox;
+	UPROPERTY()
+	bool bBoxSelected;
+	UPROPERTY()
+	FVector LeftMouseHitLocation;
 };
