@@ -36,4 +36,6 @@ protected:
 	
 	UPROPERTY()
 	TArray<AActor*> SelectedActors;
+
+	//TO DO : definire una funzione che ordini alle unita dentro SelectedActors di muoversi veros la destinazione
 };

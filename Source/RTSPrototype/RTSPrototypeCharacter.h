@@ -41,5 +41,8 @@ public:
 
 	UPROPERTY()
 	bool bSelected;
+
+	//implementare un Interface
+	//TO DO : definire una funzione che chieda al proprio AIController di muoverlo verso la destinaizone scelta
 };
 

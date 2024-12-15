@@ -217,6 +217,9 @@ void ADefaultCameraPawn::MouseRightPressed()
 
 void ADefaultCameraPawn::MouseRightReleased()
 {
+
+	//TO DO : deve richiamare una funzione dentro il playerController
+	//^ passare in input la destinazione (posizione del mouse)
 }
 
 void ADefaultCameraPawn::CreateSelectionBox()
@@ -322,8 +325,11 @@ void ADefaultCameraPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	PlayerInputComponent->BindAction("RotateLeft", IE_Pressed, this, &ADefaultCameraPawn::RotateLeft);
 	PlayerInputComponent->BindAction("Rotate", IE_Pressed, this, &ADefaultCameraPawn::EnableRotate);
 	PlayerInputComponent->BindAction("Rotate", IE_Released, this, &ADefaultCameraPawn::DisableRotate);
+	//leftKey
 	PlayerInputComponent->BindAction("MouseLeft", IE_Pressed, this, &ADefaultCameraPawn::MouseLeftPressed);
 	PlayerInputComponent->BindAction("MouseLeft", IE_Released, this, &ADefaultCameraPawn::MouseLeftReleased);
-
+	//rightKey
+	PlayerInputComponent->BindAction("MouseRight", IE_Pressed, this, &ADefaultCameraPawn::MouseRightPressed);
+	PlayerInputComponent->BindAction("MouseRight", IE_Released, this, &ADefaultCameraPawn::MouseRightReleased);
 }
 
