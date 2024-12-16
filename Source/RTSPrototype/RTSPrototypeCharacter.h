@@ -6,6 +6,7 @@
 #include "Core/Selectable.h"
 #include "GameFramework/Character.h"
 #include "Commandable.h"
+#include "Core/FactionsEnum.h"
 #include "RTSPrototypeCharacter.generated.h"
 
 UCLASS(Blueprintable)
@@ -39,18 +40,29 @@ public:
 	virtual void DeSelect() override;
 	virtual void Highlight(const bool Highlight) override;
 	/**End ISelectable Interface**/
+
+	UFUNCTION(BlueprintCallable)
+	FString GetFactionName() const;
 	
 	/**ICommandable Interface**/
 	virtual  void MoveToDestination(const FVector Destination) override;
 	/**End ICommandable Interface**/
 
-	/**Statistics**/
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Statistics")
+	/**Statistics and Settings **/
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Settings")
 	float MovementSpeed;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Statistics")
-	float attack;
-	/**End Statistics**/
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Settings")
+	float Attack;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Settings")
+	EFaction CurrentFaction;
+	/**End Statistics and Settings**/
+
 	UPROPERTY()
 	bool bSelected;
 };
+
+
 

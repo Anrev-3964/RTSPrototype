@@ -14,7 +14,9 @@
 
 ARTSPrototypeCharacter::ARTSPrototypeCharacter()
 {
+	// Default units values
 	MovementSpeed = 600.0f;
+	
 	// Set size for player capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
@@ -60,6 +62,8 @@ void ARTSPrototypeCharacter::BeginPlay()
 	{
 		MovementComponent->MaxWalkSpeed = MovementSpeed;
 	}
+
+	UE_LOG(LogTemp, Warning, TEXT("Faction: %s"), *GetFactionName());
 }
 
 void ARTSPrototypeCharacter::Select()
@@ -84,6 +88,19 @@ void ARTSPrototypeCharacter::Highlight(const bool Highlight)
 		{
 			Prim->SetRenderCustomDepth(Highlight);
 		}
+	}
+}
+
+FString ARTSPrototypeCharacter::GetFactionName() const
+{
+	switch (CurrentFaction)
+	{
+	case EFaction::Team1:
+		return TEXT("Team 1");
+	case EFaction::Team2:
+		return TEXT("Team 2");
+	default:
+		return TEXT("Unknown");
 	}
 }
 

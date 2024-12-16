@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Core/Selectable.h"
+#include "GameFramework/PlayerController.h"
+#include "Core/FactionsEnum.h"
 #include "Templates/SubclassOf.h"
 #include "GameFramework/PlayerController.h"
 #include "RTSPrototypePlayerController.generated.h"
@@ -59,6 +61,8 @@ protected:
 	void OnTouchTriggered();
 	void OnTouchReleased();
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Other Settings")
+	EFaction PlayerFaction;
 private:
 	FVector CachedDestination;
 

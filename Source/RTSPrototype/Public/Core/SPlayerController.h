@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Core/FactionsEnum.h"
 #include "GameFramework/PlayerController.h"
 #include "SPlayerController.generated.h"
 
@@ -20,10 +21,13 @@ public:
 	UFUNCTION()
 	void HandleSelection(AActor* ActorToSelect);
 	void HandleSelection(TArray<AActor*> ActorsToSelect);
+
 	UFUNCTION()
 	void ClearSelected();
+
 	UFUNCTION()
 	FVector GetMousePositionOnTerrain() const;
+
 	UFUNCTION()
 	void MoveUnitsToDestination(const FVector& Destination);
 
@@ -39,5 +43,7 @@ protected:
 	UPROPERTY()
 	TArray<AActor*> SelectedActors;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Other Settings")
+	EFaction PlayerFaction;
 	//TO DO : definire una funzione che ordini alle unita dentro SelectedActors di muoversi veros la destinazione
 };
