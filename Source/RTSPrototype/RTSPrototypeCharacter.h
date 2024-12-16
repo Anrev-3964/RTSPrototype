@@ -18,7 +18,7 @@ public:
 
 	// Called every frame.
 	virtual void Tick(float DeltaSeconds) override;
-
+	virtual void BeginPlay() override;
 	/** Returns TopDownCameraComponent subobject **/
 	FORCEINLINE class UCameraComponent* GetTopDownCameraComponent() const { return TopDownCameraComponent; }
 	/** Returns CameraBoom subobject **/
@@ -39,14 +39,18 @@ public:
 	virtual void DeSelect() override;
 	virtual void Highlight(const bool Highlight) override;
 	/**End ISelectable Interface**/
-	virtual  void MoveToDestination(const FVector Destination) override;
+	
 	/**ICommandable Interface**/
+	virtual  void MoveToDestination(const FVector Destination) override;
 	/**End ICommandable Interface**/
 
+	/**Statistics**/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Statistics")
+	float MovementSpeed;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Statistics")
+	float attack;
+	/**End Statistics**/
 	UPROPERTY()
 	bool bSelected;
-
-	//implementare un Interface
-	//TO DO : definire una funzione che chieda al proprio AIController di muoverlo verso la destinaizone scelta
 };
 

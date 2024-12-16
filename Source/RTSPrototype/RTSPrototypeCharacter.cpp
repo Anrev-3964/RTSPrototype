@@ -14,6 +14,7 @@
 
 ARTSPrototypeCharacter::ARTSPrototypeCharacter()
 {
+	MovementSpeed = 600.0f;
 	// Set size for player capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
@@ -49,6 +50,16 @@ ARTSPrototypeCharacter::ARTSPrototypeCharacter()
 void ARTSPrototypeCharacter::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
+}
+
+void ARTSPrototypeCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+	//Set character max velocity
+	if (UCharacterMovementComponent* MovementComponent = GetCharacterMovement())
+	{
+		MovementComponent->MaxWalkSpeed = MovementSpeed;
+	}
 }
 
 void ARTSPrototypeCharacter::Select()
