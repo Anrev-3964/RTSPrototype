@@ -78,10 +78,11 @@ void ARTSPrototypeCharacter::Highlight(const bool Highlight)
 
 void ARTSPrototypeCharacter::MoveToDestination(const FVector Destination)
 {
+	UE_LOG(LogTemp, Warning, TEXT("il pawn chiede al Controller di muoverlo"));
 	//get the pawn AI controller
 	if (ASAIController* AIController = Cast<ASAIController>(GetController()))
 	{
-		
+		AIController->NavigateToDestination(Destination);
 	}
 	else
 	{

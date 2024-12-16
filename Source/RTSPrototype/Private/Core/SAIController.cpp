@@ -10,7 +10,7 @@ void ASAIController::NavigateToDestination(const FVector& Destination)
 	if (APawn* ControlledPawn = GetPawn())
 	{
 		// Muovere il pawn verso la destinazione con il navmesh
-		MoveToLocation(Destination, -1.0f, true, true, false, true, nullptr, false);
+		 MoveToLocation(Destination, -1.0f, true, true, false, true, nullptr, false);
 	}
 	else
 	{

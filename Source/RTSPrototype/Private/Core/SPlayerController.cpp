@@ -104,16 +104,17 @@ FVector ASPlayerController::GetMousePositionOnTerrain() const
 	return FVector::ZeroVector;
 }
 
-void ASPlayerController::MoveUnitsToDestination(const FVector& Vector)
+void ASPlayerController::MoveUnitsToDestination(const FVector& Destination)
 {
 	for (AActor* Actor : SelectedActors)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Ho almeno un attore, destinazione: %s"), *Destination.ToString());
 		if (Actor)
 		{
 			if (ICommandable* CommandableActor = Cast<ICommandable>(Actor))
 			{
-				//TO DO : passare in input la destinazione
-				CommandableActor->MoveToDestination(FVector::ZeroVector);
+				UE_LOG(LogTemp, Warning, TEXT("ordino al pawn di muoversi"));
+				CommandableActor->MoveToDestination(Destination);
 			}
 		}
 		else

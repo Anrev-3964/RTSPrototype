@@ -25,7 +25,7 @@ public:
 	UFUNCTION()
 	FVector GetMousePositionOnTerrain() const;
 	UFUNCTION()
-	void MoveUnitsToDestination(const FVector& Vector);
+	void MoveUnitsToDestination(const FVector& Destination);
 
 protected:
 
