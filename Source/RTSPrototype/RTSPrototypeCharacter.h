@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Core/Selectable.h"
+#include "Framework/DataAssets/CharacterData.h"
 #include "GameFramework/Character.h"
 #include "RTSPrototypeCharacter.generated.h"
 
@@ -32,6 +33,15 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;
 
+protected:
+	virtual void BeginPlay() override;
+	/** Data Management **/
+	void LoadData() const;
+	UCharacterData* GetCharacterData() const;
+	UMaterialInstance* GetHighlightMaterial() const;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Data, meta=(AllowedTypes="CharacterData"))
+	FPrimaryAssetId CharacterDataAssetId;
+	/** End Data Management**/
 public:
 	/**ISelectable Interface**/
 	virtual void Select() override;
