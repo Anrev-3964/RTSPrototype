@@ -5,6 +5,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/DecalComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Core/SAIController.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -74,3 +75,21 @@ void ARTSPrototypeCharacter::Highlight(const bool Highlight)
 		}
 	}
 }
+
+void ARTSPrototypeCharacter::MoveToDestination(const FVector Destination)
+{
+	//get the pawn AI controller
+	if (ASAIController* AIController = Cast<ASAIController>(GetController()))
+	{
+		
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("AIController not found for this Pawn!"));
+		return;
+	}
+}
+
+
+
+

@@ -5,10 +5,11 @@
 #include "CoreMinimal.h"
 #include "Core/Selectable.h"
 #include "GameFramework/Character.h"
+#include "Commandable.h"
 #include "RTSPrototypeCharacter.generated.h"
 
 UCLASS(Blueprintable)
-class ARTSPrototypeCharacter : public ACharacter, public ISelectable
+class ARTSPrototypeCharacter : public ACharacter, public ISelectable,public  ICommandable
 {
 	GENERATED_BODY()
 
@@ -38,6 +39,9 @@ public:
 	virtual void DeSelect() override;
 	virtual void Highlight(const bool Highlight) override;
 	/**End ISelectable Interface**/
+	virtual  void MoveToDestination(const FVector Destination) override;
+	/**ICommandable Interface**/
+	/**End ICommandable Interface**/
 
 	UPROPERTY()
 	bool bSelected;

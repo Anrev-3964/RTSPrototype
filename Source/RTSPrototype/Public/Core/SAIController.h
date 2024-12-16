@@ -13,5 +13,8 @@ UCLASS()
 class RTSPROTOTYPE_API ASAIController : public AAIController
 {
 	GENERATED_BODY()
-	
+
+public :
+	UFUNCTION()
+	void NavigateToDestination(const FVector& Destination);
 };

@@ -217,9 +217,12 @@ void ADefaultCameraPawn::MouseRightPressed()
 
 void ADefaultCameraPawn::MouseRightReleased()
 {
-
-	//TO DO : deve richiamare una funzione dentro il playerController
-	//^ passare in input la destinazione (posizione del mouse)
+	if (!SPlayer) return;
+	//Get Mouse posiiton on terrain
+	RightMouseHitLocation = SPlayer->GetMousePositionOnTerrain();
+	//Ask the player to move his troops
+	SPlayer->MoveUnitsToDestination(RightMouseHitLocation);
+	//TO DO : controllare cosa ha clicato il giocatore, sulla base di cosa ha cliclato, fare un azione
 }
 
 void ADefaultCameraPawn::CreateSelectionBox()

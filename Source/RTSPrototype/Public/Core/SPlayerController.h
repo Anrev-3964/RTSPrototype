@@ -24,6 +24,8 @@ public:
 	void ClearSelected();
 	UFUNCTION()
 	FVector GetMousePositionOnTerrain() const;
+	UFUNCTION()
+	void MoveUnitsToDestination(const FVector& Vector);
 
 protected:
 

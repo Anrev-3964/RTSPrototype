@@ -2,6 +2,8 @@
 
 
 #include "Core/SPlayerController.h"
+
+#include "Commandable.h"
 #include "Core/Selectable.h"
 
 ASPlayerController::ASPlayerController(const FObjectInitializer& ObjectInitializer)
@@ -100,6 +102,25 @@ FVector ASPlayerController::GetMousePositionOnTerrain() const
 	}
 
 	return FVector::ZeroVector;
+}
+
+void ASPlayerController::MoveUnitsToDestination(const FVector& Vector)
+{
+	for (AActor* Actor : SelectedActors)
+	{
+		if (Actor)
+		{
+			if (ICommandable* CommandableActor = Cast<ICommandable>(Actor))
+			{
+				//TO DO : passare in input la destinazione
+				CommandableActor->MoveToDestination(FVector::ZeroVector);
+			}
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Actor %s does not implement ICommandable interface!"), *Actor->GetName());
+		}
+	}
 }
 
 
