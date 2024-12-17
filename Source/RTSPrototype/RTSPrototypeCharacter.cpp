@@ -63,7 +63,7 @@ void ARTSPrototypeCharacter::BeginPlay()
 		MovementComponent->MaxWalkSpeed = MovementSpeed;
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("Faction: %s"), *GetFactionName());
+	UE_LOG(LogTemp, Warning, TEXT("Faction: %hhd"), GetFaction());
 }
 
 void ARTSPrototypeCharacter::Select()
@@ -104,6 +104,11 @@ FString ARTSPrototypeCharacter::GetFactionName() const
 	}
 }
 
+EFaction ARTSPrototypeCharacter::GetFaction() const
+{
+	return CurrentFaction;
+}
+
 void ARTSPrototypeCharacter::MoveToDestination(const FVector Destination)
 {
 	UE_LOG(LogTemp, Warning, TEXT("il pawn chiede al Controller di muoverlo"));
@@ -118,6 +123,7 @@ void ARTSPrototypeCharacter::MoveToDestination(const FVector Destination)
 		return;
 	}
 }
+
 
 
 

@@ -4,9 +4,10 @@
 #include "Core/SPlayerController.h"
 
 #include "Commandable.h"
+#include "Core/FactionsUtils.h"
 #include "Core/Selectable.h"
 
-ASPlayerController::ASPlayerController(const FObjectInitializer& ObjectInitializer)
+ASPlayerController::ASPlayerController(const FObjectInitializer& ObjectInitializer): PlayerFaction()
 {
 }
 
@@ -14,6 +15,7 @@ void ASPlayerController::HandleSelection(AActor* ActorToSelect)
 {
 	if (ISelectable* Selectable = Cast<ISelectable>(ActorToSelect))
 	{
+	
 		if (ActorToSelect && ActorSelected(ActorToSelect))
 		{
 			Selectable->DeSelect();
@@ -21,8 +23,22 @@ void ASPlayerController::HandleSelection(AActor* ActorToSelect)
 		}
 		else
 		{
-			Selectable->Select();
-			SelectedActors.Add(ActorToSelect);
+			if (IFactionsUtils* FactionsUtils = Cast<IFactionsUtils>(ActorToSelect))
+			{
+				if (!FactionsUtils)return;
+				
+				if (PlayerFaction == FactionsUtils->GetFaction())
+				{
+					//Selected actor IS in player faction : you can select it
+					UE_LOG(LogTemp, Warning, TEXT("Selected Unit is in the same faction of player"));
+					Selectable->Select();
+					SelectedActors.Add(ActorToSelect);
+				}
+				else
+				{
+					UE_LOG(LogTemp, Warning, TEXT("Selected Unit ISN'T in the same faction of player"));
+				}
+			}
 		}
 	}
 	else
@@ -31,7 +47,7 @@ void ASPlayerController::HandleSelection(AActor* ActorToSelect)
 	}
 }
 
-void ASPlayerController::HandleSelection(TArray<AActor*> ActorsToSelect)
+void ASPlayerController::HandleSelection(const TArray<AActor*>& ActorsToSelect)
 {
 	SelectGroup(ActorsToSelect);
 }
@@ -44,6 +60,17 @@ void ASPlayerController::BeginPlay()
 	InputMode.SetHideCursorDuringCapture(false);
 	SetInputMode(InputMode);
 	bShowMouseCursor = true;
+	PlayerFaction = EFaction::Team1;
+
+	if (PlayerFaction != EFaction::Team2)
+	{
+		UE_LOG(LogTemp, Error, TEXT("PLAYER IS IN A DIFFERENT FACTION:"));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("PLAYER IS IN THE SAME FACTION:"));
+	}
+	UE_LOG(LogTemp, Warning, TEXT("Faction: %hhd"), PlayerFaction);
 }
 
 bool ASPlayerController::ActorSelected(AActor* ActorToCheck) const
@@ -61,8 +88,15 @@ void ASPlayerController::SelectGroup(const TArray<AActor*>& ActorsToSelect)
 		{
 			if (ISelectable* Selectable = Cast<ISelectable>(ActorsToSelect[i]))
 			{
-				ValidActors.Add(ActorsToSelect[i]);
-				Selectable->Select();
+				if (IFactionsUtils* FactionsUtils = Cast<IFactionsUtils>(ActorsToSelect[i]))
+				{
+					if (FactionsUtils &&  PlayerFaction == FactionsUtils->GetFaction())
+					{
+						UE_LOG(LogTemp, Warning, TEXT("Unit number %d"),i);
+						ValidActors.Add(ActorsToSelect[i]);
+						Selectable->Select();
+					}
+				}
 			}
 		}
 	}

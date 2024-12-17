@@ -20,7 +20,7 @@ public:
 
 	UFUNCTION()
 	void HandleSelection(AActor* ActorToSelect);
-	void HandleSelection(TArray<AActor*> ActorsToSelect);
+	void HandleSelection(const TArray<AActor*>& ActorsToSelect);
 
 	UFUNCTION()
 	void ClearSelected();

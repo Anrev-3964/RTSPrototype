@@ -7,10 +7,11 @@
 #include "GameFramework/Character.h"
 #include "Commandable.h"
 #include "Core/FactionsEnum.h"
+#include "Core/FactionsUtils.h"
 #include "RTSPrototypeCharacter.generated.h"
 
 UCLASS(Blueprintable)
-class ARTSPrototypeCharacter : public ACharacter, public ISelectable,public  ICommandable
+class ARTSPrototypeCharacter : public ACharacter, public ISelectable, public  ICommandable, public IFactionsUtils
 {
 	GENERATED_BODY()
 
@@ -43,13 +44,16 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	FString GetFactionName() const;
-	
+
 	/**ICommandable Interface**/
 	virtual  void MoveToDestination(const FVector Destination) override;
 	/**End ICommandable Interface**/
 
-	/**Statistics and Settings **/
+	/**IFactionUtils Interface**/
+	virtual EFaction GetFaction()const override;
+	/**End IFactionUtils Interface**/
 
+	/**Statistics and Settings **/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Settings")
 	float MovementSpeed;
 
@@ -59,7 +63,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Settings")
 	EFaction CurrentFaction;
 	/**End Statistics and Settings**/
-
+	
 	UPROPERTY()
 	bool bSelected;
 };
