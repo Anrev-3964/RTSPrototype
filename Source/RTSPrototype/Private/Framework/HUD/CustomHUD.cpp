@@ -24,11 +24,11 @@ void ACustomHUD::CreateHUD()
 {
 	if (HudClass)
 	{
-		/*HUD = CreateWidget<UHudWidget>(GetWorld(), HudClass);
-		
+		HUD = CreateWidget<UUHudWidget>(GetWorld(), HudClass);
+
 		if (HUD != nullptr)
 		{
 			HUD->AddToViewport();
-		}*/
+		}
 	}
 }

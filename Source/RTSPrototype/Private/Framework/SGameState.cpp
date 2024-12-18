@@ -7,6 +7,8 @@
 
 ASGameState::ASGameState()
 {
+	PrimaryActorTick.bCanEverTick = true;
+	SetReplicates(true); //to delete maybe
 }
 
 void ASGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

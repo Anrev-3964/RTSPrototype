@@ -56,7 +56,7 @@ void ASelectionBox::End()
 	SetActorEnableCollision(false);
 	DecalComponent->SetVisibility(false);
 
-	if (CenterInBox.Num() == 0) //maybe i can put units limit here
+	if (CenterInBox.Num() == 0)
 	{
 		SPlayer->HandleSelection(nullptr);
 	}

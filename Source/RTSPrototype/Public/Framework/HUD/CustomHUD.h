@@ -15,19 +15,21 @@ class RTSPROTOTYPE_API ACustomHUD : public AHUD
 {
 	GENERATED_BODY()
 
-	public:
+public:
 	ACustomHUD();
 	virtual void Tick(float DeltaTime) override;
 	UFUNCTION()
 	void CreateHUD();
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings|UI")
+	TSubclassOf<UUserWidget> GameMenuWidgetClass;
 
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = UI)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings|UI")
 	TSubclassOf<UUserWidget> HudClass;
+
 
 	UPROPERTY()
 	UUHudWidget* HUD;
-	
+
 	virtual void BeginPlay() override;
-	
 };

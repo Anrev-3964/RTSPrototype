@@ -7,6 +7,7 @@
 #include "Core/SPlayerController.h"
 #include "UHudWidget.generated.h"
 
+class UGameMenuWidget;
 /**
  * 
  */
@@ -18,14 +19,17 @@ class RTSPROTOTYPE_API UUHudWidget : public UUserWidget
 public:
 	virtual void NativeOnInitialized() override;
 
-
 protected:
+	void CreateGameMenu();
 	UFUNCTION()
 	void SetFormationSelectionWidget(const bool bEnabled) const;
-
 	UFUNCTION()
 	void OnSelectionUpdated();
 
 	UPROPERTY()
 	ASPlayerController* SPlayer;
+	UPROPERTY()
+	UWorld* WorldContext;
+	UPROPERTY()
+	UGameMenuWidget* GameMenuWidget;
 };

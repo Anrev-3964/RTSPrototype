@@ -3,9 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Framework/DataAssets/BuildData.h"
 #include "GameFramework/PlayerController.h"
 #include "SPlayerController.generated.h"
 
+class UBuildComponent;
 /**
  * 
  */
@@ -25,15 +27,23 @@ public:
 	UFUNCTION()
 	FVector GetMousePositionOnTerrain() const;
 
-protected:
+	TEnumAsByte<EBuildAssetFilter> GetBuildFilter() const { return BuildAssetFilter; };
 
+protected:
 	virtual void BeginPlay() override;
-	
+
 	UFUNCTION()
 	bool ActorSelected(AActor* ActorToCheck) const;
 	UFUNCTION()
 	void SelectGroup(const TArray<AActor*>& ActorsToSelect);
-	
+
 	UPROPERTY()
 	TArray<AActor*> SelectedActors;
+
+private:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UBuildComponent* BuildComponent;
+
+	UPROPERTY()
+	TEnumAsByte<EBuildAssetFilter> BuildAssetFilter = Filter1;
 };

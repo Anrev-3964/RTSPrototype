@@ -2,10 +2,14 @@
 
 
 #include "Core/SPlayerController.h"
+
+#include "Buildings/BuildComponent.h"
 #include "Core/Selectable.h"
+#include "Framework/HUD/CustomHUD.h"
 
 ASPlayerController::ASPlayerController(const FObjectInitializer& ObjectInitializer)
 {
+	BuildComponent = CreateDefaultSubobject<UBuildComponent>(TEXT("PlayerComponent"));
 }
 
 void ASPlayerController::HandleSelection(AActor* ActorToSelect)
@@ -42,6 +46,16 @@ void ASPlayerController::BeginPlay()
 	InputMode.SetHideCursorDuringCapture(false);
 	SetInputMode(InputMode);
 	bShowMouseCursor = true;
+
+	if (BuildComponent)
+	{
+		BuildComponent->LoadBuildData();
+	}
+
+	if (ACustomHUD* CustomHUD = Cast<ACustomHUD>(GetHUD()))
+	{
+		CustomHUD->CreateHUD();
+	}
 }
 
 bool ASPlayerController::ActorSelected(AActor* ActorToCheck) const
@@ -64,7 +78,7 @@ void ASPlayerController::SelectGroup(const TArray<AActor*>& ActorsToSelect)
 			}
 		}
 	}
-	
+
 	SelectedActors.Append(ValidActors);
 	ValidActors.Empty();
 }
@@ -91,16 +105,13 @@ FVector ASPlayerController::GetMousePositionOnTerrain() const
 	DeprojectMousePositionToWorld(WorldLocation, WorldDirection);
 	FHitResult OutHit;
 	if (GetWorld()->LineTraceSingleByChannel(OutHit, WorldLocation,
-		WorldLocation + (WorldDirection * 100000.0f), ECC_GameTraceChannel1))
+	                                         WorldLocation + (WorldDirection * 100000.0f), ECC_GameTraceChannel1))
 	{
 		if (OutHit.bBlockingHit)
 		{
-				return OutHit.Location;
+			return OutHit.Location;
 		}
 	}
 
 	return FVector::ZeroVector;
 }
-
-
-

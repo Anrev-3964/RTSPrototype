@@ -22,7 +22,9 @@ public:
 
 	//Data Management
 	void Init(UBuildItemDataAsset* BuildItemData, const TEnumAsByte<EBuildState> NewBuildState = EBuildState::NoBuild);
-
+	UBuildItemDataAsset* GetBuildItemData() const {return BuildData;}
+	void UpdateOverlayMaterial(const bool bCanPlace = true) const;
+	
 	FOnBuildCompleteEvent OnBuildCompleteEvent;
 
 protected:
@@ -47,6 +49,8 @@ protected:
 	FTimerHandle BuildTimer;
 	UPROPERTY()
 	TEnumAsByte<EBuildState> BuildState = EBuildState::NoBuild;
+	UPROPERTY()
+	UMaterialInstanceDynamic* DynamicOverlayMaterial;
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))

@@ -3,6 +3,7 @@
 
 #include "Buildings/Buildable.h"
 
+#include "SkeletonTreeBuilder.h"
 #include "Chaos/Deformable/MuscleActivationConstraints.h"
 #include "Components/BoxComponent.h"
 #include "Framework/DataAssets/BuildItemDataAsset.h"
@@ -12,7 +13,16 @@
 ABuildable::ABuildable()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
+
+	
+	BoxCollider = CreateDefaultSubobject<UBoxComponent>("BoxCollider");
+	RootComponent = BoxCollider;
+	BoxCollider->SetCollisionProfileName("OverlapAll");
+	
+	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>("StaticMesh");
+	StaticMesh->SetupAttachment(RootComponent);
+	StaticMesh->SetCollisionProfileName("OverlapAll");
 
 }
 
@@ -31,6 +41,11 @@ void ABuildable::Init(UBuildItemDataAsset* BuildItemData, const TEnumAsByte<EBui
 	{
 		InitBuildPreview();
 	}
+}
+
+void ABuildable::UpdateOverlayMaterial(const bool bCanPlace) const
+{
+	DynamicOverlayMaterial->SetScalarParameterValue("Status", bCanPlace? 1.0f:0.0f);
 }
 
 void ABuildable::InitBuildPreview()
@@ -84,17 +99,62 @@ void ABuildable::UpdateCollider()
 void ABuildable::SetOverlayMaterial()
 {
 	if (!BuildData) return;
+	const FSoftObjectPath AssetPath = BuildData->PlaceMaterial.ToSoftObjectPath();
+	if (UMaterialInstance* OverlayMaterial = Cast<UMaterialInstance>(AssetPath.TryLoad()))
+	{
+		DynamicOverlayMaterial = UMaterialInstanceDynamic::Create(OverlayMaterial, this);
+		if (DynamicOverlayMaterial)
+		{
+			TArray<UStaticMeshComponent*> MeshComponents;
+			GetComponents<UStaticMeshComponent>(MeshComponents);
+			for (int32 i = 0; i < MeshComponents.Num(); i++)
+			{
+				MeshComponents[i]->SetOverlayMaterial(DynamicOverlayMaterial);
+			}
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("FAILED INSIDE IF() DYNAMIC OVERLAY MATERIAL"));
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("FAILED DYNAMIC OVERLAY MATERIAL"));
+	}
 	
 }
 
 void ABuildable::UpdateBuildProgressionMesh()
 {
-	
+	if (!BuildData || !StaticMesh) return;
+
+	const int32 BuildMeshIndex = FMath::FloorToInt(BuildProgression * BuildData->BuildMeshes.Num());
+	if (BuildData->BuildMeshes.IsValidIndex(BuildMeshIndex))
+	{
+		if (UStaticMesh* DisplayMesh = BuildData->BuildMeshes[BuildMeshIndex].LoadSynchronous())
+		{
+			StaticMesh->SetStaticMesh(DisplayMesh);
+		}
+	}
 }
 
 void ABuildable::UpdateBuildProgression()
 {
-	
+	if (!StaticMesh) return;
+	BuildProgression += 1.0f / BuildData->BuildMeshes.Num();
+	if (BuildProgression > 1.0f)
+	{
+		if (UStaticMesh* DisplayMesh = BuildData->BuildingMeshComplete.LoadSynchronous())
+		{
+			StaticMesh->SetStaticMesh(DisplayMesh);
+		}
+		BuildState = EBuildState::BuildComplete;
+		EndBuild();
+	}
+	else
+	{
+		UpdateBuildProgressionMesh();
+	}
 }
 
 
