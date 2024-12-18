@@ -92,7 +92,6 @@ void ASPlayerController::SelectGroup(const TArray<AActor*>& ActorsToSelect)
 				{
 					if (FactionsUtils &&  PlayerFaction == FactionsUtils->GetFaction())
 					{
-						UE_LOG(LogTemp, Warning, TEXT("Unit number %d"),i);
 						ValidActors.Add(ActorsToSelect[i]);
 						Selectable->Select();
 					}
@@ -140,9 +139,14 @@ FVector ASPlayerController::GetMousePositionOnTerrain() const
 
 void ASPlayerController::MoveUnitsToDestination(const FVector& Destination)
 {
+	if (SelectedActors.Num() <= 0)
+	{
+		UE_LOG(LogTemp, Error, TEXT("non ho attori da muovere"));
+		return;
+	}
 	for (AActor* Actor : SelectedActors)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Ho almeno un attore, destinazione: %s"), *Destination.ToString());
+		UE_LOG(LogTemp, Error, TEXT("Ho almeno un attore, destinazione: %s"), *Destination.ToString());
 		if (Actor)
 		{
 			if (ICommandable* CommandableActor = Cast<ICommandable>(Actor))

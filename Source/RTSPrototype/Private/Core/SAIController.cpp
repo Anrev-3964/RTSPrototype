@@ -3,6 +3,8 @@
 
 #include "Core/SAIController.h"
 
+#include "Core/FactionsEnum.h"
+#include "Core/FactionsUtils.h"
 #include "Perception/AIPerceptionComponent.h"
 
 //dovra ordinare al proprio pawn di muoveris verso la destinaizone usanod un navMEsh
@@ -17,6 +19,15 @@ ASAIController::ASAIController()
 void ASAIController::BeginPLay()
 {
 	Super::BeginPlay();
+	
+	if (APawn* ControlledPawn = GetPawn())
+	{
+		if (IFactionsUtils* FactionsUtils = Cast<IFactionsUtils>(ControlledPawn))
+		{
+			PawnFaction = FactionsUtils->GetFaction();
+		}	
+	}
+
 	if (AIPerceptionComponent)
 	{
 		SightConfig = NewObject<UAISenseConfig_Sight>(this);
@@ -33,7 +44,6 @@ void ASAIController::BeginPLay()
 			PerceptionComponent->SetDominantSense(SightConfig->GetSenseImplementation());
 			AIPerceptionComponent->SetSenseEnabled(UAISense_Sight::StaticClass(), true);
 		}
-		AIPerceptionComponent->OnPerceptionUpdated.AddDynamic(this, &ASAIController::OnPerceptionUpdated);
 	}
 }
 
@@ -52,12 +62,22 @@ void ASAIController::NavigateToDestination(const FVector& Destination)
 
 void ASAIController::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors)
 {
+	UE_LOG(LogTemp, Warning, TEXT("Sono dentro la funzione"));
 	for (AActor* Actor : UpdatedActors)
 	{
 		if (Actor)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Ho percepito un attore: %s"), *Actor->GetName());
-			// Puoi aggiungere logica per reagire a ciò che è stato percepito, come inseguire un nemico
+			if (IFactionsUtils* FactionsUtils = Cast<IFactionsUtils>(Actor))
+			{
+				if (PawnFaction != FactionsUtils->GetFaction())
+				{
+					UE_LOG(LogTemp, Warning, TEXT("Ho percepito un attore nemico"));
+				}
+				else
+				{
+					UE_LOG(LogTemp, Warning, TEXT("Ho percepito un attore alleato"));
+				}
+			}
 		}
 	}
 }

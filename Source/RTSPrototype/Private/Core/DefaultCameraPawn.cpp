@@ -217,7 +217,7 @@ void ADefaultCameraPawn::MouseRightPressed()
 
 void ADefaultCameraPawn::MouseRightReleased()
 {
-	UE_LOG(LogTemp, Warning, TEXT("ho il mouse destro"));
+	UE_LOG(LogTemp, Error, TEXT("ho il mouse destro"));
 	if (!SPlayer) return;
 	//Get Mouse posiiton on terrain
 	RightMouseHitLocation = SPlayer->GetMousePositionOnTerrain();

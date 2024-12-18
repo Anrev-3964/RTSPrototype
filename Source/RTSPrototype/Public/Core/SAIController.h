@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
+#include "FactionsEnum.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AISense_Sight.h"
@@ -44,7 +45,14 @@ private:
 
 	UPROPERTY()
 	UAISenseConfig_Sight* SightConfig;
-	UFUNCTION()
+
+	UPROPERTY()
+	APawn* PossesedPawn;
+
+	UPROPERTY()
+	EFaction PawnFaction;
+	
+	UFUNCTION(BlueprintCallable, Category = "AI Perception")
 	void OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors);
 };
 
