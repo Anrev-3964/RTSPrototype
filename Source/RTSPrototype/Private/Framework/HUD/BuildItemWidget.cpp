@@ -25,6 +25,12 @@ void UBuildItemWidget::NativeOnInitialized()
 
 void UBuildItemWidget::OnPlaceBuildItemSelected()
 {
+	if (!BuildComponent)
+	{
+		return;
+	}
+
+	BuildComponent->EnterBuildPlacementMode(Data);
 }
 
 void UBuildItemWidget::NativeOnListItemObjectSet(UObject* ListItemObject)

@@ -3,8 +3,12 @@
 
 #include "Buildings/BuildComponent.h"
 
+#include "Buildings/Buildable.h"
+#include "Buildings/BuildingBase.h"
 #include "Engine/AssetManager.h"
+#include "Framework/SGameState.h"
 #include "Framework/DataAssets/BuildItemDataAsset.h"
+#include "GameFramework/GameState.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values for this component's properties
@@ -21,11 +25,22 @@ void UBuildComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	verify((SPlayer = Cast<ASPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0))) != nullptr);
+	verify((OwningActor = GetOwner()) != nullptr);
+	verify((WorldContext = OwningActor->GetWorld()) != nullptr);
+	verify((SPlayer = Cast<ASPlayerController>(UGameplayStatics::GetPlayerController(WorldContext, 0))) != nullptr);
 }
 
 void UBuildComponent::UpdatePlacementStatus()
 {
+	if (!ClientBuildObject)
+	{
+		return;
+	}
+
+	TArray<AActor*> OverlappingActors;
+	ClientBuildObject->GetOverlappingActors(OverlappingActors);
+	bIsPlaceable = OverlappingActors.Num() <= 0;
+	ClientBuildObject->UpdateOverlayMaterial(bIsPlaceable);
 }
 
 void UBuildComponent::OnBuildDataLoaded(TArray<FPrimaryAssetId> BuildAssetsIds)
@@ -47,15 +62,97 @@ void UBuildComponent::OnBuildDataLoaded(TArray<FPrimaryAssetId> BuildAssetsIds)
 	}
 }
 
+void UBuildComponent::ClientEnterBuildPlacementMode(UBuildItemDataAsset* BuildItemData)
+{
+	if (!SPlayer || !BuildItemData || !WorldContext) return;
+
+	FTransform SpawnTransform;
+	SpawnTransform.SetLocation(SPlayer->GetMousePositionOnTerrain());
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+	ClientBuildObject = WorldContext->SpawnActor<ABuildable>(BuildItemData->BuildClass.LoadSynchronous(), SpawnTransform, SpawnParams);
+	if (ClientBuildObject)
+	{
+		ClientBuildObject->Init(BuildItemData);
+	}
+
+	OnBuildModeEnterEvent.Broadcast();
+}
+
+void UBuildComponent::ServerBuildDeploy(UBuildItemDataAsset* BuildData, const FTransform& Location)
+{
+	if (!BuildData)
+	{
+		return;
+	}
+
+	FActorSpawnParameters SpawnParameters;
+	SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	BuildObject = WorldContext->SpawnActor<ABuildable>(BuildData->BuildClass.LoadSynchronous(), Location,
+	                                                   SpawnParameters);
+	if (BuildObject)
+	{
+		BuildObject->Init(BuildData, Building);
+		BuildObject->OnBuildCompleteEvent.AddDynamic(this, &UBuildComponent::OnBuildComplete);
+	}
+}
+
+void UBuildComponent::ServerBuildComplete(UBuildItemDataAsset* BuildingData, const FTransform& Location)
+{
+	if (!OwningActor || !SPlayer || !WorldContext)
+	{
+		return;
+	}
+
+	FActorSpawnParameters SpawnParameters;
+	SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	if (const TSubclassOf<AActor> BuiltClass = BuildingData->BuiltClass.LoadSynchronous())
+	{
+		if (AActor* BuiltObject = WorldContext->SpawnActor<AActor>(BuiltClass, Location, SpawnParameters))
+		{
+			if (ASGameState* GameState = Cast<ASGameState>(UGameplayStatics::GetGameState(OwningActor)))
+			{
+				GameState->AddPlacedObject(FWorldSelectableData(BuiltObject, SPlayer));
+			}
+
+			if (ABuildingBase* Building = Cast<ABuildingBase>(BuiltObject))
+			{
+				Building->SetData(BuildingData);
+			}
+		}
+	}
+}
+
+void UBuildComponent::OnBuildComplete(const TEnumAsByte<EBuildState> BuildState)
+{
+	if (!BuildObject)
+	{
+		return;
+	}
+	if (BuildState == BuildComplete)
+	{
+		ServerBuildComplete(BuildObject->GetBuildItemData(), BuildObject->GetTransform());
+	}
+	else
+	{
+		BuildObject->Destroy();
+	}
+}
+
 void UBuildComponent::EnterBuildPlacementMode(UBuildItemDataAsset* BuildItemData)
 {
+	if (!SPlayer) return;
+
+	//TODO add Input
+	ClientEnterBuildPlacementMode(BuildItemData);
 }
 
 void UBuildComponent::LoadBuildData()
 {
 	verify((AssetManager = UAssetManager::GetIfInitialized()) != nullptr);
 
-	const FPrimaryAssetType AssetType("Build Data");
+	const FPrimaryAssetType AssetType("BuildData");
 	TArray<FPrimaryAssetId> BuildDataAssets;
 	AssetManager->GetPrimaryAssetIdList(AssetType, BuildDataAssets);
 
@@ -68,9 +165,49 @@ void UBuildComponent::LoadBuildData()
 	}
 }
 
+void UBuildComponent::ExitBuildMode()
+{
+	if (!SPlayer)
+	{
+		return;
+	}
+	
+	//todo remove input
+
+	if (ClientBuildObject)
+	{
+		ClientBuildObject->Destroy();
+	}
+}
+
+void UBuildComponent::BuildDeploy()
+{
+	if (!ClientBuildObject)
+	{
+		return;
+	}
+	if (bIsPlaceable)
+	{
+		
+	}
+	else
+	{
+		//cant build notification
+	}
+}
+
 
 // Called every frame
 void UBuildComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	if (!ClientBuildObject || !SPlayer) return;
+	const FVector MouseLocationOnTerrain = SPlayer->GetMousePositionOnTerrain();
+	if (ClientBuildObject->GetActorLocation() != MouseLocationOnTerrain)
+	{
+		ClientBuildObject->SetActorLocation(MouseLocationOnTerrain);
+	}
+
+	UpdatePlacementStatus();
 }

@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "GameMenuWidget.generated.h"
 
+class UButton;
 class UBuildMenuWidget;
 class USimpleUIButton;
 /**
@@ -20,7 +21,7 @@ public:
 	virtual void NativeOnInitialized() override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta =(BindWidget))
-	USimpleUIButton* BuildButton;
+	UButton* BuildButton;
 	UPROPERTY(meta = (BindWidget))
 	UBuildMenuWidget* BuildMenuWidget;
 

@@ -10,6 +10,7 @@
 #include "BuildItemWidget.generated.h"
 
 
+class UImage;
 class UBuildItemDataAsset;
 class UBuildComponent;
 /**

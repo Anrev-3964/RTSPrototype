@@ -8,7 +8,6 @@
 
 class UTextBlock;
 class UButton;
-class UImage;
 /**
  * 
  */
@@ -26,11 +25,8 @@ public:
 	UTextBlock* ButtonTextBlock;
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	UButton* Button;
-	/*UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
-	UImage* ButtonImage;*/
-
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings")
-	FString ButtonText;
+	FText ButtonText;
 };

@@ -5,26 +5,30 @@
 
 #include "Components/Button.h"
 #include "Framework/HUD/BuildMenuWidget.h"
-#include "Framework/HUD/SimpleUIButton.h"
+
 
 void UGameMenuWidget::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
 
-	if (BuildButton)
+	if (!BuildButton)
 	{
-		BuildButton->Button->OnClicked.AddDynamic(this, &UGameMenuWidget::ToggleBuildMenu);
-		if (BuildMenuWidget)
-		{
-			BuildMenuWidget->SetVisibility(ESlateVisibility::Hidden);
-			bBuildMenuOpen = false;
-			BuildMenuWidget->OnBuildItemsSelectedEvent.AddDynamic(this, &UGameMenuWidget::OnBuildItemsSelected);
-		}
-		else
-		{
-			UE_LOG(LogTemp, Error, TEXT("BuildMenuWidget is null in NativeOnInitialized!"));
-		}
+		UE_LOG(LogTemp, Error, TEXT("BuildButton or Button subcomponent is null!"));
+		return;
 	}
+
+	BuildButton->OnClicked.AddDynamic(this, &UGameMenuWidget::ToggleBuildMenu);
+
+	if (!BuildMenuWidget)
+	{
+		UE_LOG(LogTemp, Error, TEXT("BuildMenuWidget is null!"));
+		return;
+	}
+
+	BuildMenuWidget->SetVisibility(ESlateVisibility::Hidden);
+	bBuildMenuOpen = false;
+
+	BuildMenuWidget->OnBuildItemsSelectedEvent.AddDynamic(this, &UGameMenuWidget::OnBuildItemsSelected);
 }
 
 void UGameMenuWidget::ToggleBuildMenu()
