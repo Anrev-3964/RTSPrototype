@@ -88,7 +88,6 @@ public:
 	float GetUnitSightRadius();
 	float GetUnitLoseSightRadius();
 	//float GetUnitAcceptanceRadius();
-
 	UAnimMontage* GetAttackMontage() const;
 	/** GetFunctions**/
 

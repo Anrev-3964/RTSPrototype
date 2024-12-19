@@ -22,8 +22,24 @@ void UBTService_IsTargetInAttackRange::OnBecomeRelevant(UBehaviorTreeComponent& 
 	auto const* const UnitPawn = Cast<ARTSPrototypeCharacter>(UnitController->GetPawn());
 	
 	//TO DO :confrotare la distanza tra l'unita e il bersaglio
+	/**
 	FVector TargetLocation = OwnerComp.GetBlackboardComponent()->GetValueAsVector(TEXT("TargetLocation"));;
 	float DistanceToTarget = FVector::Dist(UnitPawn->GetActorLocation(),TargetLocation);
-
-	OwnerComp.GetBlackboardComponent()->SetValueAsBool(GetSelectedBlackboardKey(),DistanceToTarget <= AttackRange);
+	**/
+	
+	if (UObject* TargetObject = OwnerComp.GetBlackboardComponent()->GetValueAsObject("TargetActor"))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Ho qualcosa"));
+		if (APawn* Target = Cast<APawn>(TargetObject))
+		{
+			float DistanceToTarget = FVector::Dist(UnitPawn->GetActorLocation(),Target->GetActorLocation());
+			OwnerComp.GetBlackboardComponent()->SetValueAsBool(GetSelectedBlackboardKey(),DistanceToTarget <= AttackRange);
+			UE_LOG(LogTemp, Warning, TEXT("Distanza dal bersaglio: %f"), DistanceToTarget);
+		}
+	}
+	else
+	{
+		OwnerComp.GetBlackboardComponent()->SetValueAsBool(GetSelectedBlackboardKey(),false);
+	}
+	
 }

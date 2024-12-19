@@ -23,7 +23,11 @@ void ASAIController::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 	if (Target)
 	{
-		GetBlackboardComponent()->SetValueAsVector("TargetLocation",Target->GetActorLocation());
+		GetBlackboardComponent()->SetValueAsObject("TargetActor", Target);
+		if (!GetBlackboardComponent()->GetValueAsBool("HasOrderFromPlayer"))
+		{
+			GetBlackboardComponent()->SetValueAsVector("TargetLocation",Target->GetActorLocation());
+		}
 	}
 }
 
@@ -136,6 +140,26 @@ void ASAIController::BeginPLay()
 
 void ASAIController::NavigateToDestination(const FVector& Destination)
 {
+	//questa funzione viene richiamata dal player
+	//TO DO : muovere l'unita modificanod la TargetLocaation nel Behaivor tree 
+
+
+	if (APawn* ControlledPawn = GetPawn())
+	{
+		if (UBlackboardComponent* BlackboardComponent = GetBlackboardComponent())
+		{
+			BlackboardComponent->SetValueAsVector("TargetLocation",Destination);
+			BlackboardComponent->SetValueAsBool("HasOrderFromPlayer",true);
+			UE_LOG(LogTemp, Warning, TEXT("NUOVA DESTINAZIONE"));
+		}
+		
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("this pawn doesent have an AICOntroller"));
+	}
+	
+	/**
 	if (APawn* ControlledPawn = GetPawn())
 	{
 		// Muovere il pawn verso la destinatione con il navmesh
@@ -145,6 +169,7 @@ void ASAIController::NavigateToDestination(const FVector& Destination)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("this pawn doesent have an AICOntroller"));
 	}
+	**/
 }
 
 void ASAIController::SetUnitSightRadius(int newRadius)

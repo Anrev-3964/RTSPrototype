@@ -153,6 +153,7 @@ void ARTSPrototypeCharacter::Attack()
 {
 	if (AttackMontage)
 	{
+	UE_LOG(LogTemp, Warning, TEXT("inizio l'animaizone di ATTACO"));
 		PlayAnimMontage(AttackMontage);
 	}
 }
