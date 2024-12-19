@@ -4,12 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "SelectionBox.h"
+#include "InputActionValue.h"
 #include "SPlayerController.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/Pawn.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "DefaultCameraPawn.generated.h"
-
 
 
 UCLASS()
@@ -30,7 +30,7 @@ protected:
 	UFUNCTION()
 	void MoveRight(float AxisValue);
 	UFUNCTION()
-	void Zoom(float AxisValue);
+	void ZoomOld(float AxisValue);
 	UFUNCTION()
 	void RotateRight();
 	UFUNCTION()
@@ -57,13 +57,16 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera Settings")
 	float RotationPitchMax = 80.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera Settings")
-	float ZoomSpeed = 5.0f;
+	float ZoomSpeed = 20.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera Settings")
 	float ZoomMin = 500.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera Settings")
 	float ZoomMax = 3000.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera Settings")
+	float EdgeScrollSpeed = 20.0f;
+	
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -71,7 +74,6 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 private:
-
 	UFUNCTION()
 	void CameraBounds();
 	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, meta = (AllowPrivateAccess = true))
@@ -91,7 +93,6 @@ private:
 
 	//Mouse Input
 protected:
-
 	UFUNCTION()
 	AActor* GetSelectedObject();
 	UFUNCTION()
@@ -106,12 +107,12 @@ protected:
 	void MouseRightReleased();
 	UFUNCTION()
 	void CreateSelectionBox();
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mouse Settings")
 	float LeftMouseHoldThreshold = 0.1f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mouse Settings")
 	TSubclassOf<ASelectionBox> SelectionBoxClass;
-	
+
 	UPROPERTY()
 	ASPlayerController* SPlayer;
 	UPROPERTY()
@@ -119,5 +120,21 @@ protected:
 	UPROPERTY()
 	bool bBoxSelected;
 	UPROPERTY()
-	FVector LeftMouseHitLocation;
+	FVector SelectHitLocation;
+
+	/** Enahnced Input **/
+	UFUNCTION()
+	void Move(const FInputActionValue& Value);
+	UFUNCTION()
+	void Look(const FInputActionValue& Value);
+	UFUNCTION()
+	void Rotate(const FInputActionValue& Value);
+	UFUNCTION()
+	void Zoom(const FInputActionValue& Value);
+	UFUNCTION()
+	void Select(const FInputActionValue& Value);
+	UFUNCTION()
+	void SelectHold(const FInputActionValue& Value);
+	UFUNCTION()
+	void SelectEnd(const FInputActionValue& Value);
 };

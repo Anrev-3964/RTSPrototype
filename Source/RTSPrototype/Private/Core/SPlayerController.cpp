@@ -3,8 +3,10 @@
 
 #include "Core/SPlayerController.h"
 
+#include "EnhancedInputSubsystems.h"
 #include "Buildings/BuildComponent.h"
 #include "Core/Selectable.h"
+#include "Framework/DataAssets/PlayerInputActions.h"
 #include "Framework/HUD/CustomHUD.h"
 
 ASPlayerController::ASPlayerController(const FObjectInitializer& ObjectInitializer)
@@ -81,6 +83,62 @@ void ASPlayerController::SelectGroup(const TArray<AActor*>& ActorsToSelect)
 
 	SelectedActors.Append(ValidActors);
 	ValidActors.Empty();
+}
+
+void ASPlayerController::AddInputMapping(const UInputMappingContext* InputMapping, const int32 MappingPriority) const
+{
+	if (UEnhancedInputLocalPlayerSubsystem* InputSubsystem = ULocalPlayer::GetSubsystem<
+		UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
+	{
+		ensure(InputMapping);
+
+		if (!InputSubsystem->HasMappingContext(InputMapping))
+		{
+			InputSubsystem->AddMappingContext(InputMapping, MappingPriority);
+		}
+	}
+}
+
+void ASPlayerController::RemoveInputMapping(const UInputMappingContext* InputMapping) const
+{
+	if (UEnhancedInputLocalPlayerSubsystem* InputSubsystem = ULocalPlayer::GetSubsystem<
+		UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
+	{
+		ensure(InputMapping);
+
+		InputSubsystem->RemoveMappingContext(InputMapping);
+	}
+}
+
+void ASPlayerController::SetInputDefault(const bool bEnabled) const
+{
+	ensureMsgf(PlayerActionAsset, TEXT("PlayerActionsAsset is NULL"));
+
+	if (const UPlayerInputActions* PlayerActions = Cast<UPlayerInputActions>(PlayerActionAsset))
+	{
+		ensure(PlayerActions->MappingContextDefault);
+
+		if (bEnabled)
+		{
+			AddInputMapping(PlayerActions->MappingContextDefault, PlayerActions->MapPriorityDefault);
+		}
+		else
+		{
+			RemoveInputMapping(PlayerActions->MappingContextDefault);
+		}
+	}
+}
+
+void ASPlayerController::SetupInputComponent()
+{
+	Super::SetupInputComponent();
+
+	if (UEnhancedInputLocalPlayerSubsystem* InputSubsystem = ULocalPlayer::GetSubsystem<
+		UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
+	{
+		InputSubsystem->ClearAllMappings();
+		SetInputDefault();
+	}
 }
 
 void ASPlayerController::ClearSelected()

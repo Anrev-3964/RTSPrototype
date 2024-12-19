@@ -7,6 +7,7 @@
 #include "GameFramework/PlayerController.h"
 #include "SPlayerController.generated.h"
 
+class UInputMappingContext;
 class UBuildComponent;
 /**
  * 
@@ -46,4 +47,21 @@ private:
 
 	UPROPERTY()
 	TEnumAsByte<EBuildAssetFilter> BuildAssetFilter = Filter1;
+
+	/** Enhanced Input **/
+public:
+	UFUNCTION()
+	void AddInputMapping(const UInputMappingContext* InputMapping, const int32 MappingPriority = 0) const;
+	UFUNCTION()
+	void RemoveInputMapping(const UInputMappingContext* InputMapping) const;
+	UFUNCTION()
+	void SetInputDefault(const bool bEnabled = true) const;
+	UFUNCTION()
+	UDataAsset* GetInputActionAsset() const { return PlayerActionAsset; };
+
+protected:
+	virtual void SetupInputComponent() override;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player Settings")
+	UDataAsset* PlayerActionAsset;
 };
