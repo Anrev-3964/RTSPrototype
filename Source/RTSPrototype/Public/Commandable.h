@@ -18,6 +18,8 @@ class RTSPROTOTYPE_API ICommandable
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 	UFUNCTION()
-
 	virtual void MoveToDestination(const FVector Destination) = 0;
+	
+	UFUNCTION()
+	virtual void Attack() = 0; 
 };

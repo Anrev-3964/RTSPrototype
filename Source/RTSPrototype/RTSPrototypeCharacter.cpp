@@ -62,8 +62,6 @@ void ARTSPrototypeCharacter::BeginPlay()
 	{
 		MovementComponent->MaxWalkSpeed = MovementSpeed;
 	}
-
-	UE_LOG(LogTemp, Warning, TEXT("Faction: %hhd"), GetFaction());
 }
 
 void ARTSPrototypeCharacter::Select()
@@ -104,6 +102,33 @@ FString ARTSPrototypeCharacter::GetFactionName() const
 	}
 }
 
+UBehaviorTree* ARTSPrototypeCharacter::GetBehaviorTree() const
+{
+	return Tree;
+}
+
+float ARTSPrototypeCharacter::GetUnitSightRadius()
+{
+	return UnitSightRadius;
+}
+
+float ARTSPrototypeCharacter::GetUnitLoseSightRadius()
+{
+	return UnitLoseSightRadius;
+}
+
+/**
+float ARTSPrototypeCharacter::GetUnitAcceptanceRadius()
+{
+	return AcceptanceRadius;
+}
+**/
+
+UAnimMontage* ARTSPrototypeCharacter::GetAttackMontage() const
+{
+	return AttackMontage;
+}
+
 EFaction ARTSPrototypeCharacter::GetFaction() const
 {
 	return CurrentFaction;
@@ -121,6 +146,14 @@ void ARTSPrototypeCharacter::MoveToDestination(const FVector Destination)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("AIController not found for this Pawn!"));
 		return;
+	}
+}
+
+void ARTSPrototypeCharacter::Attack()
+{
+	if (AttackMontage)
+	{
+		PlayAnimMontage(AttackMontage);
 	}
 }
 

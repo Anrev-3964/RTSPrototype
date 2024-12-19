@@ -17,6 +17,10 @@ class RTSPROTOTYPE_API ASAIController : public AAIController
 	GENERATED_BODY()
 
 	public :
+	explicit  ASAIController(FObjectInitializer const& FObjectInitializer);
+	
+	void BeginPLay();
+	virtual void Tick(float DeltaSeconds) override;
 
 	UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
 	UAIPerceptionComponent* AIPerceptionComponent;
@@ -24,35 +28,38 @@ class RTSPROTOTYPE_API ASAIController : public AAIController
 	UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
 	UAIPerceptionStimuliSourceComponent* AIPerceptionStimuliSource;
 	
-	//this values will by passed by units
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Settings")
-	float UnitSightRadius;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Settings")
-	float UnitLoseSightRadius;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Settings")
-	float UnitPeripheralVisionAngleDegrees;
-	
-	ASAIController();
-	
-	void BeginPLay();
 
 	UFUNCTION()
 	void NavigateToDestination(const FVector& Destination);
-
+	UFUNCTION()
+	void SetUnitSightRadius(int newRadius);
+	void SetUnitLoseSightRadius(int newRadius);
+	
 private:
 
 	UPROPERTY()
-	UAISenseConfig_Sight* SightConfig;
-
+	float AcceptanceRadius = 50.f;
 	UPROPERTY()
-	APawn* PossesedPawn;
-
+	UAISenseConfig_Sight* SightConfig;
+	
 	UPROPERTY()
 	EFaction PawnFaction;
+
+	UPROPERTY()
+	AActor* Target;
 	
 	UFUNCTION(BlueprintCallable, Category = "AI Perception")
-	void OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors);
+	void OnPerceptionUpdated(AActor* UpdatedActor, const FAIStimulus Stimulus);
+	
+	UFUNCTION()
+	void SetUpUnitPerceptionComponent();
+
+	UFUNCTION()
+	void CheckIfEnemyIsClose();
+protected:
+	virtual void OnPossess(APawn* InPawn) override;
 };
+
+
+
 
