@@ -21,6 +21,10 @@ ASAIController::ASAIController(FObjectInitializer const& FObjectInitializer)
 void ASAIController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
+	if (Target)
+	{
+		GetBlackboardComponent()->SetValueAsVector("TargetLocation",Target->GetActorLocation());
+	}
 }
 
 void ASAIController::SetUpUnitPerceptionComponent()
@@ -85,8 +89,7 @@ void ASAIController::OnPerceptionUpdated(AActor* UpdatedActor, const FAIStimulus
 				UE_LOG(LogTemp, Warning, TEXT("Ho percepito un attore nemico"));
 				GetBlackboardComponent()->SetValueAsBool("EnemyInSight",Stimulus.WasSuccessfullySensed());
 				Target = UpdatedActor;
-			
-				GetBlackboardComponent()->SetValueAsVector("TargetLocation",UpdatedActor->GetActorLocation());
+				
 				//TO DO : passare alla blackBoard il bersaglio
 			}
 			else
@@ -112,7 +115,6 @@ void ASAIController::OnPossess(APawn* InPawn)
 			//start the behaivor tree
 			RunBehaviorTree(Tree);
 		}
-		
 	}
 }
 
