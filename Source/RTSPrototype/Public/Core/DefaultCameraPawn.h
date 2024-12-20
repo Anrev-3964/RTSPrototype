@@ -64,7 +64,6 @@ protected:
 	float ZoomMax = 3000.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera Settings")
 	float EdgeScrollSpeed = 20.0f;
-	
 
 public:
 	// Called every frame
@@ -137,4 +136,13 @@ protected:
 	void SelectHold(const FInputActionValue& Value);
 	UFUNCTION()
 	void SelectEnd(const FInputActionValue& Value);
+	UFUNCTION()
+	void TestPlacement(const FInputActionValue& Value);
+
+	/** Placement **/
+
+	UFUNCTION()
+	void Place(const FInputActionValue& Value);
+	UFUNCTION()
+	void PlaceCancel(const FInputActionValue& Value);
 };

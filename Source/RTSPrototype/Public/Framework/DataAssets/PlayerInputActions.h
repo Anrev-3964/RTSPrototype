@@ -33,6 +33,20 @@ public:
 	UInputAction* Look;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Default")
 	UInputAction* Select;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Default")
+	UInputAction* TestPlacement;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Default")
+	UInputAction* SelectDoubleTap;
+
+	/** Placement Mapping Context **/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Placement")
+	UInputMappingContext* MappingContextPlacement;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Placement")
+	int32 MapPriorityPlacement;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Placement")
+	UInputAction* Place;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Placement")
+	UInputAction* PlaceCancel;
 };
 
 namespace EPlayerInputActions

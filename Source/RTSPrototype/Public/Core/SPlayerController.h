@@ -27,6 +27,8 @@ public:
 	void ClearSelected();
 	UFUNCTION()
 	FVector GetMousePositionOnTerrain() const;
+	UFUNCTION()
+	FVector GetMousePositionOnSurface() const;
 
 	TEnumAsByte<EBuildAssetFilter> GetBuildFilter() const { return BuildAssetFilter; };
 
@@ -57,11 +59,40 @@ public:
 	UFUNCTION()
 	void SetInputDefault(const bool bEnabled = true) const;
 	UFUNCTION()
+	void SetInputPlacement(const bool bEnabled = true) const;
+	UFUNCTION()
 	UDataAsset* GetInputActionAsset() const { return PlayerActionAsset; };
+
+	/** Placement **/
+
+	UFUNCTION()
+	bool IsPlacementModeEnabled() const { return bPlacementModeEnabled; };
+	UFUNCTION()
+	void SetPlacementPreview();
+	UFUNCTION()
+	void Place();
+	UFUNCTION()
+	void PlaceCancel();
 
 protected:
 	virtual void SetupInputComponent() override;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player Settings")
 	UDataAsset* PlayerActionAsset;
+
+	UFUNCTION()
+	void ServerPlace(AActor* PlacementPreviewToSpawn);
+	UFUNCTION()
+	void EndPlacement();
+	UFUNCTION()
+	void UpdatePlacement() const;
+
+	virtual void Tick(float DeltaTime) override;
+
+	bool bPlacementModeEnabled;
+
+	UPROPERTY()
+	AActor* PlacementPreviewActor;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Settings|Placeable")
+	TSubclassOf<AActor> PreviewActorType;
 };

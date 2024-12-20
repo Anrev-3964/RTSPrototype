@@ -274,21 +274,21 @@ void ADefaultCameraPawn::EdgeScroll()
 		//right/left
 		if (MousePosition.X > 0.98f && MousePosition.X < 1.0f)
 		{
-			TargetLocation += SpringArm->GetTargetRotation().RotateVector(FVector(0,1,0)) *EdgeScrollSpeed;
+			TargetLocation += SpringArm->GetTargetRotation().RotateVector(FVector(0, 1, 0)) * EdgeScrollSpeed;
 		}
 		else if (MousePosition.X < 0.02f && MousePosition.X > 0.0f)
 		{
-			TargetLocation += SpringArm->GetTargetRotation().RotateVector(FVector(0,-1,0)) *EdgeScrollSpeed;
+			TargetLocation += SpringArm->GetTargetRotation().RotateVector(FVector(0, -1, 0)) * EdgeScrollSpeed;
 		}
 
 		//forward/backward
 		if (MousePosition.Y > 0.98f && MousePosition.Y < 1.0f)
 		{
-			TargetLocation += SpringArm->GetTargetRotation().RotateVector(FVector(-1,0,0)) *EdgeScrollSpeed;
+			TargetLocation += SpringArm->GetTargetRotation().RotateVector(FVector(-1, 0, 0)) * EdgeScrollSpeed;
 		}
 		else if (MousePosition.Y < 0.02f && MousePosition.Y > 0.0f)
 		{
-			TargetLocation += SpringArm->GetTargetRotation().RotateVector(FVector(1,0,0)) *EdgeScrollSpeed;
+			TargetLocation += SpringArm->GetTargetRotation().RotateVector(FVector(1, 0, 0)) * EdgeScrollSpeed;
 		}
 
 		GetTerrainPosition(TargetLocation);
@@ -391,6 +391,39 @@ void ADefaultCameraPawn::SelectEnd(const FInputActionValue& Value)
 	}
 }
 
+void ADefaultCameraPawn::TestPlacement(const FInputActionValue& Value)
+{
+	if (!SPlayer)
+	{
+		return;
+	}
+	SPlayer->SetPlacementPreview();
+}
+
+void ADefaultCameraPawn::Place(const FInputActionValue& Value)
+{
+	if (!SPlayer)
+	{
+		return;
+	}
+	if (SPlayer->IsPlacementModeEnabled())
+	{
+		SPlayer->Place();
+	}
+}
+
+void ADefaultCameraPawn::PlaceCancel(const FInputActionValue& Value)
+{
+	if (!SPlayer)
+	{
+		return;
+	}
+	if (SPlayer->IsPlacementModeEnabled())
+	{
+		SPlayer->PlaceCancel();
+	}
+}
+
 // Called every frame
 void ADefaultCameraPawn::Tick(float DeltaTime)
 {
@@ -426,6 +459,8 @@ void ADefaultCameraPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		if (const UPlayerInputActions* PlayerActions = Cast<UPlayerInputActions>(
 			PlayerController->GetInputActionAsset()))
 		{
+			/** Default **/
+
 			EPlayerInputActions::BindInput_TriggerOnly(Input, PlayerActions->Move, this, &ADefaultCameraPawn::Move);
 			EPlayerInputActions::BindInput_TriggerOnly(Input, PlayerActions->Look, this, &ADefaultCameraPawn::Look);
 			EPlayerInputActions::BindInput_TriggerOnly(Input, PlayerActions->Zoom, this, &ADefaultCameraPawn::Zoom);
@@ -434,6 +469,13 @@ void ADefaultCameraPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 			                                                    &ADefaultCameraPawn::Select,
 			                                                    &ADefaultCameraPawn::SelectHold,
 			                                                    &ADefaultCameraPawn::SelectEnd);
+			EPlayerInputActions::BindInput_TriggerOnly(Input, PlayerActions->TestPlacement, this,
+			                                           &ADefaultCameraPawn::TestPlacement);
+
+			/** Placement **/
+			EPlayerInputActions::BindInput_TriggerOnly(Input, PlayerActions->Place, this, &ADefaultCameraPawn::Place);
+			EPlayerInputActions::BindInput_TriggerOnly(Input, PlayerActions->PlaceCancel, this,
+			                                           &ADefaultCameraPawn::PlaceCancel);
 		}
 	}
 }
