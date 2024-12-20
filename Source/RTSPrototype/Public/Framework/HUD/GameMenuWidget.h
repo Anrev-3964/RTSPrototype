@@ -21,7 +21,7 @@ public:
 	virtual void NativeOnInitialized() override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta =(BindWidget))
-	UButton* BuildButton;
+	UButton* Buildbutton;
 	UPROPERTY(meta = (BindWidget))
 	UBuildMenuWidget* BuildMenuWidget;
 

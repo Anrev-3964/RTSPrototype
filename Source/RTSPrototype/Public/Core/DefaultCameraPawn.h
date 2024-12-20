@@ -26,16 +26,6 @@ protected:
 	virtual void BeginPlay() override;
 
 	UFUNCTION()
-	void MoveForward(float AxisValue);
-	UFUNCTION()
-	void MoveRight(float AxisValue);
-	UFUNCTION()
-	void ZoomOld(float AxisValue);
-	UFUNCTION()
-	void RotateRight();
-	UFUNCTION()
-	void RotateLeft();
-	UFUNCTION()
 	void EnableRotate();
 	UFUNCTION()
 	void DisableRotate();
@@ -90,20 +80,9 @@ private:
 	UPROPERTY()
 	bool bCanRotate;
 
-	//Mouse Input
 protected:
 	UFUNCTION()
 	AActor* GetSelectedObject();
-	UFUNCTION()
-	void MouseLeftPressed();
-	UFUNCTION()
-	void MouseLeftInputHeld(float AxisValue);
-	UFUNCTION()
-	void MouseLeftReleased();
-	UFUNCTION()
-	void MouseRightPressed();
-	UFUNCTION()
-	void MouseRightReleased();
 	UFUNCTION()
 	void CreateSelectionBox();
 
@@ -112,6 +91,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mouse Settings")
 	TSubclassOf<ASelectionBox> SelectionBoxClass;
 
+	/**Mouse Input **/
 	UPROPERTY()
 	ASPlayerController* SPlayer;
 	UPROPERTY()
@@ -120,6 +100,8 @@ protected:
 	bool bBoxSelected;
 	UPROPERTY()
 	FVector SelectHitLocation;
+	UPROPERTY()
+	UBuildComponent* BuildComponent;
 
 	/** Enahnced Input **/
 	UFUNCTION()
@@ -145,4 +127,11 @@ protected:
 	void Place(const FInputActionValue& Value);
 	UFUNCTION()
 	void PlaceCancel(const FInputActionValue& Value);
+
+	/** Build **/
+
+	UFUNCTION()
+	void BuildDeploy(const FInputActionValue& Value);
+	UFUNCTION()
+	void BuildCancel(const FInputActionValue& Value);
 };

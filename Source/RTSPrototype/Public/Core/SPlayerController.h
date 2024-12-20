@@ -61,6 +61,8 @@ public:
 	UFUNCTION()
 	void SetInputPlacement(const bool bEnabled = true) const;
 	UFUNCTION()
+	void SetInputBuildMode(const bool bEnabled = true) const;
+	UFUNCTION()
 	UDataAsset* GetInputActionAsset() const { return PlayerActionAsset; };
 
 	/** Placement **/

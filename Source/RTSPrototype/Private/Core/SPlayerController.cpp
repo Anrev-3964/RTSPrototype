@@ -141,12 +141,29 @@ void ASPlayerController::SetInputPlacement(const bool bEnabled) const
 		if (bEnabled)
 		{
 			AddInputMapping(PlayerActions->MappingContextPlacement, PlayerActions->MapPriorityPlacement);
-			//SetInputDefault(!bEnabled);
+			//SetInputDefault(!bEnabled); 
 		}
 		else
 		{
 			RemoveInputMapping(PlayerActions->MappingContextPlacement);
 			//SetInputDefault();
+		}
+	}
+}
+
+void ASPlayerController::SetInputBuildMode(const bool bEnabled) const
+{
+	if (const UPlayerInputActions* PlayerActions = Cast<UPlayerInputActions>(PlayerActionAsset))
+	{
+		ensure(PlayerActions->MappingContextBuildMode);
+
+		if (bEnabled)
+		{
+			AddInputMapping(PlayerActions->MappingContextBuildMode, PlayerActions->MapPriorityBuildMode);
+		}
+		else
+		{
+			RemoveInputMapping(PlayerActions->MappingContextBuildMode);
 		}
 	}
 }

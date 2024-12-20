@@ -11,18 +11,22 @@ void UGameMenuWidget::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
 
-	if (!BuildButton)
+	if (!Buildbutton)
 	{
 		UE_LOG(LogTemp, Error, TEXT("BuildButton or Button subcomponent is null!"));
 		return;
 	}
 
-	BuildButton->OnClicked.AddDynamic(this, &UGameMenuWidget::ToggleBuildMenu);
+	Buildbutton->OnClicked.AddDynamic(this, &UGameMenuWidget::ToggleBuildMenu);
 
 	if (!BuildMenuWidget)
 	{
 		UE_LOG(LogTemp, Error, TEXT("BuildMenuWidget is null!"));
 		return;
+	}
+	if (BuildMenuWidget)
+	{
+		UE_LOG(LogTemp, Error, TEXT("BuildMenuWidget is already build!"));
 	}
 
 	BuildMenuWidget->SetVisibility(ESlateVisibility::Hidden);
@@ -33,11 +37,28 @@ void UGameMenuWidget::NativeOnInitialized()
 
 void UGameMenuWidget::ToggleBuildMenu()
 {
+	UE_LOG(LogTemp, Log, TEXT("ToggleBuildMenu called"));
+
 	bBuildMenuOpen = !bBuildMenuOpen;
 	if (BuildMenuWidget)
 	{
+		UE_LOG(LogTemp, Log, TEXT("Setting BuildMenuWidget visibility to: %s"),
+		       bBuildMenuOpen ? TEXT("Visible") : TEXT("Hidden"));
+
 		BuildMenuWidget->SetVisibility(bBuildMenuOpen ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
-		bBuildMenuOpen ? BuildMenuWidget->DisplayBuildMenu() : BuildMenuWidget->EndDisplayBuildMenu();
+
+		if (bBuildMenuOpen)
+		{
+			BuildMenuWidget->DisplayBuildMenu();
+		}
+		else
+		{
+			BuildMenuWidget->EndDisplayBuildMenu();
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("BuildMenuWidget is null in ToggleBuildMenu"));
 	}
 }
 

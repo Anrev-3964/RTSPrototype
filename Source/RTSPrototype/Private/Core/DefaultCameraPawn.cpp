@@ -5,6 +5,7 @@
 
 #include "EnhancedInputComponent.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
+#include "Buildings/BuildComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Core/SelectionBox.h"
 #include "Framework/DataAssets/PlayerInputActions.h"
@@ -42,56 +43,15 @@ void ADefaultCameraPawn::BeginPlay()
 	TargetRotation = FRotator(Rotation.Pitch - 50, Rotation.Yaw, 0);
 
 	SPlayer = Cast<ASPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+
+	if (SPlayer)
+	{
+		BuildComponent = UBuildComponent::FindBuildComponent(SPlayer);
+	}
+
 	CreateSelectionBox();
 }
 
-void ADefaultCameraPawn::MoveForward(float AxisValue)
-{
-	if (AxisValue == 0.0f)
-	{
-		return;
-	}
-
-	FVector RightMovement = FVector(SpringArm->GetForwardVector().X, SpringArm->GetForwardVector().Y, 0.0f).
-		GetSafeNormal() * AxisValue * MovementSpeed;
-	TargetLocation += RightMovement;
-
-	GetTerrainPosition(TargetLocation);
-}
-
-void ADefaultCameraPawn::MoveRight(float AxisValue)
-{
-	if (AxisValue == 0.0f)
-	{
-		return;
-	}
-
-	FVector RightMovement = FVector(SpringArm->GetRightVector().X, SpringArm->GetRightVector().Y, 0.0f).GetSafeNormal()
-		* AxisValue * MovementSpeed;
-	TargetLocation += RightMovement;
-	GetTerrainPosition(TargetLocation);
-}
-
-void ADefaultCameraPawn::ZoomOld(float AxisValue)
-{
-	if (AxisValue == 0.0f)
-	{
-		return;
-	}
-
-	const float Zoom = AxisValue * 100.0f;
-	TargetZoom = FMath::Clamp(TargetZoom + Zoom, ZoomMin, ZoomMax);
-}
-
-void ADefaultCameraPawn::RotateRight()
-{
-	TargetRotation = UKismetMathLibrary::ComposeRotators(TargetRotation, FRotator(0, -45, 0));
-}
-
-void ADefaultCameraPawn::RotateLeft()
-{
-	TargetRotation = UKismetMathLibrary::ComposeRotators(TargetRotation, FRotator(0, 45, 0));
-}
 
 void ADefaultCameraPawn::EnableRotate()
 {
@@ -174,58 +134,6 @@ AActor* ADefaultCameraPawn::GetSelectedObject()
 	}
 
 	return nullptr;
-}
-
-void ADefaultCameraPawn::MouseLeftPressed()
-{
-	if (!SPlayer)
-	{
-		return;
-	}
-	SPlayer->HandleSelection(nullptr);
-	bBoxSelected = false;
-	SelectHitLocation = SPlayer->GetMousePositionOnTerrain();
-}
-
-void ADefaultCameraPawn::MouseLeftInputHeld(float AxisValue)
-{
-	if (!SPlayer || AxisValue == 0.0f)
-	{
-		return;
-	}
-	if (SPlayer->GetInputKeyTimeDown(EKeys::LeftMouseButton) >= LeftMouseHoldThreshold)
-	{
-		if (!bBoxSelected && SelectionBox)
-		{
-			SelectionBox->Start(SelectHitLocation, TargetRotation);
-			bBoxSelected = true;
-		}
-	}
-}
-
-void ADefaultCameraPawn::MouseLeftReleased()
-{
-	if (SPlayer)
-	{
-		if (bBoxSelected && SelectionBox)
-		{
-			SelectionBox->End();
-			bBoxSelected = false;
-		}
-		else
-		{
-			// Pass the selected actor to the player controller
-			SPlayer->HandleSelection(GetSelectedObject());
-		}
-	}
-}
-
-void ADefaultCameraPawn::MouseRightPressed()
-{
-}
-
-void ADefaultCameraPawn::MouseRightReleased()
-{
 }
 
 void ADefaultCameraPawn::CreateSelectionBox()
@@ -424,6 +332,26 @@ void ADefaultCameraPawn::PlaceCancel(const FInputActionValue& Value)
 	}
 }
 
+void ADefaultCameraPawn::BuildDeploy(const FInputActionValue& Value)
+{
+	if (!BuildComponent)
+	{
+		return;
+	}
+
+	BuildComponent->BuildDeploy();
+}
+
+void ADefaultCameraPawn::BuildCancel(const FInputActionValue& Value)
+{
+	if (!BuildComponent)
+	{
+		return;
+	}
+
+	BuildComponent->ExitBuildMode();
+}
+
 // Called every frame
 void ADefaultCameraPawn::Tick(float DeltaTime)
 {
@@ -476,6 +404,12 @@ void ADefaultCameraPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 			EPlayerInputActions::BindInput_TriggerOnly(Input, PlayerActions->Place, this, &ADefaultCameraPawn::Place);
 			EPlayerInputActions::BindInput_TriggerOnly(Input, PlayerActions->PlaceCancel, this,
 			                                           &ADefaultCameraPawn::PlaceCancel);
+
+			/** Build **/
+			EPlayerInputActions::BindInput_TriggerOnly(Input, PlayerActions->BuildDeploy, this,
+			                                           &ADefaultCameraPawn::BuildDeploy);
+			EPlayerInputActions::BindInput_TriggerOnly(Input, PlayerActions->BuildCancel, this,
+			                                           &ADefaultCameraPawn::BuildCancel);
 		}
 	}
 }

@@ -36,11 +36,3 @@ void UUHudWidget::CreateGameMenu()
 		}
 	}
 }
-
-void UUHudWidget::SetFormationSelectionWidget(const bool bEnabled) const
-{
-}
-
-void UUHudWidget::OnSelectionUpdated()
-{
-}

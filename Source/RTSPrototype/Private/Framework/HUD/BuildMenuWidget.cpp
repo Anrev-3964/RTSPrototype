@@ -25,6 +25,7 @@ void UBuildMenuWidget::DisplayBuildMenu()
 {
 	if (!BuildItemsList)
 	{
+		UE_LOG(LogTemp, Error, TEXT("BuildItemsList is NULL"));
 		return;
 	}
 

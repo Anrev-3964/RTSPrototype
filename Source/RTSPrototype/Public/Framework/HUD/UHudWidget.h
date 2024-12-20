@@ -21,10 +21,6 @@ public:
 
 protected:
 	void CreateGameMenu();
-	UFUNCTION()
-	void SetFormationSelectionWidget(const bool bEnabled) const;
-	UFUNCTION()
-	void OnSelectionUpdated();
 
 	UPROPERTY()
 	ASPlayerController* SPlayer;

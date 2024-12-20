@@ -64,14 +64,18 @@ void UBuildComponent::OnBuildDataLoaded(TArray<FPrimaryAssetId> BuildAssetsIds)
 
 void UBuildComponent::ClientEnterBuildPlacementMode(UBuildItemDataAsset* BuildItemData)
 {
-	if (!SPlayer || !BuildItemData || !WorldContext) return;
+	if (!SPlayer || !BuildItemData || !WorldContext)
+	{
+		return;
+	}
 
 	FTransform SpawnTransform;
 	SpawnTransform.SetLocation(SPlayer->GetMousePositionOnTerrain());
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-	ClientBuildObject = WorldContext->SpawnActor<ABuildable>(BuildItemData->BuildClass.LoadSynchronous(), SpawnTransform, SpawnParams);
+	ClientBuildObject = WorldContext->SpawnActor<ABuildable>(BuildItemData->BuildClass.LoadSynchronous(),
+	                                                         SpawnTransform, SpawnParams);
 	if (ClientBuildObject)
 	{
 		ClientBuildObject->Init(BuildItemData);
@@ -142,9 +146,12 @@ void UBuildComponent::OnBuildComplete(const TEnumAsByte<EBuildState> BuildState)
 
 void UBuildComponent::EnterBuildPlacementMode(UBuildItemDataAsset* BuildItemData)
 {
-	if (!SPlayer) return;
+	if (!SPlayer)
+	{
+		return;
+	}
 
-	//TODO add Input
+	SPlayer->SetInputBuildMode();
 	ClientEnterBuildPlacementMode(BuildItemData);
 }
 
@@ -171,8 +178,8 @@ void UBuildComponent::ExitBuildMode()
 	{
 		return;
 	}
-	
-	//todo remove input
+
+	SPlayer->SetInputBuildMode(false);
 
 	if (ClientBuildObject)
 	{
@@ -188,7 +195,7 @@ void UBuildComponent::BuildDeploy()
 	}
 	if (bIsPlaceable)
 	{
-		
+		ExitBuildMode();
 	}
 	else
 	{
@@ -202,7 +209,10 @@ void UBuildComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (!ClientBuildObject || !SPlayer) return;
+	if (!ClientBuildObject || !SPlayer)
+	{
+		return;
+	}
 	const FVector MouseLocationOnTerrain = SPlayer->GetMousePositionOnTerrain();
 	if (ClientBuildObject->GetActorLocation() != MouseLocationOnTerrain)
 	{

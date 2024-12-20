@@ -13,9 +13,10 @@
 void UBuildItemWidget::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
+
 	if (PlaceBuildButton)
 	{
-		PlaceBuildButton->Button->OnClicked.AddDynamic(
+		PlaceBuildButton->OnClicked.AddDynamic(
 			this, &UBuildItemWidget::UBuildItemWidget::OnPlaceBuildItemSelected);
 	}
 
@@ -27,6 +28,7 @@ void UBuildItemWidget::OnPlaceBuildItemSelected()
 {
 	if (!BuildComponent)
 	{
+		UE_LOG(LogTemp, Error, TEXT("BuildComponent is null"));
 		return;
 	}
 
@@ -40,7 +42,12 @@ void UBuildItemWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 	Data = Cast<UBuildItemDataAsset>(ListItemObject);
 	if (Data)
 	{
+		UE_LOG(LogTemp, Error, TEXT("Found data"));
 		TitleText->SetText(Data->TitleText);
 		Image->SetBrushFromTexture(Data->Image.LoadSynchronous());
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Failed to get UBuildItemDataAsset"));
 	}
 }

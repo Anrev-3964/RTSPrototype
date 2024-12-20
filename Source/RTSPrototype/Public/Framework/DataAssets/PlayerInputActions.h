@@ -35,8 +35,7 @@ public:
 	UInputAction* Select;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Default")
 	UInputAction* TestPlacement;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Default")
-	UInputAction* SelectDoubleTap;
+
 
 	/** Placement Mapping Context **/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Placement")
@@ -47,6 +46,16 @@ public:
 	UInputAction* Place;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Placement")
 	UInputAction* PlaceCancel;
+
+	/** Building Mapping Context **/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Build")
+	UInputMappingContext* MappingContextBuildMode;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Build")
+	int32 MapPriorityBuildMode;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Build")
+	UInputAction* BuildDeploy;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Build")
+	UInputAction* BuildCancel;
 };
 
 namespace EPlayerInputActions

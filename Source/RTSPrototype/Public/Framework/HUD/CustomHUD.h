@@ -20,6 +20,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	UFUNCTION()
 	void CreateHUD();
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings|UI")
 	TSubclassOf<UUserWidget> GameMenuWidgetClass;
 

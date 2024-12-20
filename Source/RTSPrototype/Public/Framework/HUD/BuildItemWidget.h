@@ -24,7 +24,7 @@ class RTSPROTOTYPE_API UBuildItemWidget : public UUserWidget, public IUserObject
 public:
 	virtual void NativeOnInitialized() override;
 	UPROPERTY(meta = (BindWidget))
-	USimpleUIButton* PlaceBuildButton;
+	UButton* PlaceBuildButton;
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* TitleText;
 	UPROPERTY(meta = (BindWidget))
