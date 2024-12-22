@@ -60,6 +60,7 @@ private:
 	void CheckIfEnemyIsClose();
 protected:
 	virtual void OnPossess(APawn* InPawn) override;
+	virtual  void OnUnPossess() override;
 };
 
 

@@ -117,6 +117,9 @@ protected:
 	//Delegate variable. it can be called by blueprint
 	UPROPERTY(BlueprintAssignable, Category = "Events")
 	FOnDamageTaken OnDamageTakenEvent;
+
+	UFUNCTION()
+	void DestroyCharacter();
 	
 };
 

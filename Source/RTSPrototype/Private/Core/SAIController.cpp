@@ -160,6 +160,13 @@ void ASAIController::OnPossess(APawn* InPawn)
 		}
 	}
 }
+//mainly called when his pawn get destroyed
+void ASAIController::OnUnPossess()
+{
+	Super::OnUnPossess();
+	Destroy();
+}
+
 
 
 void ASAIController::BeginPLay()

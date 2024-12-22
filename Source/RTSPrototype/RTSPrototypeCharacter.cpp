@@ -159,6 +159,20 @@ void ARTSPrototypeCharacter::InflictDamage(const float Damage)
 	{
 		OnDamageTakenEvent.Broadcast();
 	}
+	//Health =< 0 :  target death
+	if (Health <= 0.f)
+	{
+		DestroyCharacter();
+	}
+}
+
+void ARTSPrototypeCharacter::DestroyCharacter()
+{
+	if (AAIController* AIController = Cast<AAIController>(GetController()))
+	{
+		AIController->UnPossess();
+	}
+	Destroy();
 }
 
 EFaction ARTSPrototypeCharacter::GetFaction() const
