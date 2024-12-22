@@ -3,6 +3,7 @@
 
 #include "Core/SAIController.h"
 
+#include "VectorTypes.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Core/FactionsEnum.h"
@@ -85,24 +86,54 @@ void ASAIController::OnPerceptionUpdated(AActor* UpdatedActor, const FAIStimulus
 {
 	if (UpdatedActor)
 	{
-		if (IFactionsUtils* FactionsUtils = Cast<IFactionsUtils>(UpdatedActor))
+		Target =  FindClosetTarget();
+		if (Target != nullptr)
 		{
-			//check if the stimulus is an enemy
-			if (PawnFaction != FactionsUtils->GetFaction())
-			{
-				UE_LOG(LogTemp, Warning, TEXT("Ho percepito un attore nemico"));
-				GetBlackboardComponent()->SetValueAsBool("EnemyInSight",Stimulus.WasSuccessfullySensed());
-				Target = UpdatedActor;
-				
-				//TO DO : passare alla blackBoard il bersaglio
-			}
-			else
-			{
-				UE_LOG(LogTemp, Warning, TEXT("Ho percepito un attore alleato"));
-			}
-		}		
+			GetBlackboardComponent()->SetValueAsBool("EnemyInSight",Stimulus.WasSuccessfullySensed());
+			UE_LOG(LogTemp, Warning, TEXT("Nemico trovato"));
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Nessun attore nemico"));
 	}
 }
+
+AActor* ASAIController::FindClosetTarget() const
+{
+	if (const UAIPerceptionComponent* perceptionComponent = GetAIPerceptionComponent())
+	{
+		TArray<AActor*> PerceivedActors;
+		// Get all perceived Actors
+		perceptionComponent->GetCurrentlyPerceivedActors(nullptr, PerceivedActors);
+		AActor* ClosestActor = nullptr;
+		float ClosestDistance = FLT_MAX; //start value to ensure the first Actor is set as the closest
+
+		for (AActor* Actor : PerceivedActors)
+		{
+			if (Actor)
+			{
+				if (IFactionsUtils* FactionsUtils = Cast<IFactionsUtils>(Actor))
+				{
+					if (PawnFaction != FactionsUtils->GetFaction())
+					{
+						float ActorDistance = FVector::DistSquared(GetPawn()->GetActorLocation(), Actor->GetActorLocation());
+
+						if (ActorDistance < ClosestDistance)
+						{
+							ClosestDistance = ActorDistance;
+							ClosestActor = Actor;
+						}
+					}
+				}
+			}
+		}
+		return ClosestActor;
+	}
+	return nullptr;
+}
+
+
 
 void ASAIController::OnPossess(APawn* InPawn)
 {
@@ -119,6 +150,14 @@ void ASAIController::OnPossess(APawn* InPawn)
 			//start the behaivor tree
 			RunBehaviorTree(Tree);
 		}
+		if (APawn* ControlledPawn = GetPawn())
+		{
+			if (IFactionsUtils* FactionsUtils = Cast<IFactionsUtils>(ControlledPawn))
+			{
+				PawnFaction = FactionsUtils->GetFaction();
+				UE_LOG(LogTemp, Warning, TEXT("Unit Type: %hhd"), PawnFaction);
+			}
+		}
 	}
 }
 
@@ -126,24 +165,11 @@ void ASAIController::OnPossess(APawn* InPawn)
 void ASAIController::BeginPLay()
 {
 	Super::BeginPlay();
-	
-	
-	if (APawn* ControlledPawn = GetPawn())
-	{
-		if (IFactionsUtils* FactionsUtils = Cast<IFactionsUtils>(ControlledPawn))
-		{
-			PawnFaction = FactionsUtils->GetFaction();
-		}
-	}
 }
 
 
 void ASAIController::NavigateToDestination(const FVector& Destination)
 {
-	//questa funzione viene richiamata dal player
-	//TO DO : muovere l'unita modificanod la TargetLocaation nel Behaivor tree 
-
-
 	if (APawn* ControlledPawn = GetPawn())
 	{
 		if (UBlackboardComponent* BlackboardComponent = GetBlackboardComponent())
@@ -158,18 +184,6 @@ void ASAIController::NavigateToDestination(const FVector& Destination)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("this pawn doesent have an AICOntroller"));
 	}
-	
-	/**
-	if (APawn* ControlledPawn = GetPawn())
-	{
-		// Muovere il pawn verso la destinatione con il navmesh
-		MoveToLocation(Destination, -1.f, true, true, false, true, nullptr, false);
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("this pawn doesent have an AICOntroller"));
-	}
-	**/
 }
 
 void ASAIController::SetUnitSightRadius(int newRadius)

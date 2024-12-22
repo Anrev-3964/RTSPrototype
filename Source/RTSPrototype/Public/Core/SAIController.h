@@ -50,6 +50,8 @@ private:
 	
 	UFUNCTION(BlueprintCallable, Category = "AI Perception")
 	void OnPerceptionUpdated(AActor* UpdatedActor, const FAIStimulus Stimulus);
+	UFUNCTION(BlueprintCallable, Category = "AI Perception")
+	AActor* FindClosetTarget() const ;
 	
 	UFUNCTION()
 	void SetUpUnitPerceptionComponent();

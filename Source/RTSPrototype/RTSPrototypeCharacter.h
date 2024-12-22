@@ -10,7 +10,11 @@
 #include "Core/FactionsEnum.h"
 #include "Core/FactionsUtils.h"
 #include "Animation/AnimMontage.h"
+#include "Core/HealthBarWidget.h"
 #include "RTSPrototypeCharacter.generated.h"
+
+//Delegate
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDamageTaken);
 
 UCLASS(Blueprintable)
 class ARTSPrototypeCharacter : public ACharacter, public ISelectable, public  ICommandable, public IFactionsUtils
@@ -40,6 +44,23 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;
 
+	/**Statistics and Settings **/
+
+	UPROPERTY(EditAnywhere,  Category = "Unit Perception")
+	float UnitSightRadius;
+
+	UPROPERTY(EditAnywhere,  Category = "Unit Perception")
+	float UnitLoseSightRadius;
+
+	UPROPERTY(EditAnywhere,  Category = "Unit Stats")
+	float MovementSpeed;
+
+	UPROPERTY(EditAnywhere,Category = "Unit Stats")
+	float AttackValue;
+	
+	float MaxHealth{100.f};
+	float Health;
+
 public:
 
 	/**ISelectable Interface**/
@@ -61,23 +82,6 @@ public:
 	virtual EFaction GetFaction()const override;
 	/**End IFactionUtils Interface**/
 
-	/**Statistics and Settings **/
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Perception")
-	float UnitSightRadius;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Perception")
-	float UnitLoseSightRadius;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Settings")
-	float MovementSpeed;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Settings")
-	float AttackValue;
-
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Settings")
-	//float AcceptanceRadius = 10.f;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Settings")
 	EFaction CurrentFaction;
 	/**End Statistics and Settings**/
@@ -89,8 +93,18 @@ public:
 	float GetUnitLoseSightRadius();
 	//float GetUnitAcceptanceRadius();
 	UAnimMontage* GetAttackMontage() const;
+	UFUNCTION(BlueprintCallable)
+	float GetMaxHealth() const;
+	UFUNCTION(BlueprintCallable)
+	float GetHealth() const;
 	/** GetFunctions**/
 
+	/** Set Functions**/
+	UFUNCTION(BlueprintCallable)
+	void SetHealth(const float NewHealth);
+	UFUNCTION(BlueprintCallable)
+	void InflictDamage(const float Damage);
+	/** Set Functions**/
 	UPROPERTY()
 	bool bSelected;
 
@@ -100,6 +114,10 @@ protected:
 	//must be set in editor
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Settings",meta=(AllowPrivateAccess="true"))
 	UBehaviorTree* Tree;
+	//Delegate variable. it can be called by blueprint
+	UPROPERTY(BlueprintAssignable, Category = "Events")
+	FOnDamageTaken OnDamageTakenEvent;
+	
 };
 
 
