@@ -34,6 +34,10 @@ public:
 	TSoftClassPtr<AActor> BuildClass;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Classes")
 	TSoftClassPtr<AActor> BuiltClass;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
+	int GoldCost;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
+	int HP;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Display")
 	TArray<TSoftObjectPtr<UStaticMesh>> BuildMeshes;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Configuration")

@@ -9,6 +9,7 @@
 #include "BuildComponent.generated.h"
 
 
+class ARTSPlayerState;
 class ABuildable;
 class UBuildItemDataAsset;
 
@@ -57,6 +58,8 @@ protected:
 	ABuildable* ClientBuildObject; //probably server, to remove
 	UPROPERTY()
 	bool bIsPlaceable = false;
+	UPROPERTY()
+	ARTSPlayerState* PlayerState;
 
 public:
 	// Called every frame
@@ -72,10 +75,12 @@ public:
 	void LoadBuildData();
 	void ExitBuildMode();
 	void BuildingDeploy();
+
 	TArray<FPrimaryAssetId> GetBuildData() const
 	{
 		UE_LOG(LogTemp, Log, TEXT("GetBuildData called. %d items in BuildItemsData."), BuildItemsData.Num());
 		return BuildItemsData;
 	}
+
 	FOnBuildModeEnterDelegate OnBuildModeEnterEvent;
 };

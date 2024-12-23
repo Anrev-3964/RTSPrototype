@@ -37,9 +37,6 @@ void ABuildingBase::SetData(UBuildItemDataAsset* BuildingData)
 void ABuildingBase::BeginPlay()
 {
 	Super::BeginPlay();
-
-	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
-	StaticMesh->SetupAttachment(RootComponent);
 }
 
 // Called every frame

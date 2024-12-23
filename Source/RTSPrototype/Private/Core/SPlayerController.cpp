@@ -250,22 +250,22 @@ void ASPlayerController::ServerPlace(AActor* PlacementPreviewToSpawn)
 		}
 		UE_LOG(LogTemp, Log, TEXT("Spawning actor of class: %s"), *Preview->PlaceableClass->GetName());
 
-		if (PlacedBuilding)
-		{
-			for (UActorComponent* Component : PlacedBuilding->GetComponents())
+		/*	if (PlacedBuilding)
 			{
-				UE_LOG(LogTemp, Log, TEXT("Component: %s"), *Component->GetName());
+				for (UActorComponent* Component : PlacedBuilding->GetComponents())
+				{
+					UE_LOG(LogTemp, Log, TEXT("Component: %s"), *Component->GetName());
+				}
+				// Log success for debugging
+				UE_LOG(LogTemp, Log, TEXT("Building placed successfully at %s"),
+				       *PlacedBuilding->GetActorLocation().ToString());
+				DrawDebugSphere(GetWorld(), SpawnTransform.GetLocation(), 50.0f, 12, FColor::Red, true, 5.0f);
 			}
-			// Log success for debugging
-			UE_LOG(LogTemp, Log, TEXT("Building placed successfully at %s"),
-			       *PlacedBuilding->GetActorLocation().ToString());
-			DrawDebugSphere(GetWorld(), SpawnTransform.GetLocation(), 50.0f, 12, FColor::Red, true, 5.0f);
-		}
-		else
-		{
-			// Log failure for debugging
-			UE_LOG(LogTemp, Warning, TEXT("Failed to spawn building."));
-		}
+			else
+			{
+				// Log failure for debugging
+				UE_LOG(LogTemp, Warning, TEXT("Failed to spawn building."));
+			}*/
 	}
 
 	EndPlacement();

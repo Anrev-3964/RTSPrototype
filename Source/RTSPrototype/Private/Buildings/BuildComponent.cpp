@@ -6,10 +6,12 @@
 #include "Buildings/Buildable.h"
 #include "Buildings/BuildingBase.h"
 #include "Engine/AssetManager.h"
+#include "Framework/RTSPlayerState.h"
 #include "Framework/SGameState.h"
 #include "Framework/DataAssets/BuildItemDataAsset.h"
 #include "GameFramework/GameState.h"
 #include "Kismet/GameplayStatics.h"
+#include "Slate/SGameLayerManager.h"
 
 // Sets default values for this component's properties
 UBuildComponent::UBuildComponent()
@@ -28,6 +30,7 @@ void UBuildComponent::BeginPlay()
 	verify((OwningActor = GetOwner()) != nullptr);
 	verify((WorldContext = OwningActor->GetWorld()) != nullptr);
 	verify((SPlayer = Cast<ASPlayerController>(UGameplayStatics::GetPlayerController(WorldContext, 0))) != nullptr);
+	verify((PlayerState = Cast<ARTSPlayerState>(UGameplayStatics::GetPlayerState(WorldContext, 0))) != nullptr);
 }
 
 void UBuildComponent::UpdatePlacementStatus()
@@ -55,7 +58,7 @@ void UBuildComponent::OnBuildDataLoaded(TArray<FPrimaryAssetId> BuildAssetsIds)
 	{
 		UE_LOG(LogTemp, Log, TEXT("Loaded asset: %s"), *Asset.ToString());
 	}
-	
+
 	for (int i = 0; i < BuildAssetsIds.Num(); i++)
 	{
 		const UObject* AssetObject = AssetManager->GetPrimaryAssetObject(BuildAssetsIds[i]);
@@ -68,7 +71,8 @@ void UBuildComponent::OnBuildDataLoaded(TArray<FPrimaryAssetId> BuildAssetsIds)
 		const UBuildItemDataAsset* BuildDataAsset = Cast<UBuildItemDataAsset>(AssetObject);
 		if (!BuildDataAsset)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Failed to cast asset to UBuildItemDataAsset: %s"), *BuildAssetsIds[i].ToString());
+			UE_LOG(LogTemp, Warning, TEXT("Failed to cast asset to UBuildItemDataAsset: %s"),
+			       *BuildAssetsIds[i].ToString());
 			continue;
 		}
 
@@ -77,8 +81,8 @@ void UBuildComponent::OnBuildDataLoaded(TArray<FPrimaryAssetId> BuildAssetsIds)
 
 		//if (BuildDataAsset->BuildAssetFilter == SPlayer->GetBuildFilter())
 		//{
-			BuildItemsData.Add(BuildAssetsIds[i]);
-			UE_LOG(LogTemp, Log, TEXT("Added asset: %s"), *BuildAssetsIds[i].ToString());
+		BuildItemsData.Add(BuildAssetsIds[i]);
+		UE_LOG(LogTemp, Log, TEXT("Added asset: %s"), *BuildAssetsIds[i].ToString());
 		//}
 	}
 }
@@ -89,6 +93,14 @@ void UBuildComponent::ClientEnterBuildPlacementMode(UBuildItemDataAsset* BuildIt
 	{
 		return;
 	}
+
+	if (BuildItemData->GoldCost > PlayerState->GetGold())
+	{
+		UE_LOG(LogTemp, Error, TEXT("NOT ENOUGH GOLD"));
+		return;
+	}
+
+	PlayerState->RemoveGold(BuildItemData->GoldCost);
 
 	FTransform SpawnTransform;
 	SpawnTransform.SetLocation(SPlayer->GetMousePositionOnTerrain());
