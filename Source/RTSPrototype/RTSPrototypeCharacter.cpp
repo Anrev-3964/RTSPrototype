@@ -5,20 +5,15 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Camera/CameraComponent.h"
-#include "Components/DecalComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "Components/WidgetComponent.h"
-#include "Core/HealthBarWidget.h"
 #include "Core/SAIController.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Materials/Material.h"
-#include "Blueprint/UserWidget.h"
 #include "Engine/World.h"
 
-ARTSPrototypeCharacter::ARTSPrototypeCharacter() :
-	Health{MaxHealth}
+ARTSPrototypeCharacter::ARTSPrototypeCharacter()
 {
 	// Set size for player capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -62,10 +57,22 @@ void ARTSPrototypeCharacter::Tick(float DeltaSeconds)
 void ARTSPrototypeCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	//Set character max velocity
+	AssignUnitStatsFromDataAsset();
+}
+
+void ARTSPrototypeCharacter::AssignUnitStatsFromDataAsset()
+{
+	if (!UnitData)
+		return;
+	Health = UnitData->GetMaxHealth();
+	MaxHealth = UnitData->GetMaxHealth();
+	AttackValue = UnitData->GetAttack();
+	UE_LOG(LogTemp, Warning, TEXT("HEALTH : %f"), Health);
+	UE_LOG(LogTemp, Warning, TEXT("ATTACK VALUE : %f"),AttackValue);
+
 	if (UCharacterMovementComponent* MovementComponent = GetCharacterMovement())
 	{
-		MovementComponent->MaxWalkSpeed = MovementSpeed;
+		MovementComponent->MaxWalkSpeed = UnitData->GetMaxMovementSpeed();
 	}
 }
 
@@ -110,16 +117,6 @@ FString ARTSPrototypeCharacter::GetFactionName() const
 UBehaviorTree* ARTSPrototypeCharacter::GetBehaviorTree() const
 {
 	return Tree;
-}
-
-float ARTSPrototypeCharacter::GetUnitSightRadius()
-{
-	return UnitSightRadius;
-}
-
-float ARTSPrototypeCharacter::GetUnitLoseSightRadius()
-{
-	return UnitLoseSightRadius;
 }
 
 /**

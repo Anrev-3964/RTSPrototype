@@ -11,6 +11,7 @@ UCLASS(BlueprintType)
 class RTSPROTOTYPE_API UUnitData : public UDataAsset
 {
 	GENERATED_BODY()
+	//To DO : informazioni da aggiungere : fazione, animation Attack montage
 private:
 	// Proprietà private del Data Asset
 	UPROPERTY(EditDefaultsOnly, Category = "Unit Infomration")
@@ -23,6 +24,8 @@ private:
 	float MaxHealth;
 	UPROPERTY(EditDefaultsOnly, Category = "Unit Stats")
 	float Attack;
+	UPROPERTY(EditDefaultsOnly, Category = "Unit Stats")
+	float MaxMovementSpeed;
 
 	//da aggiungere : Behaivor tree, anim motage,velocita di movimento
 public:
@@ -35,5 +38,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Get Unit Data")
 	float GetAttack() const;
+	UFUNCTION(BlueprintCallable, Category = "Get Unit Data")
+	float GetMaxMovementSpeed() const;
 	/**Get Fuctions**/
 };

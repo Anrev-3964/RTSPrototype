@@ -10,7 +10,7 @@
 #include "Core/FactionsEnum.h"
 #include "Core/FactionsUtils.h"
 #include "Animation/AnimMontage.h"
-#include "Core/HealthBarWidget.h"
+#include "Core/UnitData.h"
 #include "RTSPrototypeCharacter.generated.h"
 
 //Delegate
@@ -45,22 +45,19 @@ private:
 	class USpringArmComponent* CameraBoom;
 
 	/**Statistics and Settings **/
-
-	UPROPERTY(EditAnywhere,  Category = "Unit Perception")
-	float UnitSightRadius;
-
-	UPROPERTY(EditAnywhere,  Category = "Unit Perception")
-	float UnitLoseSightRadius;
-
-	UPROPERTY(EditAnywhere,  Category = "Unit Stats")
-	float MovementSpeed;
-
-	UPROPERTY(EditAnywhere,Category = "Unit Stats")
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	float AttackValue;
-	
-	float MaxHealth{100.f};
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	float MaxHealth;
+	UPROPERTY(BlueprintReadOnly,  meta = (AllowPrivateAccess = "true"))
 	float Health;
 
+	//Unit Data Asset
+	UPROPERTY(EditAnywhere,Category = "Unit Stats")
+	UUnitData* UnitData;
+
+	UFUNCTION()
+	void AssignUnitStatsFromDataAsset();
 public:
 
 	/**ISelectable Interface**/
@@ -88,9 +85,6 @@ public:
 
 	/** GetFunctions**/
 	UBehaviorTree* GetBehaviorTree() const;
-	UFUNCTION()
-	float GetUnitSightRadius();
-	float GetUnitLoseSightRadius();
 	//float GetUnitAcceptanceRadius();
 	UAnimMontage* GetAttackMontage() const;
 	UFUNCTION(BlueprintCallable)
@@ -105,6 +99,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void InflictDamage(const float Damage);
 	/** Set Functions**/
+
 	UPROPERTY()
 	bool bSelected;
 
@@ -120,7 +115,6 @@ protected:
 
 	UFUNCTION()
 	void DestroyCharacter();
-	
 };
 
 

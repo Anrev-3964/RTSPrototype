@@ -55,9 +55,7 @@ private:
 	
 	UFUNCTION()
 	void SetUpUnitPerceptionComponent();
-
-	UFUNCTION()
-	void CheckIfEnemyIsClose();
+	
 protected:
 	virtual void OnPossess(APawn* InPawn) override;
 	virtual  void OnUnPossess() override;

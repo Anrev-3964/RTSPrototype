@@ -11,8 +11,6 @@
 #include "Perception/AIPerceptionComponent.h"
 #include "RTSPrototype/RTSPrototypeCharacter.h"
 
-//dovra ordinare al proprio pawn di muoveris verso la destinaizone usanod un navMEsh
-
 
 ASAIController::ASAIController(FObjectInitializer const& FObjectInitializer)
 {
@@ -44,8 +42,8 @@ void ASAIController::SetUpUnitPerceptionComponent()
 	{
 		SetPerceptionComponent(*AIPerceptionComponent);
 			
-		SightConfig->SightRadius = ControlledPawn->GetUnitSightRadius();           
-		SightConfig->LoseSightRadius = ControlledPawn->GetUnitLoseSightRadius();     
+		//SightConfig->SightRadius = ControlledPawn->GetUnitSightRadius();           
+		//SightConfig->LoseSightRadius = ControlledPawn->GetUnitLoseSightRadius();     
 		SightConfig->PeripheralVisionAngleDegrees = 360.f;
 		SightConfig->SetMaxAge(5.0f);
 		SightConfig->AutoSuccessRangeFromLastSeenLocation = 500.f;
@@ -59,26 +57,6 @@ void ASAIController::SetUpUnitPerceptionComponent()
 		//GetPerceptionComponent()->OnTargetPerceptionUpdated.AddDynamic(this,&ASAIController::OnPerceptionUpdated);
 		GetPerceptionComponent()->ConfigureSense(*SightConfig);
 		UE_LOG(LogTemp, Error, TEXT("SetUp finito con successo"));
-	}
-}
-
-void ASAIController::CheckIfEnemyIsClose()
-{
-	if (!Target)
-		return;
-
-	FVector AIPawnPosition = GetPawn()->GetActorLocation();
-	FVector EnemyPosition = Target->GetActorLocation();
-
-	float Distance = FVector::Dist(AIPawnPosition, EnemyPosition);
-
-	if (Distance <= AcceptanceRadius)
-	{
-		GetBlackboardComponent()->SetValueAsBool("CanAttackEnemy",true);
-	}
-	else
-	{
-		GetBlackboardComponent()->SetValueAsBool("CanAttackEnemy",false);
 	}
 }
 
@@ -123,11 +101,13 @@ AActor* ASAIController::FindClosetTarget() const
 						{
 							ClosestDistance = ActorDistance;
 							ClosestActor = Actor;
+							UE_LOG(LogTemp, Error, TEXT("C'E UN NEMICO QUI!"));
 						}
 					}
 				}
 			}
 		}
+		UE_LOG(LogTemp, Error, TEXT("attore vicino : %p"), ClosestActor);
 		return ClosestActor;
 	}
 	return nullptr;
@@ -149,6 +129,7 @@ void ASAIController::OnPossess(APawn* InPawn)
 			Blackboard = b;
 			//start the behaivor tree
 			RunBehaviorTree(Tree);
+			UE_LOG(LogTemp, Warning, TEXT("Blackboard assigned to %s: %p"), *GetName(), b);
 		}
 		if (APawn* ControlledPawn = GetPawn())
 		{

@@ -17,3 +17,8 @@ float UUnitData::GetAttack() const
 {
 	return Attack;
 }
+
+float UUnitData::GetMaxMovementSpeed() const
+{
+	return MaxMovementSpeed;
+}
