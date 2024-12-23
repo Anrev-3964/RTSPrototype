@@ -226,6 +226,8 @@ void UBuildComponent::BuildingDeploy()
 	}
 	if (bIsPlaceable)
 	{
+		FTransform SpawnTransform(ClientBuildObject->GetActorLocation());
+		ServerBuildDeploy(ClientBuildObject->GetBuildItemData(), SpawnTransform);
 		ExitBuildMode();
 	}
 	else
