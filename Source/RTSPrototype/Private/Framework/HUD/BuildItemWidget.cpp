@@ -16,8 +16,13 @@ void UBuildItemWidget::NativeOnInitialized()
 
 	if (PlaceBuildButton)
 	{
+		UE_LOG(LogTemp, Log, TEXT("PlaceBuildButton is valid"));
 		PlaceBuildButton->OnClicked.AddDynamic(
-			this, &UBuildItemWidget::UBuildItemWidget::OnPlaceBuildItemSelected);
+			this, &UBuildItemWidget::OnPlaceBuildItemSelected);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("PlaceBuildButton is null"));
 	}
 
 	verify((SPlayer = Cast<ASPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0))) != nullptr);
@@ -26,9 +31,16 @@ void UBuildItemWidget::NativeOnInitialized()
 
 void UBuildItemWidget::OnPlaceBuildItemSelected()
 {
+	UE_LOG(LogTemp, Log, TEXT("OnPlaceBuildItemSelected called"));
 	if (!BuildComponent)
 	{
 		UE_LOG(LogTemp, Error, TEXT("BuildComponent is null"));
+		return;
+	}
+
+	if (!Data)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Data is null in OnPlaceBuildItemSelected"));
 		return;
 	}
 

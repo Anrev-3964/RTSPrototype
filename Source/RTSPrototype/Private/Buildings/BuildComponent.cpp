@@ -49,16 +49,37 @@ void UBuildComponent::OnBuildDataLoaded(TArray<FPrimaryAssetId> BuildAssetsIds)
 	{
 		return;
 	}
+
+	UE_LOG(LogTemp, Log, TEXT("Build data loaded with %d assets"), BuildAssetsIds.Num());
+	for (const FPrimaryAssetId& Asset : BuildAssetsIds)
+	{
+		UE_LOG(LogTemp, Log, TEXT("Loaded asset: %s"), *Asset.ToString());
+	}
+	
 	for (int i = 0; i < BuildAssetsIds.Num(); i++)
 	{
-		if (const UBuildItemDataAsset* BuildDataAsset = Cast<UBuildItemDataAsset>(
-			AssetManager->GetPrimaryAssetObject(BuildAssetsIds[i])))
+		const UObject* AssetObject = AssetManager->GetPrimaryAssetObject(BuildAssetsIds[i]);
+		if (!AssetObject)
 		{
-			if (BuildDataAsset->BuildAssetFilter == SPlayer->GetBuildFilter())
-			{
-				BuildItemsData.Add(BuildAssetsIds[i]);
-			}
+			UE_LOG(LogTemp, Warning, TEXT("Failed to get asset object for ID: %s"), *BuildAssetsIds[i].ToString());
+			continue;
 		}
+
+		const UBuildItemDataAsset* BuildDataAsset = Cast<UBuildItemDataAsset>(AssetObject);
+		if (!BuildDataAsset)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Failed to cast asset to UBuildItemDataAsset: %s"), *BuildAssetsIds[i].ToString());
+			continue;
+		}
+
+		//UE_LOG(LogTemp, Log, TEXT("Checking BuildAssetFilter: %i vs %i"), 
+		//	BuildDataAsset->BuildAssetFilter, SPlayer->GetBuildFilter());
+
+		//if (BuildDataAsset->BuildAssetFilter == SPlayer->GetBuildFilter())
+		//{
+			BuildItemsData.Add(BuildAssetsIds[i]);
+			UE_LOG(LogTemp, Log, TEXT("Added asset: %s"), *BuildAssetsIds[i].ToString());
+		//}
 	}
 }
 
@@ -157,18 +178,28 @@ void UBuildComponent::EnterBuildPlacementMode(UBuildItemDataAsset* BuildItemData
 
 void UBuildComponent::LoadBuildData()
 {
+	UE_LOG(LogTemp, Log, TEXT("Loading build data"));
 	verify((AssetManager = UAssetManager::GetIfInitialized()) != nullptr);
 
 	const FPrimaryAssetType AssetType("BuildData");
 	TArray<FPrimaryAssetId> BuildDataAssets;
+
 	AssetManager->GetPrimaryAssetIdList(AssetType, BuildDataAssets);
+
+	UE_LOG(LogTemp, Log, TEXT("Found %d BuildData assets."), BuildDataAssets.Num());
 
 	if (BuildDataAssets.Num() > 0)
 	{
 		const TArray<FName> Bundles;
 		const FStreamableDelegate FormationDataLoadedDelegate =
 			FStreamableDelegate::CreateUObject(this, &UBuildComponent::OnBuildDataLoaded, BuildDataAssets);
+
 		AssetManager->LoadPrimaryAssets(BuildDataAssets, Bundles, FormationDataLoadedDelegate);
+		UE_LOG(LogTemp, Log, TEXT("Loading %d BuildData assets."), BuildDataAssets.Num());
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No BuildData assets found."));
 	}
 }
 
@@ -187,7 +218,7 @@ void UBuildComponent::ExitBuildMode()
 	}
 }
 
-void UBuildComponent::BuildDeploy()
+void UBuildComponent::BuildingDeploy()
 {
 	if (!ClientBuildObject)
 	{
@@ -199,7 +230,7 @@ void UBuildComponent::BuildDeploy()
 	}
 	else
 	{
-		//cant build notification
+		UE_LOG(LogTemp, Warning, TEXT("Cannot place the building. Overlap detected or invalid position."));
 	}
 }
 

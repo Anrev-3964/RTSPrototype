@@ -50,6 +50,7 @@ void UGameMenuWidget::ToggleBuildMenu()
 		if (bBuildMenuOpen)
 		{
 			BuildMenuWidget->DisplayBuildMenu();
+			UE_LOG(LogTemp, Log, TEXT("Button clicked - calling DisplayBuildMenu"));
 		}
 		else
 		{

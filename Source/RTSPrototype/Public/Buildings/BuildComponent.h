@@ -71,7 +71,11 @@ public:
 	void EnterBuildPlacementMode(UBuildItemDataAsset* BuildItemData);
 	void LoadBuildData();
 	void ExitBuildMode();
-	void BuildDeploy();
-	TArray<FPrimaryAssetId> GetBuildData() const { return BuildItemsData; }
+	void BuildingDeploy();
+	TArray<FPrimaryAssetId> GetBuildData() const
+	{
+		UE_LOG(LogTemp, Log, TEXT("GetBuildData called. %d items in BuildItemsData."), BuildItemsData.Num());
+		return BuildItemsData;
+	}
 	FOnBuildModeEnterDelegate OnBuildModeEnterEvent;
 };

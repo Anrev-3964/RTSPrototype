@@ -339,7 +339,7 @@ void ADefaultCameraPawn::BuildDeploy(const FInputActionValue& Value)
 		return;
 	}
 
-	BuildComponent->BuildDeploy();
+	BuildComponent->BuildingDeploy();
 }
 
 void ADefaultCameraPawn::BuildCancel(const FInputActionValue& Value)

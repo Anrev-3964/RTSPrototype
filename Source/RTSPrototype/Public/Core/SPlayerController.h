@@ -30,7 +30,7 @@ public:
 	UFUNCTION()
 	FVector GetMousePositionOnSurface() const;
 
-	TEnumAsByte<EBuildAssetFilter> GetBuildFilter() const { return BuildAssetFilter; };
+	//TEnumAsByte<EBuildAssetFilter> GetBuildFilter() const { return BuildAssetFilter; };
 
 protected:
 	virtual void BeginPlay() override;
@@ -47,8 +47,8 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UBuildComponent* BuildComponent;
 
-	UPROPERTY()
-	TEnumAsByte<EBuildAssetFilter> BuildAssetFilter = Filter1;
+	//UPROPERTY()
+	//TEnumAsByte<EBuildAssetFilter> BuildAssetFilter = Filter1;
 
 	/** Enhanced Input **/
 public:

@@ -23,37 +23,65 @@ void UBuildMenuWidget::NativeConstruct()
 
 void UBuildMenuWidget::DisplayBuildMenu()
 {
-	if (!BuildItemsList)
-	{
-		UE_LOG(LogTemp, Error, TEXT("BuildItemsList is NULL"));
-		return;
-	}
-
 	verify((AssetManager = UAssetManager::GetIfInitialized()) != nullptr);
 	verify((SPlayer = Cast<ASPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0))) != nullptr);
 	verify((BuildComponent = UBuildComponent::FindBuildComponent(SPlayer)) != nullptr);
+	
+    if (!BuildItemsList)
+    {
+        UE_LOG(LogTemp, Error, TEXT("BuildItemsList is NULL"));
+        return;
+    }
 
-	BuildItemsList->ClearListItems();
+	if (BuildComponent)
+	{
+		BuildComponent->LoadBuildData(); // Ensure data is loaded
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("BuildComponent is NULL. Cannot retrieve BuildData."));
+		return;
+	}
 
-	//populate build menu
 	const TArray<FPrimaryAssetId> BuildItemDataAssets = BuildComponent->GetBuildData();
-	for (int i = 0; i < BuildItemDataAssets.Num(); i++)
+	if (BuildItemDataAssets.Num() == 0)
 	{
-		if (UBuildItemDataAsset* BuildData = Cast<UBuildItemDataAsset>(
-			AssetManager->GetPrimaryAssetObject(BuildItemDataAssets[i])))
-		{
-			BuildItemsList->AddItem(BuildData);
-		}
+		UE_LOG(LogTemp, Warning, TEXT("No build data found. Did LoadBuildData run?"));
+		return;
 	}
 
-	//Show build menu
-	BuildItemsList->SetVisibility(ESlateVisibility::Visible);
-	MenuBorder->SetVisibility(ESlateVisibility::Visible);
+    
 
-	if (BuildComponent && !BuildComponent->OnBuildModeEnterEvent.IsBound())
-	{
-		BuildComponent->OnBuildModeEnterEvent.AddDynamic(this, &UBuildMenuWidget::OnBuildModeEnteredEvent);
-	}
+    BuildItemsList->ClearListItems();
+
+    //const TArray<FPrimaryAssetId> BuildItemDataAssets = BuildComponent->GetBuildData();
+    if (BuildItemDataAssets.Num() == 0)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("BuildItemDataAssets is empty."));
+    }
+
+    for (int i = 0; i < BuildItemDataAssets.Num(); i++)
+    {
+        if (UBuildItemDataAsset* BuildData = Cast<UBuildItemDataAsset>(
+            AssetManager->GetPrimaryAssetObject(BuildItemDataAssets[i])))
+        {
+            BuildItemsList->AddItem(BuildData);
+        }
+        else
+        {
+            UE_LOG(LogTemp, Warning, TEXT("Failed to load BuildItemDataAsset: %s"), *BuildItemDataAssets[i].ToString());
+        }
+    }
+
+    BuildItemsList->SetVisibility(ESlateVisibility::Visible);
+    MenuBorder->SetVisibility(ESlateVisibility::Visible);
+
+    if (BuildComponent && !BuildComponent->OnBuildModeEnterEvent.IsBound())
+    {
+        BuildComponent->OnBuildModeEnterEvent.AddDynamic(this, &UBuildMenuWidget::OnBuildModeEnteredEvent);
+    }
+
+    UE_LOG(LogTemp, Log, TEXT("DisplayBuildMenu completed successfully."));
 }
 
 void UBuildMenuWidget::EndDisplayBuildMenu() const

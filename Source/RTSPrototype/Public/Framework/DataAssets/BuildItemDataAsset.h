@@ -24,8 +24,8 @@ public:
 		return FPrimaryAssetId(DataType, GetFName());
 	}
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Display")
-	TEnumAsByte<EBuildAssetFilter> BuildAssetFilter;
+	/*UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Display")
+	TEnumAsByte<EBuildAssetFilter> BuildAssetFilter;*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Configuration")
 	FText TitleText;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Configuration")
