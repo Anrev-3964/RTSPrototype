@@ -40,6 +40,11 @@ UAnimMontage* UUnitData::GetAttackMontage() const
 	return AttackMontage;
 }
 
+float UUnitData::GetAttackDelay() const
+{
+	return AttackDelay;
+}
+
 /**
 float UUnitData::GetSightRadius() const
 {

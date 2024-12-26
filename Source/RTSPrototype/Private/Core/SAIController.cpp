@@ -14,7 +14,30 @@
 
 ASAIController::ASAIController(FObjectInitializer const& FObjectInitializer)
 {
-	AIPerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AI Perception Component"));
+	//AIPerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AI Perception Component"));	
+
+	/**
+	UAISenseConfig_Sight* AISightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("SightConfig"));
+
+	if (AIPerceptionComponent && AISightConfig)
+	{
+		// Imposta il senso visivo come principale
+		AIPerceptionComponent->SetDominantSense(UAISense_Sight::StaticClass());
+		
+		AISightConfig->SightRadius = 1000.f; 
+		AISightConfig->LoseSightRadius = 1200.f;          
+		AISightConfig->PeripheralVisionAngleDegrees = 360.f; 
+		AISightConfig->SetMaxAge(1.0f);                    
+		
+		AIPerceptionComponent->ConfigureSense(*AISightConfig);
+        
+		AISightConfig->DetectionByAffiliation.bDetectEnemies = true;
+		AISightConfig->DetectionByAffiliation.bDetectFriendlies = true;
+		AISightConfig->DetectionByAffiliation.bDetectNeutrals = true;
+		
+		AIPerceptionComponent->SetDominantSense(UAISense_Sight::StaticClass());
+	}
+	**/
 }
 
 void ASAIController::Tick(float DeltaSeconds)
@@ -109,6 +132,8 @@ void ASAIController::OnPossess(APawn* InPawn)
 			}
 		}
 		UnitData = Unit->GetUnitData();
+
+		Blackboard->SetValueAsFloat("AttackDelay",UnitData->GetAttackDelay());
 	}
 }
 //mainly called when his pawn get destroyed

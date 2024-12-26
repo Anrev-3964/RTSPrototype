@@ -24,9 +24,11 @@ private:
 	float MaxHealth;
 	UPROPERTY(EditDefaultsOnly, Category = "Unit Stats")
 	float Attack;
-	UPROPERTY(EditDefaultsOnly, Category = "Unit Stats")
+	UPROPERTY(EditDefaultsOnly, Category = "Unit Stats", meta = (Tooltip = "Delay in secondi tra un attacco e l'altro in consecutiva"))
+	float AttackDelay;
+	UPROPERTY(EditDefaultsOnly, Category = "Unit Stats",meta = (Tooltip = "la velocita massima che l'unita puo raggiungere"))
 	float MaxMovementSpeed;
-	UPROPERTY(EditDefaultsOnly, Category = "Unit Settings")
+	UPROPERTY(EditDefaultsOnly, Category = "Unit Settings",meta = (Tooltip = "l'animazione usata dal unita quando attaca"))
 	UAnimMontage* AttackMontage;
 
 	/**
@@ -53,6 +55,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Get Unit Data")
 	UAnimMontage* GetAttackMontage()  const;
 
+	UFUNCTION(BlueprintCallable, Category = "Get Unit Data")
+	float GetAttackDelay()  const;
 	/**
 	UFUNCTION(BlueprintCallable, Category = "Get Unit Data")
 	float GetSightRadius() const;
