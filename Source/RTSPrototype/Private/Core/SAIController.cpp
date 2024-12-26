@@ -14,7 +14,7 @@
 
 ASAIController::ASAIController(FObjectInitializer const& FObjectInitializer)
 {
-	SetUpUnitPerceptionComponent();
+	AIPerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AI Perception Component"));
 }
 
 void ASAIController::Tick(float DeltaSeconds)
@@ -30,36 +30,6 @@ void ASAIController::Tick(float DeltaSeconds)
 	}
 }
 
-void ASAIController::SetUpUnitPerceptionComponent()
-{
-	AIPerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AI Perception Component"));
-	AIPerceptionStimuliSource = CreateDefaultSubobject<UAIPerceptionStimuliSourceComponent>(TEXT("AIPerceptionStimuliSource"));
-	SightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("SightConfig"));
-
-	ARTSPrototypeCharacter* ControlledPawn = Cast<ARTSPrototypeCharacter>(GetPawn());
-	
-	if (SightConfig && ControlledPawn)
-	{
-		SetPerceptionComponent(*AIPerceptionComponent);
-			
-		//SightConfig->SightRadius = ControlledPawn->GetUnitSightRadius();           
-		//SightConfig->LoseSightRadius = ControlledPawn->GetUnitLoseSightRadius();     
-		SightConfig->PeripheralVisionAngleDegrees = 360.f;
-		SightConfig->SetMaxAge(5.0f);
-		SightConfig->AutoSuccessRangeFromLastSeenLocation = 500.f;
-		SightConfig->DetectionByAffiliation.bDetectEnemies = true;
-		SightConfig->DetectionByAffiliation.bDetectFriendlies = true;
-		SightConfig->DetectionByAffiliation.bDetectNeutrals = true;
-
-		// Configura il componente di percezione con il senso visivo
-
-		GetPerceptionComponent()->SetDominantSense(SightConfig->GetSenseImplementation());
-		//GetPerceptionComponent()->OnTargetPerceptionUpdated.AddDynamic(this,&ASAIController::OnPerceptionUpdated);
-		GetPerceptionComponent()->ConfigureSense(*SightConfig);
-		UE_LOG(LogTemp, Error, TEXT("SetUp finito con successo"));
-	}
-}
-
 void ASAIController::OnPerceptionUpdated(AActor* UpdatedActor, const FAIStimulus Stimulus)
 {
 	if (UpdatedActor)
@@ -68,12 +38,12 @@ void ASAIController::OnPerceptionUpdated(AActor* UpdatedActor, const FAIStimulus
 		if (Target != nullptr)
 		{
 			GetBlackboardComponent()->SetValueAsBool("EnemyInSight",Stimulus.WasSuccessfullySensed());
-			UE_LOG(LogTemp, Warning, TEXT("Nemico trovato"));
+			//UE_LOG(LogTemp, Warning, TEXT("Nemico trovato"));
 		}
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Nessun attore nemico"));
+		//UE_LOG(LogTemp, Warning, TEXT("Nessun attore nemico"));
 	}
 }
 
@@ -101,19 +71,17 @@ AActor* ASAIController::FindClosetTarget() const
 						{
 							ClosestDistance = ActorDistance;
 							ClosestActor = Actor;
-							UE_LOG(LogTemp, Error, TEXT("C'E UN NEMICO QUI!"));
+							//UE_LOG(LogTemp, Error, TEXT("C'E UN NEMICO QUI!"));
 						}
 					}
 				}
 			}
 		}
-		UE_LOG(LogTemp, Error, TEXT("attore vicino : %p"), ClosestActor);
+		//UE_LOG(LogTemp, Error, TEXT("attore vicino : %p"), ClosestActor);
 		return ClosestActor;
 	}
 	return nullptr;
 }
-
-
 
 void ASAIController::OnPossess(APawn* InPawn)
 {
@@ -131,6 +99,7 @@ void ASAIController::OnPossess(APawn* InPawn)
 			RunBehaviorTree(Tree);
 			UE_LOG(LogTemp, Warning, TEXT("Blackboard assigned to %s: %p"), *GetName(), b);
 		}
+		
 		if (APawn* ControlledPawn = GetPawn())
 		{
 			if (IFactionsUtils* FactionsUtils = Cast<IFactionsUtils>(ControlledPawn))
@@ -139,6 +108,7 @@ void ASAIController::OnPossess(APawn* InPawn)
 				UE_LOG(LogTemp, Warning, TEXT("Unit Type: %hhd"), PawnFaction);
 			}
 		}
+		UnitData = Unit->GetUnitData();
 	}
 }
 //mainly called when his pawn get destroyed
@@ -164,16 +134,12 @@ void ASAIController::NavigateToDestination(const FVector& Destination)
 		{
 			BlackboardComponent->SetValueAsVector("TargetLocation",Destination);
 			BlackboardComponent->SetValueAsBool("HasOrderFromPlayer",true);
-			UE_LOG(LogTemp, Warning, TEXT("NUOVA DESTINAZIONE"));
+			//UE_LOG(LogTemp, Warning, TEXT("NUOVA DESTINAZIONE"));
 		}
-		
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("this pawn doesent have an AICOntroller"));
 	}
 }
 
+//TO DO : da modificare
 void ASAIController::SetUnitSightRadius(int newRadius)
 {
 	if (SightConfig)
@@ -181,7 +147,7 @@ void ASAIController::SetUnitSightRadius(int newRadius)
 		SightConfig->SightRadius = newRadius;
 	}
 }
-
+//TO DO : da modificare
 void ASAIController::SetUnitLoseSightRadius(int newRadius)
 {
 	if (SightConfig)

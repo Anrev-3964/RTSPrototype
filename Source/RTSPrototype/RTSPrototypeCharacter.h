@@ -51,7 +51,8 @@ private:
 	float MaxHealth;
 	UPROPERTY(BlueprintReadOnly,  meta = (AllowPrivateAccess = "true"))
 	float Health;
-
+	UPROPERTY(BlueprintReadOnly,  meta = (AllowPrivateAccess = "true"))
+	UAnimMontage* AttackMontage;
 	//Unit Data Asset
 	UPROPERTY(EditAnywhere,Category = "Unit Stats")
 	UUnitData* UnitData;
@@ -85,10 +86,16 @@ public:
 
 	/** GetFunctions**/
 	UBehaviorTree* GetBehaviorTree() const;
-	//float GetUnitAcceptanceRadius();
+
 	UAnimMontage* GetAttackMontage() const;
+
 	UFUNCTION(BlueprintCallable)
+
 	float GetMaxHealth() const;
+
+	UFUNCTION(BlueprintCallable)
+	UUnitData* GetUnitData() const;
+
 	UFUNCTION(BlueprintCallable)
 	float GetHealth() const;
 	/** GetFunctions**/
@@ -103,8 +110,6 @@ public:
 	UPROPERTY()
 	bool bSelected;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation Montages")
-	UAnimMontage* AttackMontage;
 protected:
 	//must be set in editor
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Settings",meta=(AllowPrivateAccess="true"))

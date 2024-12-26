@@ -26,7 +26,15 @@ private:
 	float Attack;
 	UPROPERTY(EditDefaultsOnly, Category = "Unit Stats")
 	float MaxMovementSpeed;
+	UPROPERTY(EditDefaultsOnly, Category = "Unit Settings")
+	UAnimMontage* AttackMontage;
 
+	/**
+	UPROPERTY(EditDefaultsOnly, Category = "Unit Percetion")
+	float SightRadius;
+	UPROPERTY(EditDefaultsOnly, Category = "Unit Percetion")
+	float LoseSightRadius;
+	**/
 	//da aggiungere : Behaivor tree, anim motage,velocita di movimento
 public:
 	/**Get Fuctions**/
@@ -38,7 +46,19 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Get Unit Data")
 	float GetAttack() const;
+
 	UFUNCTION(BlueprintCallable, Category = "Get Unit Data")
 	float GetMaxMovementSpeed() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Get Unit Data")
+	UAnimMontage* GetAttackMontage()  const;
+
+	/**
+	UFUNCTION(BlueprintCallable, Category = "Get Unit Data")
+	float GetSightRadius() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Get Unit Data")
+	float GetLoseSightRadius() const;
+	**/
 	/**Get Fuctions**/
 };

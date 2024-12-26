@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "AIController.h"
 #include "FactionsEnum.h"
+#include "Core/UnitData.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AISense_Sight.h"
@@ -22,7 +23,7 @@ class RTSPROTOTYPE_API ASAIController : public AAIController
 	void BeginPLay();
 	virtual void Tick(float DeltaSeconds) override;
 
-	UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UAIPerceptionComponent* AIPerceptionComponent;
 
 	UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
@@ -47,15 +48,15 @@ private:
 
 	UPROPERTY()
 	AActor* Target;
+
+	UPROPERTY()
+	UUnitData* UnitData;
 	
 	UFUNCTION(BlueprintCallable, Category = "AI Perception")
 	void OnPerceptionUpdated(AActor* UpdatedActor, const FAIStimulus Stimulus);
-	UFUNCTION(BlueprintCallable, Category = "AI Perception")
-	AActor* FindClosetTarget() const ;
-	
 	UFUNCTION()
-	void SetUpUnitPerceptionComponent();
-	
+	AActor* FindClosetTarget() const ;
+
 protected:
 	virtual void OnPossess(APawn* InPawn) override;
 	virtual  void OnUnPossess() override;

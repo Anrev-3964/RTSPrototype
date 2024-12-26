@@ -67,8 +67,7 @@ void ARTSPrototypeCharacter::AssignUnitStatsFromDataAsset()
 	Health = UnitData->GetMaxHealth();
 	MaxHealth = UnitData->GetMaxHealth();
 	AttackValue = UnitData->GetAttack();
-	UE_LOG(LogTemp, Warning, TEXT("HEALTH : %f"), Health);
-	UE_LOG(LogTemp, Warning, TEXT("ATTACK VALUE : %f"),AttackValue);
+	AttackMontage = UnitData->GetAttackMontage();
 
 	if (UCharacterMovementComponent* MovementComponent = GetCharacterMovement())
 	{
@@ -119,13 +118,6 @@ UBehaviorTree* ARTSPrototypeCharacter::GetBehaviorTree() const
 	return Tree;
 }
 
-/**
-float ARTSPrototypeCharacter::GetUnitAcceptanceRadius()
-{
-	return AcceptanceRadius;
-}
-**/
-
 UAnimMontage* ARTSPrototypeCharacter::GetAttackMontage() const
 {
 	return AttackMontage;
@@ -134,6 +126,11 @@ UAnimMontage* ARTSPrototypeCharacter::GetAttackMontage() const
 float ARTSPrototypeCharacter::GetMaxHealth() const
 {
 	return MaxHealth;
+}
+
+UUnitData* ARTSPrototypeCharacter::GetUnitData() const
+{
+	return UnitData;
 }
 
 float ARTSPrototypeCharacter::GetHealth() const
