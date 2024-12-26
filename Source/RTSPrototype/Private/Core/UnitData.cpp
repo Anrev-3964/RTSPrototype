@@ -45,6 +45,24 @@ float UUnitData::GetAttackDelay() const
 	return AttackDelay;
 }
 
+float UUnitData::GetAttackRange() const
+{
+	if (AttackRange < 200)
+	{
+		return 200.f;
+	}
+	return AttackRange;
+}
+
+float UUnitData::GetUnitAcceptableRadius() const
+{
+	if (UnitAcceptableRadius <= 100)
+	{
+		return 100;
+	}
+	return  UnitAcceptableRadius;
+}
+
 /**
 float UUnitData::GetSightRadius() const
 {

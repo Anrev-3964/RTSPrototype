@@ -30,6 +30,10 @@ private:
 	float MaxMovementSpeed;
 	UPROPERTY(EditDefaultsOnly, Category = "Unit Settings",meta = (Tooltip = "l'animazione usata dal unita quando attaca"))
 	UAnimMontage* AttackMontage;
+	UPROPERTY(EditDefaultsOnly, Category = "Unit AI ",meta = (Tooltip = "Range di attaco per l'unita (AttackRange = 200 se : AttackRange < 200)"))
+	float AttackRange;
+	UPROPERTY(EditDefaultsOnly, Category = "Unit AI ",meta = (Tooltip = "Range tolleranza per il navmesh dell'unita (UnitAcceptanceRadius = 100 se : UnitAcceptanceRadius < 100)"))
+	float UnitAcceptableRadius;
 
 	/**
 	UPROPERTY(EditDefaultsOnly, Category = "Unit Percetion")
@@ -57,6 +61,11 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Get Unit Data")
 	float GetAttackDelay()  const;
+	UFUNCTION(BlueprintCallable, Category = "Get Unit Data")
+	float GetAttackRange()  const;
+	UFUNCTION(BlueprintCallable, Category = "Get Unit Data")
+	float GetUnitAcceptableRadius()  const;
+	
 	/**
 	UFUNCTION(BlueprintCallable, Category = "Get Unit Data")
 	float GetSightRadius() const;

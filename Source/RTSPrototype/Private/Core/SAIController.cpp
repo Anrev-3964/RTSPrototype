@@ -43,6 +43,13 @@ ASAIController::ASAIController(FObjectInitializer const& FObjectInitializer)
 void ASAIController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
+
+	//Update the Target Variable over time 
+	if (GetWorld()->GetTimeSeconds() >(LastInteractionTime + InteractionCooldown))
+	{
+		Target = FindClosetTarget();
+		LastInteractionTime = GetWorld()->GetTimeSeconds();
+	}
 	if (Target)
 	{
 		GetBlackboardComponent()->SetValueAsObject("TargetActor", Target);
@@ -109,6 +116,8 @@ AActor* ASAIController::FindClosetTarget() const
 void ASAIController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
+
+	LastInteractionTime = GetWorld()->GetTimeSeconds();
 	if (ARTSPrototypeCharacter* const Unit =Cast<ARTSPrototypeCharacter>(InPawn))
 	{
 		//get the behaivor tree and it's own blackboard and apply it to the AI controller
@@ -131,9 +140,13 @@ void ASAIController::OnPossess(APawn* InPawn)
 				UE_LOG(LogTemp, Warning, TEXT("Unit Type: %hhd"), PawnFaction);
 			}
 		}
+		
 		UnitData = Unit->GetUnitData();
 
+		//Set BlackBoard values
 		Blackboard->SetValueAsFloat("AttackDelay",UnitData->GetAttackDelay());
+		Blackboard->SetValueAsFloat("AttackRange", UnitData->GetAttackRange());
+		Blackboard->SetValueAsFloat("AcceptableRadius", UnitData->GetUnitAcceptableRadius());
 	}
 }
 //mainly called when his pawn get destroyed

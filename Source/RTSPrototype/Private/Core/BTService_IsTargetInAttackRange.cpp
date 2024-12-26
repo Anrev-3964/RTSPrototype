@@ -20,26 +20,24 @@ void UBTService_IsTargetInAttackRange::OnBecomeRelevant(UBehaviorTreeComponent& 
 	//get Unit controller and Unit Pawn
 	auto const* const UnitController = Cast<ASAIController>(OwnerComp.GetAIOwner());
 	auto const* const UnitPawn = Cast<ARTSPrototypeCharacter>(UnitController->GetPawn());
-	
-	//TO DO :confrotare la distanza tra l'unita e il bersaglio
-	/**
-	FVector TargetLocation = OwnerComp.GetBlackboardComponent()->GetValueAsVector(TEXT("TargetLocation"));;
-	float DistanceToTarget = FVector::Dist(UnitPawn->GetActorLocation(),TargetLocation);
-	**/
-	
+	float AttackRange = OwnerComp.GetBlackboardComponent()->GetValueAsFloat(GetSelectedBlackboardKey());
+
 	if (UObject* TargetObject = OwnerComp.GetBlackboardComponent()->GetValueAsObject("TargetActor"))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Ho qualcosa"));
 		if (APawn* Target = Cast<APawn>(TargetObject))
 		{
 			float DistanceToTarget = FVector::Dist(UnitPawn->GetActorLocation(),Target->GetActorLocation());
-			OwnerComp.GetBlackboardComponent()->SetValueAsBool(GetSelectedBlackboardKey(),DistanceToTarget <= AttackRange);
-			UE_LOG(LogTemp, Warning, TEXT("Distanza dal bersaglio: %f"), DistanceToTarget);
+			UE_LOG(LogTemp, Warning, TEXT("Distanza di attaco: %f"), AttackRange);
+			UE_LOG(LogTemp, Warning, TEXT("Distanza dal bersaglio : %f"), DistanceToTarget);
+			
+			OwnerComp.GetBlackboardComponent()->SetValueAsBool("TargetIsInAttackRange",DistanceToTarget <= AttackRange);
 		}
 	}
 	else
 	{
 		OwnerComp.GetBlackboardComponent()->SetValueAsBool(GetSelectedBlackboardKey(),false);
+		UE_LOG(LogTemp, Warning, TEXT("Nessun bersaglio"));
 	}
 	
 }

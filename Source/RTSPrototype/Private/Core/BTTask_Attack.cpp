@@ -16,7 +16,7 @@ EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 	auto const OutOfRange = !OwnerComp.GetBlackboardComponent()->GetValueAsBool(GetSelectedBlackboardKey());
 	if (OutOfRange)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("il bersaglio e TROPPO DISTANTE per attacarlo"));
+		//UE_LOG(LogTemp, Warning, TEXT("il bersaglio e TROPPO DISTANTE per attacarlo"));
 		FinishLatentTask(OwnerComp,EBTNodeResult::Succeeded);//segnala che l'azione richiede tempo
 		return  EBTNodeResult::Succeeded;
 	}
@@ -33,7 +33,7 @@ EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 		//dont attack if the unit is already attacking (anim montage in play)
 		if (MontageHasFinished(UnitPawn))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("sono ABBASTANZA VICINO per attacarlo"));
+			//UE_LOG(LogTemp, Warning, TEXT("sono ABBASTANZA VICINO per attacarlo"));
 			Icommandable->Attack();
 		}
 	}

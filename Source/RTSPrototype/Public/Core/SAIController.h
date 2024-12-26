@@ -57,6 +57,9 @@ private:
 	UFUNCTION()
 	AActor* FindClosetTarget() const ;
 
+	float LastInteractionTime;
+	float InteractionCooldown = 0.8f;
+
 protected:
 	virtual void OnPossess(APawn* InPawn) override;
 	virtual  void OnUnPossess() override;

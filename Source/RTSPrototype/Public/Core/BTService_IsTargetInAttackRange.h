@@ -18,8 +18,4 @@ public :
 	UBTService_IsTargetInAttackRange();
 	//the equivalent of th ebehaivor tree
 	void OnBecomeRelevant(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
-
-private:
-	UPROPERTY(EditAnywhere,Category = AI,meta=(AllowPrivateAccess="true"))
-	float AttackRange = 80.f;
 };
