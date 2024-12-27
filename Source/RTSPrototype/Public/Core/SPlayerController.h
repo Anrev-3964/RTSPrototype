@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Framework/DataAssets/BuildData.h"
+#include "Core/FactionsEnum.h"
 #include "GameFramework/PlayerController.h"
 #include "SPlayerController.generated.h"
 
@@ -22,7 +23,8 @@ public:
 
 	UFUNCTION()
 	void HandleSelection(AActor* ActorToSelect);
-	void HandleSelection(TArray<AActor*> ActorsToSelect);
+	void HandleSelection(const TArray<AActor*>& ActorsToSelect);
+
 	UFUNCTION()
 	void ClearSelected();
 	UFUNCTION()
@@ -32,14 +34,18 @@ public:
 
 	//TEnumAsByte<EBuildAssetFilter> GetBuildFilter() const { return BuildAssetFilter; };
 
-protected:
-	virtual void BeginPlay() override;
+	UFUNCTION()
+	void MoveUnitsToDestination(const FVector& Destination);
 
+protected:
+
+	virtual void BeginPlay() override;
+	
 	UFUNCTION()
 	bool ActorSelected(AActor* ActorToCheck) const;
 	UFUNCTION()
 	void SelectGroup(const TArray<AActor*>& ActorsToSelect);
-
+	
 	UPROPERTY()
 	TArray<AActor*> SelectedActors;
 
@@ -97,4 +103,8 @@ protected:
 	AActor* PlacementPreviewActor;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Settings|Placeable")
 	TSubclassOf<AActor> PreviewActorType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Other Settings")
+	EFaction PlayerFaction;
+	//TO DO : definire una funzione che ordini alle unita dentro SelectedActors di muoversi veros la destinazione
 };

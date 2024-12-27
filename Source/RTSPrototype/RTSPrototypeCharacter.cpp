@@ -2,10 +2,13 @@
 
 #include "RTSPrototypeCharacter.h"
 
+#include "BehaviorTree/BlackboardComponent.h"
+
 #include "MaterialDomain.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Core/SAIController.h"
 #include "Engine/AssetManager.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PlayerController.h"
@@ -42,10 +45,11 @@ ARTSPrototypeCharacter::ARTSPrototypeCharacter()
 	TopDownCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("TopDownCamera"));
 	TopDownCameraComponent->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	TopDownCameraComponent->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
-
+	
 	// Activate ticking in order to update the cursor every frame.
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
+	
 }
 
 void ARTSPrototypeCharacter::Tick(float DeltaSeconds)
@@ -57,6 +61,22 @@ void ARTSPrototypeCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	LoadData();
+	AssignUnitStatsFromDataAsset();
+}
+
+void ARTSPrototypeCharacter::AssignUnitStatsFromDataAsset()
+{
+	if (!UnitData)
+		return;
+	Health = UnitData->GetMaxHealth();
+	MaxHealth = UnitData->GetMaxHealth();
+	AttackValue = UnitData->GetAttack();
+	AttackMontage = UnitData->GetAttackMontage();
+
+	if (UCharacterMovementComponent* MovementComponent = GetCharacterMovement())
+	{
+		MovementComponent->MaxWalkSpeed = UnitData->GetMaxMovementSpeed();
+	}
 }
 
 void ARTSPrototypeCharacter::LoadData() const
@@ -189,3 +209,124 @@ for (int32 i = 0; i < SkeletalComponents.Num(); i++)
     }
 }
 }
+
+FString ARTSPrototypeCharacter::GetFactionName() const
+{
+	switch (CurrentFaction)
+	{
+	case EFaction::Team1:
+		return TEXT("Team 1");
+	case EFaction::Team2:
+		return TEXT("Team 2");
+	default:
+		return TEXT("Unknown");
+	}
+}
+
+UBehaviorTree* ARTSPrototypeCharacter::GetBehaviorTree() const
+{
+	return Tree;
+}
+
+UAnimMontage* ARTSPrototypeCharacter::GetAttackMontage() const
+{
+	return AttackMontage;
+}
+
+float ARTSPrototypeCharacter::GetMaxHealth() const
+{
+	return MaxHealth;
+}
+
+UUnitData* ARTSPrototypeCharacter::GetUnitData() const
+{
+	return UnitData;
+}
+
+float ARTSPrototypeCharacter::GetHealth() const
+{
+	return Health;
+}
+
+void ARTSPrototypeCharacter::SetHealth(const float NewHealth)
+{
+	Health = NewHealth;
+}
+
+void ARTSPrototypeCharacter::InflictDamage(const float Damage)
+{
+	Health -= Damage;
+	Health = FMath::Clamp(Health, 0.f, MaxHealth);
+
+	//call OnDamageTakenEvent if there is at least 1 subscriber
+	if (OnDamageTakenEvent.IsBound())
+	{
+		OnDamageTakenEvent.Broadcast();
+	}
+	//Health =< 0 :  target death
+	if (Health <= 0.f)
+	{
+		DestroyCharacter();
+	}
+}
+
+void ARTSPrototypeCharacter::DestroyCharacter()
+{
+	if (AAIController* AIController = Cast<AAIController>(GetController()))
+	{
+		AIController->UnPossess();
+	}
+	Destroy();
+}
+
+EFaction ARTSPrototypeCharacter::GetFaction() const
+{
+	return CurrentFaction;
+}
+
+void ARTSPrototypeCharacter::MoveToDestination(const FVector Destination)
+{
+	//UE_LOG(LogTemp, Warning, TEXT("il pawn chiede al Controller di muoverlo"));
+	//get the pawn AI controller
+	if (ASAIController* AIController = Cast<ASAIController>(GetController()))
+	{
+		AIController->NavigateToDestination(Destination);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("AIController not found for this Pawn!"));
+		return;
+	}
+}
+
+void ARTSPrototypeCharacter::Attack()
+{
+	if (AttackMontage)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("inizio l'animaizone di ATTACO"));
+		PlayAnimMontage(AttackMontage);
+
+		//Try to get the targe from behaivor tree
+		if (Tree)
+		{
+			if (AAIController* AIController = Cast<AAIController>(GetController()))
+			{
+				if (UBlackboardComponent* BlackboardComp = AIController->GetBlackboardComponent())
+				{
+					if (UObject* TargetObject = BlackboardComp->GetValueAsObject("TargetActor"))
+					{
+						if (ARTSPrototypeCharacter* TargetCharacter = Cast<ARTSPrototypeCharacter>(TargetObject))
+						{
+							TargetCharacter->InflictDamage(AttackValue);
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+
+
+
+

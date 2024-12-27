@@ -16,7 +16,7 @@
 // Sets default values
 ADefaultCameraPawn::ADefaultCameraPawn()
 {
-	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+ 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	SceneComponent = CreateDefaultSubobject<USceneComponent>("DefaultCameraPawn");
@@ -52,7 +52,6 @@ void ADefaultCameraPawn::BeginPlay()
 	CreateSelectionBox();
 }
 
-
 void ADefaultCameraPawn::EnableRotate()
 {
 	bCanRotate = true;
@@ -61,32 +60,6 @@ void ADefaultCameraPawn::EnableRotate()
 void ADefaultCameraPawn::DisableRotate()
 {
 	bCanRotate = false;
-}
-
-void ADefaultCameraPawn::RotateHorizontal(float AxisValue)
-{
-	if (AxisValue == 0.0f)
-	{
-		return;
-	}
-
-	if (bCanRotate)
-	{
-		TargetRotation = UKismetMathLibrary::ComposeRotators(TargetRotation, FRotator(0, AxisValue, 0));
-	}
-}
-
-void ADefaultCameraPawn::RotateVertical(float AxisValue)
-{
-	if (AxisValue == 0.0f)
-	{
-		return;
-	}
-
-	if (bCanRotate)
-	{
-		TargetRotation = UKismetMathLibrary::ComposeRotators(TargetRotation, FRotator(AxisValue, 0, 0));
-	}
 }
 
 void ADefaultCameraPawn::CameraBounds()
@@ -118,9 +91,10 @@ AActor* ADefaultCameraPawn::GetSelectedObject()
 		FHitResult Hit;
 		if (World->LineTraceSingleByChannel(Hit, WorldLocation, EndLocation, ECC_Visibility, Params))
 		{
+
 			DrawDebugLine(World, WorldLocation, Hit.ImpactPoint, FColor::Green, false, 2.0f, 0, 1.0f);
 			DrawDebugSphere(World, Hit.ImpactPoint, 10.0f, 12, FColor::Red, false, 2.0f);
-
+			
 			if (AActor* Actor = Hit.GetActor())
 			{
 				return Actor;
@@ -135,6 +109,20 @@ AActor* ADefaultCameraPawn::GetSelectedObject()
 
 	return nullptr;
 }
+void ADefaultCameraPawn::MouseRightPressed()
+{
+}
+
+/*void ADefaultCameraPawn::MouseRightReleased()
+{
+	UE_LOG(LogTemp, Error, TEXT("ho il mouse destro"));
+	if (!SPlayer) return;
+	//Get Mouse posiiton on terrain
+	RightMouseHitLocation = SPlayer->GetMousePositionOnTerrain();
+	//Ask the player to move his troops
+	SPlayer->MoveUnitsToDestination(RightMouseHitLocation);
+	//TO DO : controllare cosa ha clicato il giocatore, sulla base di cosa ha cliclato, fare un azione
+}*/
 
 void ADefaultCameraPawn::CreateSelectionBox()
 {
@@ -148,7 +136,7 @@ void ADefaultCameraPawn::CreateSelectionBox()
 		SpawnParameters.Owner = this;
 		SpawnParameters.Instigator = this;
 		SelectionBox = WorldContext->SpawnActor<ASelectionBox>(SelectionBoxClass, FVector::ZeroVector,
-		                                                       FRotator::ZeroRotator, SpawnParameters);
+			FRotator::ZeroRotator, SpawnParameters);
 		if (SelectionBox)
 		{
 			SelectionBox->SetOwner(this);
@@ -263,6 +251,17 @@ void ADefaultCameraPawn::Select(const FInputActionValue& Value)
 	SelectHitLocation = SPlayer->GetMousePositionOnTerrain();
 }
 
+void ADefaultCameraPawn::PawnMove(const FInputActionValue& Value)
+{
+	UE_LOG(LogTemp, Error, TEXT("ho il mouse destro"));
+	if (!SPlayer) return;
+	//Get Mouse posiiton on terrain
+	RightMouseHitLocation = SPlayer->GetMousePositionOnTerrain();
+	//Ask the player to move his troops
+	SPlayer->MoveUnitsToDestination(RightMouseHitLocation);
+	//TO DO : controllare cosa ha clicato il giocatore, sulla base di cosa ha cliclato, fare un azione
+}
+
 void ADefaultCameraPawn::SelectHold(const FInputActionValue& Value)
 {
 	if (!SPlayer)
@@ -356,7 +355,7 @@ void ADefaultCameraPawn::BuildCancel(const FInputActionValue& Value)
 void ADefaultCameraPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	
 	EdgeScroll();
 	CameraBounds();
 
@@ -371,6 +370,7 @@ void ADefaultCameraPawn::Tick(float DeltaTime)
 	const FRotator InterpolatedRotation = UKismetMathLibrary::RInterpTo(SpringArm->GetRelativeRotation(),
 	                                                                    TargetRotation, DeltaTime, RotationSpeed);
 	SpringArm->SetRelativeRotation(InterpolatedRotation);
+
 }
 
 // Called to bind functionality to input
@@ -399,6 +399,7 @@ void ADefaultCameraPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 			                                                    &ADefaultCameraPawn::SelectEnd);
 			EPlayerInputActions::BindInput_TriggerOnly(Input, PlayerActions->TestPlacement, this,
 			                                           &ADefaultCameraPawn::TestPlacement);
+			EPlayerInputActions::BindInput_TriggerOnly(Input, PlayerActions->MovePawn, this, &ADefaultCameraPawn::PawnMove);
 
 			/** Placement **/
 			EPlayerInputActions::BindInput_TriggerOnly(Input, PlayerActions->Place, this, &ADefaultCameraPawn::Place);
@@ -413,3 +414,4 @@ void ADefaultCameraPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		}
 	}
 }
+
