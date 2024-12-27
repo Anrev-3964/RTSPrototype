@@ -25,25 +25,10 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-	UFUNCTION()
-	void MoveForward(float AxisValue);
-	UFUNCTION()
-	void MoveRight(float AxisValue);
-	UFUNCTION()
-	void Zoom(float AxisValue);
-	UFUNCTION()
-	void RotateRight();
-	UFUNCTION()
-	void RotateLeft();
 	UFUNCTION()
 	void EnableRotate();
 	UFUNCTION()
 	void DisableRotate();
-	UFUNCTION()
-	void RotateHorizontal(float AxisValue);
-	UFUNCTION()
-	void RotateVertical(float AxisValue);
 	UFUNCTION()
 	void EdgeScroll();
 	UFUNCTION()
@@ -97,12 +82,6 @@ protected:
 
 	UFUNCTION()
 	AActor* GetSelectedObject();
-	UFUNCTION()
-	void MouseLeftPressed();
-	UFUNCTION()
-	void MouseLeftInputHeld(float AxisValue);
-	UFUNCTION()
-	void MouseLeftReleased();
 	UFUNCTION()
 	void MouseRightPressed();
 	UFUNCTION()

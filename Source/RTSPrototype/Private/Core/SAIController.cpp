@@ -144,9 +144,12 @@ void ASAIController::OnPossess(APawn* InPawn)
 		UnitData = Unit->GetUnitData();
 
 		//Set BlackBoard values
-		Blackboard->SetValueAsFloat("AttackDelay",UnitData->GetAttackDelay());
-		Blackboard->SetValueAsFloat("AttackRange", UnitData->GetAttackRange());
-		Blackboard->SetValueAsFloat("AcceptableRadius", UnitData->GetUnitAcceptableRadius());
+		if (UnitData)
+		{
+			Blackboard->SetValueAsFloat("AttackDelay",UnitData->GetAttackDelay());
+			Blackboard->SetValueAsFloat("AttackRange", UnitData->GetAttackRange());
+			Blackboard->SetValueAsFloat("AcceptableRadius", UnitData->GetUnitAcceptableRadius());
+		}
 	}
 }
 //mainly called when his pawn get destroyed

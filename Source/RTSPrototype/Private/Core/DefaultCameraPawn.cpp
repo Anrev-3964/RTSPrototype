@@ -52,52 +52,6 @@ void ADefaultCameraPawn::BeginPlay()
 	CreateSelectionBox();
 }
 
-void ADefaultCameraPawn::MoveForward(float AxisValue)
-{
-	if (AxisValue == 0.0f)
-	{
-		return;
-	}
-
-	FVector RightMovement = FVector(SpringArm->GetForwardVector().X, SpringArm->GetForwardVector().Y, 0.0f).GetSafeNormal() * AxisValue * MovementSpeed;
-	TargetLocation += RightMovement;
-
-	GetTerrainPosition(TargetLocation);
-}
-
-void ADefaultCameraPawn::MoveRight(float AxisValue)
-{
-	if (AxisValue == 0.0f)
-	{
-		return;
-	}
-
-	FVector RightMovement = FVector(SpringArm->GetRightVector().X, SpringArm->GetRightVector().Y, 0.0f).GetSafeNormal() * AxisValue * MovementSpeed;
-	TargetLocation += RightMovement;
-	GetTerrainPosition(TargetLocation);
-}
-
-void ADefaultCameraPawn::Zoom(float AxisValue)
-{
-	if (AxisValue == 0.0f)
-	{
-		return;
-	}
-
-	const float Zoom = AxisValue * 100.0f;
-	TargetZoom = FMath::Clamp(TargetZoom + Zoom, ZoomMin, ZoomMax);
-}
-
-void ADefaultCameraPawn::RotateRight()
-{
-	TargetRotation = UKismetMathLibrary::ComposeRotators(TargetRotation, FRotator(0, -45, 0));
-}
-
-void ADefaultCameraPawn::RotateLeft()
-{
-	TargetRotation = UKismetMathLibrary::ComposeRotators(TargetRotation, FRotator(0, 45, 0));
-}
-
 void ADefaultCameraPawn::EnableRotate()
 {
 	bCanRotate = true;
@@ -106,32 +60,6 @@ void ADefaultCameraPawn::EnableRotate()
 void ADefaultCameraPawn::DisableRotate()
 {
 	bCanRotate = false;
-}
-
-void ADefaultCameraPawn::RotateHorizontal(float AxisValue)
-{
-	if (AxisValue == 0.0f)
-	{
-		return;
-	}
-
-	if (bCanRotate)
-	{
-		TargetRotation = UKismetMathLibrary::ComposeRotators(TargetRotation, FRotator(0, AxisValue, 0));
-	}
-}
-
-void ADefaultCameraPawn::RotateVertical(float AxisValue)
-{
-	if (AxisValue == 0.0f)
-	{
-		return;
-	}
-	
-	if (bCanRotate)
-	{
-		TargetRotation = UKismetMathLibrary::ComposeRotators(TargetRotation, FRotator(AxisValue, 0, 0));
-	}
 }
 
 void ADefaultCameraPawn::CameraBounds()
@@ -181,45 +109,6 @@ AActor* ADefaultCameraPawn::GetSelectedObject()
 
 	return nullptr;
 }
-
-void ADefaultCameraPawn::MouseLeftPressed()
-{
-	if (!SPlayer) return;
-	SPlayer->HandleSelection(nullptr);
-	bBoxSelected = false;
-	LeftMouseHitLocation = SPlayer->GetMousePositionOnTerrain();
-}
-
-void ADefaultCameraPawn::MouseLeftInputHeld(float AxisValue)
-{
-	if (!SPlayer || AxisValue == 0.0f) return;
-	if (SPlayer->GetInputKeyTimeDown(EKeys::LeftMouseButton) >= LeftMouseHoldThreshold)
-	{
-		if (!bBoxSelected && SelectionBox)
-		{
-			SelectionBox->Start(LeftMouseHitLocation, TargetRotation);
-			bBoxSelected = true;
-		}
-	}
-}
-
-void ADefaultCameraPawn::MouseLeftReleased()
-{
-	if (SPlayer)
-	{
-			if (bBoxSelected && SelectionBox)
-			{
-				SelectionBox->End();
-				bBoxSelected = false;
-			}
-			else
-			{
-				// Pass the selected actor to the player controller
-				SPlayer->HandleSelection(GetSelectedObject());
-			}
-	}
-}
-
 void ADefaultCameraPawn::MouseRightPressed()
 {
 }
