@@ -7,11 +7,14 @@
 #include "Buildings/BuildComponent.h"
 #include "Buildings/PlacementPreview.h"
 #include "Core/DefaultCameraPawn.h"
+
+#include "Commandable.h"
+#include "Core/FactionsUtils.h"
 #include "Core/Selectable.h"
 #include "Framework/DataAssets/PlayerInputActions.h"
 #include "Framework/HUD/CustomHUD.h"
 
-ASPlayerController::ASPlayerController(const FObjectInitializer& ObjectInitializer)
+ASPlayerController::ASPlayerController(const FObjectInitializer& ObjectInitializer): PlayerFaction()
 {
 	BuildComponent = CreateDefaultSubobject<UBuildComponent>(TEXT("PlayerComponent"));
 	bPlacementModeEnabled = false;
@@ -28,8 +31,22 @@ void ASPlayerController::HandleSelection(AActor* ActorToSelect)
 		}
 		else
 		{
-			Selectable->Select();
-			SelectedActors.Add(ActorToSelect);
+			if (IFactionsUtils* FactionsUtils = Cast<IFactionsUtils>(ActorToSelect))
+			{
+				if (!FactionsUtils)return;
+				
+				if (PlayerFaction == FactionsUtils->GetFaction())
+				{
+					//Selected actor IS in player faction : you can select it
+					UE_LOG(LogTemp, Warning, TEXT("Selected Unit is in the same faction of player"));
+					Selectable->Select();
+					SelectedActors.Add(ActorToSelect);
+				}
+				else
+				{
+					UE_LOG(LogTemp, Warning, TEXT("Selected Unit ISN'T in the same faction of player"));
+				}
+			}
 		}
 	}
 	else
@@ -38,7 +55,7 @@ void ASPlayerController::HandleSelection(AActor* ActorToSelect)
 	}
 }
 
-void ASPlayerController::HandleSelection(TArray<AActor*> ActorsToSelect)
+void ASPlayerController::HandleSelection(const TArray<AActor*>& ActorsToSelect)
 {
 	SelectGroup(ActorsToSelect);
 }
@@ -61,6 +78,17 @@ void ASPlayerController::BeginPlay()
 	{
 		CustomHUD->CreateHUD();
 	}
+	PlayerFaction = EFaction::Team1;
+
+	if (PlayerFaction != EFaction::Team2)
+	{
+		UE_LOG(LogTemp, Error, TEXT("PLAYER IS IN A DIFFERENT FACTION:"));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("PLAYER IS IN THE SAME FACTION:"));
+	}
+	UE_LOG(LogTemp, Warning, TEXT("Faction: %hhd"), PlayerFaction);
 }
 
 bool ASPlayerController::ActorSelected(AActor* ActorToCheck) const
@@ -78,12 +106,18 @@ void ASPlayerController::SelectGroup(const TArray<AActor*>& ActorsToSelect)
 		{
 			if (ISelectable* Selectable = Cast<ISelectable>(ActorsToSelect[i]))
 			{
-				ValidActors.Add(ActorsToSelect[i]);
-				Selectable->Select();
+				if (IFactionsUtils* FactionsUtils = Cast<IFactionsUtils>(ActorsToSelect[i]))
+				{
+					if (FactionsUtils &&  PlayerFaction == FactionsUtils->GetFaction())
+					{
+						ValidActors.Add(ActorsToSelect[i]);
+						Selectable->Select();
+					}
+				}
 			}
 		}
 	}
-
+	
 	SelectedActors.Append(ValidActors);
 	ValidActors.Empty();
 }
@@ -324,7 +358,7 @@ FVector ASPlayerController::GetMousePositionOnTerrain() const
 	DeprojectMousePositionToWorld(WorldLocation, WorldDirection);
 	FHitResult OutHit;
 	if (GetWorld()->LineTraceSingleByChannel(OutHit, WorldLocation,
-	                                         WorldLocation + (WorldDirection * 100000.0f), ECC_GameTraceChannel1))
+		WorldLocation + (WorldDirection * 100000.0f), ECC_GameTraceChannel1))
 	{
 		if (OutHit.bBlockingHit)
 		{
@@ -345,9 +379,37 @@ FVector ASPlayerController::GetMousePositionOnSurface() const
 	{
 		if (OutHit.bBlockingHit)
 		{
-			return OutHit.Location;
+				return OutHit.Location;
 		}
 	}
 
 	return FVector::ZeroVector;
 }
+
+void ASPlayerController::MoveUnitsToDestination(const FVector& Destination)
+{
+	if (SelectedActors.Num() <= 0)
+	{
+		UE_LOG(LogTemp, Error, TEXT("non ho attori da muovere"));
+		return;
+	}
+	for (AActor* Actor : SelectedActors)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Ho almeno un attore, destinazione: %s"), *Destination.ToString());
+		if (Actor)
+		{
+			if (ICommandable* CommandableActor = Cast<ICommandable>(Actor))
+			{
+				UE_LOG(LogTemp, Warning, TEXT("ordino al pawn di muoversi"));
+				CommandableActor->MoveToDestination(Destination);
+			}
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Actor %s does not implement ICommandable interface!"), *Actor->GetName());
+		}
+	}
+}
+
+
+

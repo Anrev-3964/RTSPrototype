@@ -12,6 +12,7 @@
 #include "DefaultCameraPawn.generated.h"
 
 
+
 UCLASS()
 class RTSPROTOTYPE_API ADefaultCameraPawn : public APawn
 {
@@ -25,6 +26,16 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UFUNCTION()
+	void MoveForward(float AxisValue);
+	UFUNCTION()
+	void MoveRight(float AxisValue);
+	UFUNCTION()
+	void Zoom(float AxisValue);
+	UFUNCTION()
+	void RotateRight();
+	UFUNCTION()
+	void RotateLeft();
 	UFUNCTION()
 	void EnableRotate();
 	UFUNCTION()
@@ -55,7 +66,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera Settings")
 	float EdgeScrollSpeed = 20.0f;
 
-public:
+public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -63,6 +74,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 private:
+
 	UFUNCTION()
 	void CameraBounds();
 	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, meta = (AllowPrivateAccess = true))
@@ -80,12 +92,24 @@ private:
 	UPROPERTY()
 	bool bCanRotate;
 
+	//Mouse Input
 protected:
+
 	UFUNCTION()
 	AActor* GetSelectedObject();
 	UFUNCTION()
+	void MouseLeftPressed();
+	UFUNCTION()
+	void MouseLeftInputHeld(float AxisValue);
+	UFUNCTION()
+	void MouseLeftReleased();
+	UFUNCTION()
+	void MouseRightPressed();
+	UFUNCTION()
+	void MouseRightReleased();
+	UFUNCTION()
 	void CreateSelectionBox();
-
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mouse Settings")
 	float LeftMouseHoldThreshold = 0.1f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mouse Settings")
@@ -134,4 +158,9 @@ protected:
 	void BuildDeploy(const FInputActionValue& Value);
 	UFUNCTION()
 	void BuildCancel(const FInputActionValue& Value);
+	
+	UPROPERTY()
+	FVector LeftMouseHitLocation;
+	UPROPERTY()
+	FVector RightMouseHitLocation;
 };
