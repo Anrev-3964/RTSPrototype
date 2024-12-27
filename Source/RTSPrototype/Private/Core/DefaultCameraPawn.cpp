@@ -113,7 +113,7 @@ void ADefaultCameraPawn::MouseRightPressed()
 {
 }
 
-void ADefaultCameraPawn::MouseRightReleased()
+/*void ADefaultCameraPawn::MouseRightReleased()
 {
 	UE_LOG(LogTemp, Error, TEXT("ho il mouse destro"));
 	if (!SPlayer) return;
@@ -122,7 +122,7 @@ void ADefaultCameraPawn::MouseRightReleased()
 	//Ask the player to move his troops
 	SPlayer->MoveUnitsToDestination(RightMouseHitLocation);
 	//TO DO : controllare cosa ha clicato il giocatore, sulla base di cosa ha cliclato, fare un azione
-}
+}*/
 
 void ADefaultCameraPawn::CreateSelectionBox()
 {
@@ -249,6 +249,17 @@ void ADefaultCameraPawn::Select(const FInputActionValue& Value)
 	SPlayer->HandleSelection(nullptr);
 	bBoxSelected = false;
 	SelectHitLocation = SPlayer->GetMousePositionOnTerrain();
+}
+
+void ADefaultCameraPawn::PawnMove(const FInputActionValue& Value)
+{
+	UE_LOG(LogTemp, Error, TEXT("ho il mouse destro"));
+	if (!SPlayer) return;
+	//Get Mouse posiiton on terrain
+	RightMouseHitLocation = SPlayer->GetMousePositionOnTerrain();
+	//Ask the player to move his troops
+	SPlayer->MoveUnitsToDestination(RightMouseHitLocation);
+	//TO DO : controllare cosa ha clicato il giocatore, sulla base di cosa ha cliclato, fare un azione
 }
 
 void ADefaultCameraPawn::SelectHold(const FInputActionValue& Value)
@@ -388,6 +399,7 @@ void ADefaultCameraPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 			                                                    &ADefaultCameraPawn::SelectEnd);
 			EPlayerInputActions::BindInput_TriggerOnly(Input, PlayerActions->TestPlacement, this,
 			                                           &ADefaultCameraPawn::TestPlacement);
+			EPlayerInputActions::BindInput_TriggerOnly(Input, PlayerActions->MovePawn, this, &ADefaultCameraPawn::PawnMove);
 
 			/** Placement **/
 			EPlayerInputActions::BindInput_TriggerOnly(Input, PlayerActions->Place, this, &ADefaultCameraPawn::Place);

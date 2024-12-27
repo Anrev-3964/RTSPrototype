@@ -84,8 +84,8 @@ protected:
 	AActor* GetSelectedObject();
 	UFUNCTION()
 	void MouseRightPressed();
-	UFUNCTION()
-	void MouseRightReleased();
+	//UFUNCTION()
+	//void MouseRightReleased();
 	UFUNCTION()
 	void CreateSelectionBox();
 	
@@ -117,6 +117,8 @@ protected:
 	void Zoom(const FInputActionValue& Value);
 	UFUNCTION()
 	void Select(const FInputActionValue& Value);
+	UFUNCTION()
+	void PawnMove(const FInputActionValue& Value);
 	UFUNCTION()
 	void SelectHold(const FInputActionValue& Value);
 	UFUNCTION()

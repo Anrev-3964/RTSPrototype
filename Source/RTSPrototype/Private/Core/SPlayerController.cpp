@@ -79,16 +79,6 @@ void ASPlayerController::BeginPlay()
 		CustomHUD->CreateHUD();
 	}
 	PlayerFaction = EFaction::Team1;
-
-	if (PlayerFaction != EFaction::Team2)
-	{
-		UE_LOG(LogTemp, Error, TEXT("PLAYER IS IN A DIFFERENT FACTION:"));
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("PLAYER IS IN THE SAME FACTION:"));
-	}
-	UE_LOG(LogTemp, Warning, TEXT("Faction: %hhd"), PlayerFaction);
 }
 
 bool ASPlayerController::ActorSelected(AActor* ActorToCheck) const
