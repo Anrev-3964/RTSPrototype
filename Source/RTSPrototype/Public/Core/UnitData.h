@@ -28,20 +28,29 @@ private:
 	float AttackDelay;
 	UPROPERTY(EditDefaultsOnly, Category = "Unit Stats",meta = (Tooltip = "la velocita massima che l'unita puo raggiungere"))
 	float MaxMovementSpeed;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Unit Stats",meta = (Tooltip = "Il costo in valuta per creare l'unita(UnitCost = 1 se UnitCost < 1) "))
+	int UnitCost;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Unit Stats",meta = (Tooltip = "La quantita di oro che l'unita puo transportare (se puo farlo. GoldTransportCapacity = 10 se GoldTransportCapacity <= 10)"))
+	int GoldTransportCapacity; 
+
+	UPROPERTY(EditDefaultsOnly, Category = "Unit Settings",meta = (Tooltip = "Il tempo di addestramenot di un unita (TrainingTime = 1 se : TrainingTime < 1)"))
+	float TrainingTime;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Unit Settings",meta = (Tooltip = "True : l'unita puo interagire con la miniera e raccogliere oro"))
+	bool CanMineGold;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Unit Settings",meta = (Tooltip = "l'animazione usata dal unita quando attaca"))
 	UAnimMontage* AttackMontage;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Unit AI ",meta = (Tooltip = "Range di attaco per l'unita (AttackRange = 200 se : AttackRange < 200)"))
 	float AttackRange;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Unit AI ",meta = (Tooltip = "Range tolleranza per il navmesh dell'unita (UnitAcceptanceRadius = 100 se : UnitAcceptanceRadius < 100)"))
 	float UnitAcceptableRadius;
 
-	/**
-	UPROPERTY(EditDefaultsOnly, Category = "Unit Percetion")
-	float SightRadius;
-	UPROPERTY(EditDefaultsOnly, Category = "Unit Percetion")
-	float LoseSightRadius;
-	**/
-	//da aggiungere : Behaivor tree, anim motage,velocita di movimento
+	
 public:
 	/**Get Fuctions**/
 	UFUNCTION(BlueprintCallable, Category = "Get Unit Data")
@@ -57,21 +66,27 @@ public:
 	float GetMaxMovementSpeed() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Get Unit Data")
-	UAnimMontage* GetAttackMontage()  const;
+	int GetUnitCost() const;
+	
+	UFUNCTION(BlueprintCallable, Category = "Get Unit Data")
+	int GetGoldTransportCapacity() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Get Unit Data")
+	bool GetCanMineGold() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Get Unit Data")
+	float GetTrainingTime() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Get Unit Data")
+	UAnimMontage* GetAttackMontage()  const;
+	
+	UFUNCTION(BlueprintCallable, Category = "Get Unit Data")
 	float GetAttackDelay()  const;
+
 	UFUNCTION(BlueprintCallable, Category = "Get Unit Data")
 	float GetAttackRange()  const;
+
 	UFUNCTION(BlueprintCallable, Category = "Get Unit Data")
 	float GetUnitAcceptableRadius()  const;
 	
-	/**
-	UFUNCTION(BlueprintCallable, Category = "Get Unit Data")
-	float GetSightRadius() const;
-
-	UFUNCTION(BlueprintCallable, Category = "Get Unit Data")
-	float GetLoseSightRadius() const;
-	**/
-	/**Get Fuctions**/
 };

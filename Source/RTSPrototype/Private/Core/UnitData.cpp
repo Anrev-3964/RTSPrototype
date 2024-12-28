@@ -35,6 +35,38 @@ float UUnitData::GetMaxMovementSpeed() const
 	return MaxMovementSpeed;
 }
 
+int UUnitData::GetUnitCost() const
+{
+	if (UnitCost <= 1)
+	{
+		return 1;
+	}
+	return UnitCost;
+}
+
+int UUnitData::GetGoldTransportCapacity() const
+{
+	if (GoldTransportCapacity <= 10)
+	{
+		return 10;
+	}
+	return GoldTransportCapacity;
+}
+
+bool UUnitData::GetCanMineGold() const
+{
+	return CanMineGold;
+}
+
+float UUnitData::GetTrainingTime() const
+{
+	if (TrainingTime  <= 1)
+	{
+		return  1;
+	}
+	return TrainingTime;
+}
+
 UAnimMontage* UUnitData::GetAttackMontage() const
 {
 	return AttackMontage;
@@ -63,14 +95,3 @@ float UUnitData::GetUnitAcceptableRadius() const
 	return  UnitAcceptableRadius;
 }
 
-/**
-float UUnitData::GetSightRadius() const
-{
-	return SightRadius;
-}
-
-float UUnitData::GetLoseSightRadius() const
-{
-	return LoseSightRadius;
-}
-**/

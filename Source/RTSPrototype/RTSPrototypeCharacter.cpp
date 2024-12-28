@@ -137,16 +137,6 @@ void ARTSPrototypeCharacter::DeSelect()
 
 void ARTSPrototypeCharacter::Highlight(const bool Highlight)
 {
-	/*TArray<UPrimitiveComponent*> Components;
-	GetComponents<UPrimitiveComponent>(Components);
-	for (UPrimitiveComponent* VisualComponent : Components)
-	{
-		if (UPrimitiveComponent* Prim = Cast<UPrimitiveComponent>(VisualComponent))
-		{
-			Prim->SetRenderCustomDepth(Highlight);
-		}
-	}*/
-
 TArray<USkeletalMeshComponent*> SkeletalComponents;
 GetComponents<USkeletalMeshComponent>(SkeletalComponents);
 
