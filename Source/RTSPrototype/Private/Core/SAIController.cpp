@@ -50,6 +50,14 @@ void ASAIController::Tick(float DeltaSeconds)
 		Target = FindClosetTarget();
 		LastInteractionTime = GetWorld()->GetTimeSeconds();
 	}
+	//To DO : modificare la logica di assegnazione del target a seconda del suo ordine
+	/**
+	 deve essere ASSEGNATO quando :
+	 -non riceve ordini (assegnazione automatica sulla base di stimolo)
+	 -quando lo riceve dal giocatore (non cambiera finche il bersaglio non sara morto o su ordine del giocatore)
+	 **/
+	//TO DO : modificare la logica di tracciamento del target
+	//TO DO : modificare l'enum dell unita a seconda di quello che sta facendo 
 	if (Target)
 	{
 		GetBlackboardComponent()->SetValueAsObject("TargetActor", Target);
@@ -150,6 +158,8 @@ void ASAIController::OnPossess(APawn* InPawn)
 			Blackboard->SetValueAsFloat("AttackRange", UnitData->GetAttackRange());
 			Blackboard->SetValueAsFloat("AcceptableRadius", UnitData->GetUnitAcceptableRadius());
 		}
+
+		UnitState = EUnitState::WaitingForOrders;
 	}
 }
 //mainly called when his pawn get destroyed

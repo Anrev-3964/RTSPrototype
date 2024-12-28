@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "AIController.h"
 #include "FactionsEnum.h"
+#include "UnitStateEnum.h"
 #include "Core/UnitData.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
@@ -45,6 +46,9 @@ private:
 	
 	UPROPERTY()
 	EFaction PawnFaction;
+	
+	UPROPERTY()
+	EUnitState UnitState; //indica l'ordine/task attuale ricevuto dal giocatore
 
 	UPROPERTY()
 	AActor* Target;
