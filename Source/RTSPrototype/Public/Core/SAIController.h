@@ -47,9 +47,20 @@ private:
 	UPROPERTY()
 	EFaction PawnFaction;
 	
+
+	/** UnitStateEnum : rappresent current task from player **/
 	UPROPERTY()
 	EUnitState UnitState; //indica l'ordine/task attuale ricevuto dal giocatore
-
+	UPROPERTY()
+	int WaitingForOrder = 0;
+	UPROPERTY()
+	int MovingToDestination = 1;
+	UPROPERTY()
+	int AttackingTarget = 2;
+	UPROPERTY()
+	int MiningGold = 3;
+	/** UnitStateEnum : rappresent current task from player **/
+	
 	UPROPERTY()
 	AActor* Target;
 
@@ -60,9 +71,11 @@ private:
 	void OnPerceptionUpdated(AActor* UpdatedActor, const FAIStimulus Stimulus);
 	UFUNCTION()
 	AActor* FindClosetTarget() const ;
+	UFUNCTION()
+	void HandleCurrentOrder();
 
 	float LastInteractionTime;
-	float InteractionCooldown = 0.8f;
+	float InteractionCooldown = 0.1f;
 
 protected:
 	virtual void OnPossess(APawn* InPawn) override;

@@ -113,16 +113,6 @@ void ADefaultCameraPawn::MouseRightPressed()
 {
 }
 
-/*void ADefaultCameraPawn::MouseRightReleased()
-{
-	UE_LOG(LogTemp, Error, TEXT("ho il mouse destro"));
-	if (!SPlayer) return;
-	//Get Mouse posiiton on terrain
-	RightMouseHitLocation = SPlayer->GetMousePositionOnTerrain();
-	//Ask the player to move his troops
-	SPlayer->MoveUnitsToDestination(RightMouseHitLocation);
-	//TO DO : controllare cosa ha clicato il giocatore, sulla base di cosa ha cliclato, fare un azione
-}*/
 
 void ADefaultCameraPawn::CreateSelectionBox()
 {

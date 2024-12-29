@@ -3,6 +3,7 @@
 
 #include "Core/SAIController.h"
 
+#include "MeshPaintVisualize.h"
 #include "VectorTypes.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
@@ -47,17 +48,18 @@ void ASAIController::Tick(float DeltaSeconds)
 	//Update the Target Variable over time 
 	if (GetWorld()->GetTimeSeconds() >(LastInteractionTime + InteractionCooldown))
 	{
-		Target = FindClosetTarget();
+		HandleCurrentOrder();
 		LastInteractionTime = GetWorld()->GetTimeSeconds();
 	}
+
 	//To DO : modificare la logica di assegnazione del target a seconda del suo ordine
 	/**
 	 deve essere ASSEGNATO quando :
 	 -non riceve ordini (assegnazione automatica sulla base di stimolo)
 	 -quando lo riceve dal giocatore (non cambiera finche il bersaglio non sara morto o su ordine del giocatore)
 	 **/
-	//TO DO : modificare la logica di tracciamento del target
-	//TO DO : modificare l'enum dell unita a seconda di quello che sta facendo 
+
+	/**
 	if (Target)
 	{
 		GetBlackboardComponent()->SetValueAsObject("TargetActor", Target);
@@ -66,10 +68,12 @@ void ASAIController::Tick(float DeltaSeconds)
 			GetBlackboardComponent()->SetValueAsVector("TargetLocation",Target->GetActorLocation());
 		}
 	}
+	**/
 }
 
 void ASAIController::OnPerceptionUpdated(AActor* UpdatedActor, const FAIStimulus Stimulus)
 {
+	/**
 	if (UpdatedActor)
 	{
 		Target =  FindClosetTarget();
@@ -79,10 +83,7 @@ void ASAIController::OnPerceptionUpdated(AActor* UpdatedActor, const FAIStimulus
 			//UE_LOG(LogTemp, Warning, TEXT("Nemico trovato"));
 		}
 	}
-	else
-	{
-		//UE_LOG(LogTemp, Warning, TEXT("Nessun attore nemico"));
-	}
+	**/
 }
 
 AActor* ASAIController::FindClosetTarget() const
@@ -119,6 +120,41 @@ AActor* ASAIController::FindClosetTarget() const
 		return ClosestActor;
 	}
 	return nullptr;
+}
+
+void ASAIController::HandleCurrentOrder()
+{
+	switch (UnitState)
+	{
+	case EUnitState::WaitingForOrders: //is doing nothing : if it finds an enemy, try to attack it
+		Target = FindClosetTarget();
+		if (Target)
+		{
+			GetBlackboardComponent()->SetValueAsObject("TargetActor", Target);
+			GetBlackboardComponent()->SetValueAsVector("TargetLocation",Target->GetActorLocation());
+			GetBlackboardComponent()->SetValueAsBool("EnemyInSight",true);
+		}
+		break;
+
+	case EUnitState::MovingToDestination://moving to destination : doesent care about enemies
+		break;
+
+	case EUnitState::AttackingTarget://is attacking a specific target: just keep track of enemy
+		if (Target)
+		{
+			GetBlackboardComponent()->SetValueAsObject("TargetActor", Target);
+			GetBlackboardComponent()->SetValueAsVector("TargetLocation",Target->GetActorLocation());
+		}
+		break;
+
+	case EUnitState::MiningGold:
+		break;
+
+	default:
+		UE_LOG(LogTemp, Error, TEXT("Unknown unit state."));
+		// Gestione dell'errore per stati non validi
+		break;
+	}
 }
 
 void ASAIController::OnPossess(APawn* InPawn)
@@ -185,7 +221,7 @@ void ASAIController::NavigateToDestination(const FVector& Destination)
 		{
 			BlackboardComponent->SetValueAsVector("TargetLocation",Destination);
 			BlackboardComponent->SetValueAsBool("HasOrderFromPlayer",true);
-			//UE_LOG(LogTemp, Warning, TEXT("NUOVA DESTINAZIONE"));
+			BlackboardComponent->SetValueAsEnum("CurrentState",MovingToDestination);
 		}
 	}
 }
