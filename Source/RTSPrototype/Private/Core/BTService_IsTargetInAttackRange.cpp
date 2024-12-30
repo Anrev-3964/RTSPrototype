@@ -28,9 +28,6 @@ void UBTService_IsTargetInAttackRange::OnBecomeRelevant(UBehaviorTreeComponent& 
 		if (APawn* Target = Cast<APawn>(TargetObject))
 		{
 			float DistanceToTarget = FVector::Dist(UnitPawn->GetActorLocation(),Target->GetActorLocation());
-			UE_LOG(LogTemp, Warning, TEXT("Distanza di attaco: %f"), AttackRange);
-			UE_LOG(LogTemp, Warning, TEXT("Distanza dal bersaglio : %f"), DistanceToTarget);
-			
 			OwnerComp.GetBlackboardComponent()->SetValueAsBool("TargetIsInAttackRange",DistanceToTarget <= AttackRange);
 		}
 	}

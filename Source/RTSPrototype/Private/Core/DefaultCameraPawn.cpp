@@ -12,6 +12,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "RTSPrototype/RTSPrototypeCharacter.h"
 
 // Sets default values
 ADefaultCameraPawn::ADefaultCameraPawn()
@@ -238,18 +239,30 @@ void ADefaultCameraPawn::Select(const FInputActionValue& Value)
 
 	SPlayer->HandleSelection(nullptr);
 	bBoxSelected = false;
-	SelectHitLocation = SPlayer->GetMousePositionOnTerrain();
+	SelectHitLocation = SPlayer->GetMousePositionOnTerrain().Location;
 }
 
-void ADefaultCameraPawn::PawnMove(const FInputActionValue& Value)
+void ADefaultCameraPawn::HandlePlayerRigthClick(const FInputActionValue& Value)//give a specific order to units,based on what player lineTraceHit
 {
-	UE_LOG(LogTemp, Error, TEXT("ho il mouse destro"));
 	if (!SPlayer) return;
-	//Get Mouse posiiton on terrain
-	RightMouseHitLocation = SPlayer->GetMousePositionOnTerrain();
-	//Ask the player to move his troops
-	SPlayer->MoveUnitsToDestination(RightMouseHitLocation);
-	//TO DO : controllare cosa ha clicato il giocatore, sulla base di cosa ha cliclato, fare un azione
+
+	FHitResult Hit = SPlayer->GetMousePositionOnSurface();
+	if (AActor* HitActor = Hit.GetActor())
+	{
+		//check what object got hit by right click
+		if (ARTSPrototypeCharacter* SelectedUnit = Cast<ARTSPrototypeCharacter>(HitActor)) //player selected a unit 
+		{
+			SPlayer->HandleSelection(HitActor);
+		}
+		else //player selected the terrain or another object which is not selectable -> order units to move (if it's possible)
+		{
+			PawnMove();
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, "Il Player ha colpito il terreno o qualcos'altro di non selezionabile");
+			}
+		}
+	}
 }
 
 void ADefaultCameraPawn::SelectHold(const FInputActionValue& Value)
@@ -259,7 +272,7 @@ void ADefaultCameraPawn::SelectHold(const FInputActionValue& Value)
 		return;
 	}
 
-	if ((SelectHitLocation - SPlayer->GetMousePositionOnTerrain()).Length() > 100.0f)
+	if ((SelectHitLocation - SPlayer->GetMousePositionOnTerrain().Location).Length() > 100.0f)
 	{
 		if (!bBoxSelected && SelectionBox)
 		{
@@ -341,6 +354,16 @@ void ADefaultCameraPawn::BuildCancel(const FInputActionValue& Value)
 	BuildComponent->ExitBuildMode();
 }
 
+void ADefaultCameraPawn::PawnMove()
+{
+	if (!SPlayer) return;
+	//Get Mouse position on terrain
+	RightMouseHitLocation = SPlayer->GetMousePositionOnTerrain().Location;
+	//Ask the player to move his troops
+	SPlayer->MoveUnitsToDestination(RightMouseHitLocation);
+	//TO DO : controllare cosa ha clicato il giocatore, sulla base di cosa ha cliclato, fare un azione
+}
+
 // Called every frame
 void ADefaultCameraPawn::Tick(float DeltaTime)
 {
@@ -389,7 +412,7 @@ void ADefaultCameraPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 			                                                    &ADefaultCameraPawn::SelectEnd);
 			EPlayerInputActions::BindInput_TriggerOnly(Input, PlayerActions->TestPlacement, this,
 			                                           &ADefaultCameraPawn::TestPlacement);
-			EPlayerInputActions::BindInput_TriggerOnly(Input, PlayerActions->MovePawn, this, &ADefaultCameraPawn::PawnMove);
+			EPlayerInputActions::BindInput_TriggerOnly(Input, PlayerActions->MovePawn, this, &ADefaultCameraPawn::HandlePlayerRigthClick);
 
 			/** Placement **/
 			EPlayerInputActions::BindInput_TriggerOnly(Input, PlayerActions->Place, this, &ADefaultCameraPawn::Place);

@@ -111,7 +111,7 @@ void ASelectionBox::Adjust() const
 		return;
 	}
 
-	const FVector CurrentMouseLocOnTerrain = SPlayer->GetMousePositionOnTerrain();
+	const FVector CurrentMouseLocOnTerrain = SPlayer->GetMousePositionOnTerrain().Location;
 	const FVector EndPoint = FVector(CurrentMouseLocOnTerrain.X, CurrentMouseLocOnTerrain.Y, 0);
 	BoxCollider->SetWorldLocation(UKismetMathLibrary::VLerp(StartLocation, EndPoint, 0.5f));
 

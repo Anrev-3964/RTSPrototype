@@ -103,7 +103,7 @@ void UBuildComponent::ClientEnterBuildPlacementMode(UBuildItemDataAsset* BuildIt
 	PlayerState->RemoveGold(BuildItemData->GoldCost);
 
 	FTransform SpawnTransform;
-	SpawnTransform.SetLocation(SPlayer->GetMousePositionOnTerrain());
+	SpawnTransform.SetLocation(SPlayer->GetMousePositionOnTerrain().Location);
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
@@ -258,7 +258,7 @@ void UBuildComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 	{
 		return;
 	}
-	const FVector MouseLocationOnTerrain = SPlayer->GetMousePositionOnTerrain();
+	const FVector MouseLocationOnTerrain = SPlayer->GetMousePositionOnTerrain().Location;
 	if (ClientBuildObject->GetActorLocation() != MouseLocationOnTerrain)
 	{
 		ClientBuildObject->SetActorLocation(MouseLocationOnTerrain);

@@ -28,9 +28,9 @@ public:
 	UFUNCTION()
 	void ClearSelected();
 	UFUNCTION()
-	FVector GetMousePositionOnTerrain() const;
+	FHitResult GetMousePositionOnTerrain() const;
 	UFUNCTION()
-	FVector GetMousePositionOnSurface() const;
+	FHitResult GetMousePositionOnSurface() const;
 
 	//TEnumAsByte<EBuildAssetFilter> GetBuildFilter() const { return BuildAssetFilter; };
 

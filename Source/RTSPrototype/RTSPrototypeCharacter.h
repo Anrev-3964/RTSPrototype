@@ -82,6 +82,7 @@ public:
 	/**ICommandable Interface**/
 	virtual  void MoveToDestination(const FVector Destination) override;
 	virtual  void Attack() override;
+	virtual  void ChaseTarget(AActor* Target) override;
 	/**End ICommandable Interface**/
 
 	/**IFactionUtils Interface**/

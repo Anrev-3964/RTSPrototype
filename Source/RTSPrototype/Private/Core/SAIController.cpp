@@ -51,39 +51,11 @@ void ASAIController::Tick(float DeltaSeconds)
 		HandleCurrentOrder();
 		LastInteractionTime = GetWorld()->GetTimeSeconds();
 	}
-
-	//To DO : modificare la logica di assegnazione del target a seconda del suo ordine
-	/**
-	 deve essere ASSEGNATO quando :
-	 -non riceve ordini (assegnazione automatica sulla base di stimolo)
-	 -quando lo riceve dal giocatore (non cambiera finche il bersaglio non sara morto o su ordine del giocatore)
-	 **/
-
-	/**
-	if (Target)
-	{
-		GetBlackboardComponent()->SetValueAsObject("TargetActor", Target);
-		if (!GetBlackboardComponent()->GetValueAsBool("HasOrderFromPlayer"))
-		{
-			GetBlackboardComponent()->SetValueAsVector("TargetLocation",Target->GetActorLocation());
-		}
-	}
-	**/
 }
 
 void ASAIController::OnPerceptionUpdated(AActor* UpdatedActor, const FAIStimulus Stimulus)
 {
-	/**
-	if (UpdatedActor)
-	{
-		Target =  FindClosetTarget();
-		if (Target != nullptr)
-		{
-			GetBlackboardComponent()->SetValueAsBool("EnemyInSight",Stimulus.WasSuccessfullySensed());
-			//UE_LOG(LogTemp, Warning, TEXT("Nemico trovato"));
-		}
-	}
-	**/
+
 }
 
 AActor* ASAIController::FindClosetTarget() const
@@ -110,7 +82,6 @@ AActor* ASAIController::FindClosetTarget() const
 						{
 							ClosestDistance = ActorDistance;
 							ClosestActor = Actor;
-							//UE_LOG(LogTemp, Error, TEXT("C'E UN NEMICO QUI!"));
 						}
 					}
 				}
@@ -124,36 +95,40 @@ AActor* ASAIController::FindClosetTarget() const
 
 void ASAIController::HandleCurrentOrder()
 {
-	switch (UnitState)
+	if (UBlackboardComponent* BlackboardComponent = GetBlackboardComponent())
 	{
-	case EUnitState::WaitingForOrders: //is doing nothing : if it finds an enemy, try to attack it
-		Target = FindClosetTarget();
-		if (Target)
+		EUnitState CurrentUnitState = static_cast<EUnitState>(BlackboardComponent->GetValueAsEnum("CurrentState"));
+		switch (CurrentUnitState)
 		{
-			GetBlackboardComponent()->SetValueAsObject("TargetActor", Target);
-			GetBlackboardComponent()->SetValueAsVector("TargetLocation",Target->GetActorLocation());
-			GetBlackboardComponent()->SetValueAsBool("EnemyInSight",true);
+			//is doing nothing : if it finds an enemy, try to attack it
+		case EUnitState::WaitingForOrders: 
+			Target = FindClosetTarget();
+			if (Target)
+			{
+				GetBlackboardComponent()->SetValueAsObject("TargetActor", Target);
+				GetBlackboardComponent()->SetValueAsVector("TargetLocation",Target->GetActorLocation());
+				GetBlackboardComponent()->SetValueAsBool("EnemyInSight",true);
+			}
+			break;
+
+			//moving to destination : doesent care about enemies
+		case EUnitState::MovingToDestination:
+			break;
+
+			//is attacking a specific target: just keep track of enemy
+		case EUnitState::AttackingTarget:
+			if (Target)
+			{
+				GetBlackboardComponent()->SetValueAsVector("TargetLocation",Target->GetActorLocation());
+			}
+			break;
+
+		case EUnitState::MiningGold:
+			break;
+
+		default:
+			break;
 		}
-		break;
-
-	case EUnitState::MovingToDestination://moving to destination : doesent care about enemies
-		break;
-
-	case EUnitState::AttackingTarget://is attacking a specific target: just keep track of enemy
-		if (Target)
-		{
-			GetBlackboardComponent()->SetValueAsObject("TargetActor", Target);
-			GetBlackboardComponent()->SetValueAsVector("TargetLocation",Target->GetActorLocation());
-		}
-		break;
-
-	case EUnitState::MiningGold:
-		break;
-
-	default:
-		UE_LOG(LogTemp, Error, TEXT("Unknown unit state."));
-		// Gestione dell'errore per stati non validi
-		break;
 	}
 }
 
@@ -219,9 +194,30 @@ void ASAIController::NavigateToDestination(const FVector& Destination)
 	{
 		if (UBlackboardComponent* BlackboardComponent = GetBlackboardComponent())
 		{
+			BlackboardComponent->SetValueAsEnum("CurrentState",MovingToDestination);
 			BlackboardComponent->SetValueAsVector("TargetLocation",Destination);
 			BlackboardComponent->SetValueAsBool("HasOrderFromPlayer",true);
-			BlackboardComponent->SetValueAsEnum("CurrentState",MovingToDestination);
+		}
+	}
+}
+
+void ASAIController::ChaseAndAttackTarget(AActor* TargetActor)
+{
+	if (TargetActor)
+	{
+		Target = TargetActor;
+		if (UBlackboardComponent* BlackboardComponent = GetBlackboardComponent())
+		{
+			BlackboardComponent->SetValueAsObject("TargetActor", Target);
+			BlackboardComponent->SetValueAsVector("TargetLocation",Target->GetActorLocation());
+			BlackboardComponent->SetValueAsEnum("CurrentState",AttackingTarget);
+		}
+	}
+	else
+	{
+		if (UBlackboardComponent* BlackboardComponent = GetBlackboardComponent())
+		{
+			BlackboardComponent->SetValueAsEnum("CurrentState",WaitingForOrder);
 		}
 	}
 }

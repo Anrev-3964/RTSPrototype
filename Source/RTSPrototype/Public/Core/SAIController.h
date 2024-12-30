@@ -34,6 +34,8 @@ class RTSPROTOTYPE_API ASAIController : public AAIController
 	UFUNCTION()
 	void NavigateToDestination(const FVector& Destination);
 	UFUNCTION()
+	void ChaseAndAttackTarget(AActor* TargetActor);
+	UFUNCTION()
 	void SetUnitSightRadius(int newRadius);
 	void SetUnitLoseSightRadius(int newRadius);
 	

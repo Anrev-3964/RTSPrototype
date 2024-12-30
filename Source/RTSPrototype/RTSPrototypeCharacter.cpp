@@ -282,11 +282,6 @@ void ARTSPrototypeCharacter::MoveToDestination(const FVector Destination)
 	{
 		AIController->NavigateToDestination(Destination);
 	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("AIController not found for this Pawn!"));
-		return;
-	}
 }
 
 void ARTSPrototypeCharacter::Attack()
@@ -313,6 +308,18 @@ void ARTSPrototypeCharacter::Attack()
 				}
 			}
 		}
+	}
+}
+
+void ARTSPrototypeCharacter::ChaseTarget(AActor* TargetActor)
+{
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, "il player ha ordinato di attacare  un nemico");
+	}
+	if (ASAIController* AIController = Cast<ASAIController>(GetController()))
+	{
+		AIController->ChaseAndAttackTarget(TargetActor);
 	}
 }
 

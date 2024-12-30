@@ -13,6 +13,7 @@
 #include "Core/Selectable.h"
 #include "Framework/DataAssets/PlayerInputActions.h"
 #include "Framework/HUD/CustomHUD.h"
+#include "RTSPrototype/RTSPrototypeCharacter.h"
 
 ASPlayerController::ASPlayerController(const FObjectInitializer& ObjectInitializer): PlayerFaction()
 {
@@ -38,13 +39,28 @@ void ASPlayerController::HandleSelection(AActor* ActorToSelect)
 				if (PlayerFaction == FactionsUtils->GetFaction())
 				{
 					//Selected actor IS in player faction : you can select it
-					UE_LOG(LogTemp, Warning, TEXT("Selected Unit is in the same faction of player"));
+					if (GEngine)
+					{
+						GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, "il player ha selezionato un alleato");
+					}
 					Selectable->Select();
 					SelectedActors.Add(ActorToSelect);
 				}
+
 				else
+					/**Selected actor IS NOT in player faction : you order your units to attack it **/
 				{
-					UE_LOG(LogTemp, Warning, TEXT("Selected Unit ISN'T in the same faction of player"));
+					if (SelectedActors.Num() <= 0) return;
+					for (AActor* Actor : SelectedActors)
+					{
+						if (Actor)
+						{
+							if (ICommandable* CommandableActor = Cast<ICommandable>(Actor))
+							{
+								CommandableActor->ChaseTarget(ActorToSelect);
+							}
+						}
+					}
 				}
 			}
 		}
@@ -197,7 +213,7 @@ void ASPlayerController::SetPlacementPreview()
 	if (PreviewActorType && !bPlacementModeEnabled)
 	{
 		FTransform SpawnTransform;
-		SpawnTransform.SetLocation(GetMousePositionOnSurface());
+		SpawnTransform.SetLocation(GetMousePositionOnSurface().Location);
 		FActorSpawnParameters SpawnParameters;
 		SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
@@ -313,7 +329,7 @@ void ASPlayerController::UpdatePlacement() const
 		return;
 	}
 
-	PlacementPreviewActor->SetActorLocation(GetMousePositionOnSurface());
+	PlacementPreviewActor->SetActorLocation(GetMousePositionOnSurface().Location);
 }
 
 void ASPlayerController::Tick(float DeltaTime)
@@ -342,6 +358,24 @@ void ASPlayerController::ClearSelected()
 	SelectedActors.Empty();
 }
 
+FHitResult ASPlayerController::GetMousePositionOnTerrain() const
+{
+	FVector WorldLocation, WorldDirection;
+	DeprojectMousePositionToWorld(WorldLocation, WorldDirection);
+	FHitResult OutHit;
+	if (GetWorld()->LineTraceSingleByChannel(OutHit, WorldLocation,
+		WorldLocation + (WorldDirection * 100000.0f), ECC_GameTraceChannel1))
+	{
+		if (OutHit.bBlockingHit)
+		{
+			ARTSPrototypeCharacter* Unit = Cast<ARTSPrototypeCharacter>(OutHit.GetActor());
+			return OutHit;
+		}
+	}
+
+	return FHitResult();
+}
+/**
 FVector ASPlayerController::GetMousePositionOnTerrain() const
 {
 	FVector WorldLocation, WorldDirection;
@@ -358,7 +392,24 @@ FVector ASPlayerController::GetMousePositionOnTerrain() const
 
 	return FVector::ZeroVector;
 }
+**/
+FHitResult ASPlayerController::GetMousePositionOnSurface() const
+{
+	FVector WorldLocation, WorldDirection;
+	DeprojectMousePositionToWorld(WorldLocation, WorldDirection);
+	FHitResult OutHit;
+	if (GetWorld()->LineTraceSingleByChannel(OutHit, WorldLocation,
+											 WorldLocation + (WorldDirection * 100000.0f), ECC_Visibility))
+	{
+		if (OutHit.bBlockingHit)
+		{
+			return OutHit;
+		}
+	}
 
+	return FHitResult();
+}
+/**
 FVector ASPlayerController::GetMousePositionOnSurface() const
 {
 	FVector WorldLocation, WorldDirection;
@@ -375,7 +426,7 @@ FVector ASPlayerController::GetMousePositionOnSurface() const
 
 	return FVector::ZeroVector;
 }
-
+**/
 void ASPlayerController::MoveUnitsToDestination(const FVector& Destination)
 {
 	if (SelectedActors.Num() <= 0)

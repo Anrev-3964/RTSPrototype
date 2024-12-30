@@ -21,5 +21,7 @@ public:
 	virtual void MoveToDestination(const FVector Destination) = 0;
 	
 	UFUNCTION()
-	virtual void Attack() = 0; 
+	virtual void Attack() = 0;
+	UFUNCTION()
+	virtual void ChaseTarget(AActor* Target) = 0; 
 };

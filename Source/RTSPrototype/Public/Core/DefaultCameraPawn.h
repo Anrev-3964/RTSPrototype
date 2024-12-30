@@ -118,7 +118,7 @@ protected:
 	UFUNCTION()
 	void Select(const FInputActionValue& Value);
 	UFUNCTION()
-	void PawnMove(const FInputActionValue& Value);
+	void HandlePlayerRigthClick(const FInputActionValue& Value);
 	UFUNCTION()
 	void SelectHold(const FInputActionValue& Value);
 	UFUNCTION()
@@ -144,4 +144,8 @@ protected:
 	FVector LeftMouseHitLocation;
 	UPROPERTY()
 	FVector RightMouseHitLocation;
+
+	/**Units Managment**/
+	UFUNCTION()
+	void PawnMove();
 };
