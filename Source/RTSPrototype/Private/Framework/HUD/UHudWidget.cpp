@@ -32,7 +32,21 @@ void UUHudWidget::CreateGameMenu()
 			if (GameMenuWidget)
 			{
 				GameMenuWidget->AddToViewport();
+				GameMenuWidget->SetVisibility(ESlateVisibility::Hidden); // Initially hidden
+				UE_LOG(LogTemp, Warning, TEXT("GameMenuWidget has been created successfully!"));
+			}
+			else
+			{
+				UE_LOG(LogTemp, Error, TEXT("Failed to create GameMenuWidget!"));
 			}
 		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("GameMenuWidgetClass is not set in HUD!"));
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Failed to cast to ACustomHUD!"));
 	}
 }

@@ -18,7 +18,7 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDamageTaken);
 
 UCLASS(Blueprintable)
-class ARTSPrototypeCharacter : public ACharacter, public ISelectable, public  ICommandable, public IFactionsUtils
+class ARTSPrototypeCharacter : public ACharacter, public ISelectable, public ICommandable, public IFactionsUtils
 {
 	GENERATED_BODY()
 
@@ -57,20 +57,22 @@ protected:
 	float AttackValue;
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	float MaxHealth;
-	UPROPERTY(BlueprintReadOnly,  meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	float Health;
-	UPROPERTY(BlueprintReadOnly,  meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* AttackMontage;
 	//Unit Data Asset
-	UPROPERTY(EditAnywhere,Category = "Unit Stats")
+	UPROPERTY(EditAnywhere, Category = "Unit Stats")
 	UUnitData* UnitData;
 
 	bool bCanMine = false;
 
 	UFUNCTION()
 	void AssignUnitStatsFromDataAsset();
-public:
+	UFUNCTION()
+	void ManageBuildMenu(bool bIsSelected);
 
+public:
 	/**ISelectable Interface**/
 	virtual void Select() override;
 	virtual void DeSelect() override;
@@ -79,15 +81,15 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	FString GetFactionName() const;
-	
-	
+
+
 	/**ICommandable Interface**/
-	virtual  void MoveToDestination(const FVector Destination) override;
-	virtual  void Attack() override;
+	virtual void MoveToDestination(const FVector Destination) override;
+	virtual void Attack() override;
 	/**End ICommandable Interface**/
 
 	/**IFactionUtils Interface**/
-	virtual EFaction GetFaction()const override;
+	virtual EFaction GetFaction() const override;
 	/**End IFactionUtils Interface**/
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Settings")
@@ -122,7 +124,7 @@ public:
 
 protected:
 	//must be set in editor
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Settings",meta=(AllowPrivateAccess="true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Settings", meta=(AllowPrivateAccess="true"))
 	UBehaviorTree* Tree;
 	//Delegate variable. it can be called by blueprint
 	UPROPERTY(BlueprintAssignable, Category = "Events")
@@ -131,4 +133,3 @@ protected:
 	UFUNCTION()
 	void DestroyCharacter();
 };
-

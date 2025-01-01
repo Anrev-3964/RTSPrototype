@@ -7,6 +7,7 @@
 #include "Core/SPlayerController.h"
 #include "UHudWidget.generated.h"
 
+class UButton;
 class UGameMenuWidget;
 /**
  * 
