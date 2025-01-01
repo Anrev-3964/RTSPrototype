@@ -3,8 +3,7 @@
 
 #include "Buildings/Buildable.h"
 
-#include "SkeletonTreeBuilder.h"
-#include "Chaos/Deformable/MuscleActivationConstraints.h"
+#include "MaterialDomain.h"
 #include "Components/BoxComponent.h"
 #include "Framework/DataAssets/BuildItemDataAsset.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -12,28 +11,31 @@
 // Sets default values
 ABuildable::ABuildable()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
-	
+
 	BoxCollider = CreateDefaultSubobject<UBoxComponent>("BoxCollider");
 	RootComponent = BoxCollider;
 	BoxCollider->SetCollisionProfileName("OverlapAll");
-	
+	BoxCollider->SetGenerateOverlapEvents(true);
+
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>("StaticMesh");
 	StaticMesh->SetupAttachment(RootComponent);
 	StaticMesh->SetCollisionProfileName("OverlapAll");
-
 }
 
 void ABuildable::Init(UBuildItemDataAsset* BuildItemData, const TEnumAsByte<EBuildState> NewBuildState)
 {
-	if (!BuildItemData) return;
+	if (!BuildItemData)
+	{
+		return;
+	}
 
 	BuildState = NewBuildState;
 	BuildData = BuildItemData;
 
-	if (BuildState == EBuildState::Building)
+	if (BuildState == Building)
 	{
 		StartBuild();
 	}
@@ -45,12 +47,15 @@ void ABuildable::Init(UBuildItemDataAsset* BuildItemData, const TEnumAsByte<EBui
 
 void ABuildable::UpdateOverlayMaterial(const bool bCanPlace) const
 {
-	DynamicOverlayMaterial->SetScalarParameterValue("Status", bCanPlace? 1.0f:0.0f);
+	DynamicOverlayMaterial->SetScalarParameterValue("Status", bCanPlace ? 1.0f : 0.0f);
 }
 
 void ABuildable::InitBuildPreview()
 {
-	if (!StaticMesh || !BuildData || !BoxCollider) return;
+	if (!StaticMesh || !BuildData || !BoxCollider)
+	{
+		return;
+	}
 
 	if (UStaticMesh* PreviewMesh = BuildData->BuildingMeshComplete.LoadSynchronous())
 	{
@@ -66,15 +71,15 @@ void ABuildable::StartBuild()
 	UpdateBuildProgressionMesh();
 	GetWorldTimerManager().SetTimer(BuildTimer, this, &ABuildable::UpdateBuildProgression, 2.0f, true, 2.0f);
 
-	BuildState = EBuildState::Building;
+	BuildState = Building;
 }
 
 void ABuildable::EndBuild()
 {
 	GetWorldTimerManager().ClearTimer(BuildTimer);
-	if (BuildState != EBuildState::BuildComplete)
+	if (BuildState != BuildComplete)
 	{
-		BuildState = EBuildState::BuildAborted;
+		BuildState = BuildAborted;
 	}
 
 	OnBuildCompleteEvent.Broadcast(BuildState);
@@ -82,23 +87,28 @@ void ABuildable::EndBuild()
 
 void ABuildable::UpdateCollider()
 {
-	if (!StaticMesh && !BoxCollider) return;
+	if (!StaticMesh && !BoxCollider)
+	{
+		return;
+	}
 	FVector MinMeshBounds, MaxMeshBounds;
 	StaticMesh->GetLocalBounds(MinMeshBounds, MaxMeshBounds);
 
 	BoxCollider->SetBoxExtent(FVector(
-	FMath::Max((FMath::RoundToInt(MaxMeshBounds.X + 10.0f)), 100.0f),
-	FMath::Max((FMath::RoundToInt(MaxMeshBounds.Y + 10.0f)), 100.0f),
-	FMath::Max((FMath::RoundToInt(MaxMeshBounds.Z + 10.0f)), 100.0f)
-	), true);
+		                          FMath::Max((FMath::RoundToInt(MaxMeshBounds.X + 10.0f)), 100.0f),
+		                          FMath::Max((FMath::RoundToInt(MaxMeshBounds.Y + 10.0f)), 100.0f),
+		                          FMath::Max((FMath::RoundToInt(MaxMeshBounds.Z + 10.0f)), 100.0f)
+	                          ), true);
 
 	BoxCollider->SetWorldRotation(UKismetMathLibrary::MakeRotFromX(FVector(1.0f, 0.0f, 0.0f)));
-
 }
 
 void ABuildable::SetOverlayMaterial()
 {
-	if (!BuildData) return;
+	if (!BuildData)
+	{
+		return;
+	}
 	const FSoftObjectPath AssetPath = BuildData->PlaceMaterial.ToSoftObjectPath();
 	if (UMaterialInstance* OverlayMaterial = Cast<UMaterialInstance>(AssetPath.TryLoad()))
 	{
@@ -121,12 +131,14 @@ void ABuildable::SetOverlayMaterial()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("FAILED DYNAMIC OVERLAY MATERIAL"));
 	}
-	
 }
 
 void ABuildable::UpdateBuildProgressionMesh()
 {
-	if (!BuildData || !StaticMesh) return;
+	if (!BuildData || !StaticMesh)
+	{
+		return;
+	}
 
 	const int32 BuildMeshIndex = FMath::FloorToInt(BuildProgression * BuildData->BuildMeshes.Num());
 	if (BuildData->BuildMeshes.IsValidIndex(BuildMeshIndex))
@@ -140,15 +152,20 @@ void ABuildable::UpdateBuildProgressionMesh()
 
 void ABuildable::UpdateBuildProgression()
 {
-	if (!StaticMesh) return;
+	if (!StaticMesh)
+	{
+		return;
+	}
 	BuildProgression += 1.0f / BuildData->BuildMeshes.Num();
 	if (BuildProgression > 1.0f)
 	{
 		if (UStaticMesh* DisplayMesh = BuildData->BuildingMeshComplete.LoadSynchronous())
 		{
 			StaticMesh->SetStaticMesh(DisplayMesh);
+			StaticMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+			StaticMesh->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 		}
-		BuildState = EBuildState::BuildComplete;
+		BuildState = BuildComplete;
 		EndBuild();
 	}
 	else
@@ -157,18 +174,106 @@ void ABuildable::UpdateBuildProgression()
 	}
 }
 
+UMaterialInstance* ABuildable::GetHighlightMaterial() const
+{
+	if (const UBuildItemDataAsset* BuildItemData = GetBuildItemData())
+	{
+		const FSoftObjectPath AssetPath = BuildItemData->HighlightMaterial.ToSoftObjectPath();
+		return Cast<UMaterialInstance>(AssetPath.TryLoad());
+	}
+
+	return nullptr;
+}
+
+EFaction ABuildable::GetFaction() const
+{
+	return CurrentFaction;
+}
+
+void ABuildable::Select()
+{
+	bSelected = true;
+	UE_LOG(LogTemp, Warning, TEXT("BUILDING SELECTED"));
+	Highlight(bSelected);
+}
+
+void ABuildable::DeSelect()
+{
+	bSelected = false;
+	Highlight(bSelected);
+}
+
+void ABuildable::Highlight(const bool Highlight)
+{
+	 TArray<UStaticMeshComponent*> StaticMeshComponents;
+    GetComponents<UStaticMeshComponent>(StaticMeshComponents);
+
+    for (UStaticMeshComponent* MeshComponent : StaticMeshComponents)
+    {
+        if (Highlight)
+        {
+            if (UMaterialInstance* HighlightMaterial = GetHighlightMaterial())
+            {
+                if (HighlightMaterial->GetMaterial()->MaterialDomain == MD_PostProcess)
+                {
+                    UE_LOG(LogTemp, Log, TEXT("Applying Custom Depth for post-process material"));
+
+                    TArray<UPrimitiveComponent*> PrimitiveComponents;
+                    GetComponents<UPrimitiveComponent>(PrimitiveComponents);
+
+                    for (UPrimitiveComponent* VisualComponent : PrimitiveComponents)
+                    {
+                        if (VisualComponent)
+                        {
+                            VisualComponent->SetRenderCustomDepth(true);
+                            UE_LOG(LogTemp, Log, TEXT("Enabled Custom Depth for %s"), *VisualComponent->GetName());
+                        }
+                    }
+                }
+                else
+                {
+                    MeshComponent->SetOverlayMaterial(HighlightMaterial);
+                    UE_LOG(LogTemp, Log, TEXT("Applied Overlay Material: %s to %s"), 
+                        *HighlightMaterial->GetName(), *MeshComponent->GetName());
+                }
+            }
+            else
+            {
+                UE_LOG(LogTemp, Warning, TEXT("Failed to get Highlight Material. Falling back."));
+            }
+        }
+        else
+        {
+            UE_LOG(LogTemp, Log, TEXT("Disabling highlight"));
+
+            // Disable overlay material
+            MeshComponent->SetOverlayMaterial(nullptr);
+            UE_LOG(LogTemp, Log, TEXT("Removed Overlay Material from %s"), *MeshComponent->GetName());
+
+            // Disable custom depth
+            TArray<UPrimitiveComponent*> PrimitiveComponents;
+            GetComponents<UPrimitiveComponent>(PrimitiveComponents);
+
+            for (UPrimitiveComponent* VisualComponent : PrimitiveComponents)
+            {
+                if (VisualComponent)
+                {
+                    VisualComponent->SetRenderCustomDepth(false);
+                    UE_LOG(LogTemp, Log, TEXT("Disabled Custom Depth for %s"), *VisualComponent->GetName());
+                }
+            }
+        }
+    }
+}
 
 // Called when the game starts or when spawned
 void ABuildable::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 // Called every frame
 void ABuildable::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
-

@@ -44,4 +44,6 @@ public:
 	TSoftObjectPtr<UStaticMesh> BuildingMeshComplete;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Selection")
 	TSoftObjectPtr<UMaterialInstance> PlaceMaterial;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Selection")
+	TSoftObjectPtr<UMaterialInstance> HighlightMaterial;
 };

@@ -5,8 +5,10 @@
 #include "BehaviorTree/BlackboardComponent.h"
 
 #include "MaterialDomain.h"
+#include "RTSPrototypeGameMode.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Camera/CameraComponent.h"
+#include "Components/Button.h"
 #include "Components/CapsuleComponent.h"
 #include "Core/SAIController.h"
 #include "Engine/AssetManager.h"
@@ -16,6 +18,8 @@
 #include "Materials/Material.h"
 #include "Engine/World.h"
 #include "Framework/DataAssets/CharacterData.h"
+#include "Framework/HUD/GameMenuWidget.h"
+#include "Framework/HUD/UHudWidget.h"
 
 ARTSPrototypeCharacter::ARTSPrototypeCharacter()
 {
@@ -73,6 +77,17 @@ void ARTSPrototypeCharacter::AssignUnitStatsFromDataAsset()
 	AttackValue = UnitData->GetAttack();
 	AttackMontage = UnitData->GetAttackMontage();
 
+	if (UnitData->GetName() == "Peone")
+	{
+		bCanMine = true;
+		UE_LOG(LogTemp, Error, TEXT("Peone can Mine"));
+	}
+	else
+	{
+		bCanMine = false;
+		UE_LOG(LogTemp, Error, TEXT("Can't Mine"));
+	}
+	
 	if (UCharacterMovementComponent* MovementComponent = GetCharacterMovement())
 	{
 		MovementComponent->MaxWalkSpeed = UnitData->GetMaxMovementSpeed();
@@ -137,16 +152,6 @@ void ARTSPrototypeCharacter::DeSelect()
 
 void ARTSPrototypeCharacter::Highlight(const bool Highlight)
 {
-	/*TArray<UPrimitiveComponent*> Components;
-	GetComponents<UPrimitiveComponent>(Components);
-	for (UPrimitiveComponent* VisualComponent : Components)
-	{
-		if (UPrimitiveComponent* Prim = Cast<UPrimitiveComponent>(VisualComponent))
-		{
-			Prim->SetRenderCustomDepth(Highlight);
-		}
-	}*/
-
 TArray<USkeletalMeshComponent*> SkeletalComponents;
 GetComponents<USkeletalMeshComponent>(SkeletalComponents);
 

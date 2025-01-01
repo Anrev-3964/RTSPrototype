@@ -13,6 +13,7 @@
 #include "Core/Selectable.h"
 #include "Framework/DataAssets/PlayerInputActions.h"
 #include "Framework/HUD/CustomHUD.h"
+#include "RTSPrototype/RTSPrototypeCharacter.h"
 
 ASPlayerController::ASPlayerController(const FObjectInitializer& ObjectInitializer): PlayerFaction()
 {
@@ -24,8 +25,11 @@ void ASPlayerController::HandleSelection(AActor* ActorToSelect)
 {
 	if (ISelectable* Selectable = Cast<ISelectable>(ActorToSelect))
 	{
-		if (ActorToSelect && ActorSelected(ActorToSelect))
+		UE_LOG(LogTemp, Warning, TEXT("Actor implements ISelectable: %s"), *ActorToSelect->GetName());
+
+		if (ActorSelected(ActorToSelect))
 		{
+			UE_LOG(LogTemp, Warning, TEXT("Actor is already selected. Deselecting: %s"), *ActorToSelect->GetName());
 			Selectable->DeSelect();
 			SelectedActors.Remove(ActorToSelect);
 		}
@@ -33,18 +37,15 @@ void ASPlayerController::HandleSelection(AActor* ActorToSelect)
 		{
 			if (IFactionsUtils* FactionsUtils = Cast<IFactionsUtils>(ActorToSelect))
 			{
-				if (!FactionsUtils)return;
-				
-				if (PlayerFaction == FactionsUtils->GetFaction())
+				if (FactionsUtils->GetFaction() == PlayerFaction)
 				{
-					//Selected actor IS in player faction : you can select it
-					UE_LOG(LogTemp, Warning, TEXT("Selected Unit is in the same faction of player"));
+					UE_LOG(LogTemp, Warning, TEXT("Actor is in the same faction. Selecting: %s"), *ActorToSelect->GetName());
 					Selectable->Select();
 					SelectedActors.Add(ActorToSelect);
 				}
 				else
 				{
-					UE_LOG(LogTemp, Warning, TEXT("Selected Unit ISN'T in the same faction of player"));
+					UE_LOG(LogTemp, Warning, TEXT("Actor is not in the same faction: %s"), *ActorToSelect->GetName());
 				}
 			}
 		}
@@ -273,23 +274,6 @@ void ASPlayerController::ServerPlace(AActor* PlacementPreviewToSpawn)
 			return;
 		}
 		UE_LOG(LogTemp, Log, TEXT("Spawning actor of class: %s"), *Preview->PlaceableClass->GetName());
-
-		/*	if (PlacedBuilding)
-			{
-				for (UActorComponent* Component : PlacedBuilding->GetComponents())
-				{
-					UE_LOG(LogTemp, Log, TEXT("Component: %s"), *Component->GetName());
-				}
-				// Log success for debugging
-				UE_LOG(LogTemp, Log, TEXT("Building placed successfully at %s"),
-				       *PlacedBuilding->GetActorLocation().ToString());
-				DrawDebugSphere(GetWorld(), SpawnTransform.GetLocation(), 50.0f, 12, FColor::Red, true, 5.0f);
-			}
-			else
-			{
-				// Log failure for debugging
-				UE_LOG(LogTemp, Warning, TEXT("Failed to spawn building."));
-			}*/
 	}
 
 	EndPlacement();

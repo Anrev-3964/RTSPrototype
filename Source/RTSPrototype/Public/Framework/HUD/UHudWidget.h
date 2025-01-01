@@ -26,6 +26,8 @@ protected:
 	ASPlayerController* SPlayer;
 	UPROPERTY()
 	UWorld* WorldContext;
+
+public:
 	UPROPERTY()
 	UGameMenuWidget* GameMenuWidget;
 };

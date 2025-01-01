@@ -65,6 +65,8 @@ protected:
 	UPROPERTY(EditAnywhere,Category = "Unit Stats")
 	UUnitData* UnitData;
 
+	bool bCanMine = false;
+
 	UFUNCTION()
 	void AssignUnitStatsFromDataAsset();
 public:

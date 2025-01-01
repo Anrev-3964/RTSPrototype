@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Core/FactionsUtils.h"
+#include "Core/Selectable.h"
 #include "GameFramework/Actor.h"
 #include "Framework/DataAssets/BuildData.h"
 #include "Buildable.generated.h"
@@ -12,7 +14,7 @@ class UBuildItemDataAsset;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBuildCompleteEvent, const TEnumAsByte<EBuildState>, BuildState);
 UCLASS()
-class RTSPROTOTYPE_API ABuildable : public AActor
+class RTSPROTOTYPE_API ABuildable : public AActor, public ISelectable, public IFactionsUtils
 {
 	GENERATED_BODY()
 	
@@ -24,10 +26,19 @@ public:
 	void Init(UBuildItemDataAsset* BuildItemData, const TEnumAsByte<EBuildState> NewBuildState = EBuildState::NoBuild);
 	UBuildItemDataAsset* GetBuildItemData() const {return BuildData;}
 	void UpdateOverlayMaterial(const bool bCanPlace = true) const;
+	UMaterialInstance* GetHighlightMaterial() const;
 	
 	FOnBuildCompleteEvent OnBuildCompleteEvent;
 
+	virtual EFaction GetFaction() const override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Settings")
+	EFaction CurrentFaction;
+
 protected:
+	virtual void Select() override;
+	virtual void DeSelect() override;
+	virtual void Highlight(const bool Highlight) override;
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
@@ -57,6 +68,9 @@ private:
 	UBoxComponent* BoxCollider;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	UStaticMeshComponent* StaticMesh;
+
+	bool bSelected;
+	
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

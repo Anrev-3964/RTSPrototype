@@ -253,7 +253,6 @@ void ADefaultCameraPawn::Select(const FInputActionValue& Value)
 
 void ADefaultCameraPawn::PawnMove(const FInputActionValue& Value)
 {
-	UE_LOG(LogTemp, Error, TEXT("ho il mouse destro"));
 	if (!SPlayer) return;
 	//Get Mouse posiiton on terrain
 	RightMouseHitLocation = SPlayer->GetMousePositionOnTerrain();
