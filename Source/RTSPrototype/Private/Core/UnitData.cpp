@@ -69,7 +69,20 @@ float UUnitData::GetTrainingTime() const
 
 UAnimMontage* UUnitData::GetAttackMontage() const
 {
-	return AttackMontage;
+	if (AttackMontage)
+	{
+		return AttackMontage;	
+	}
+	return nullptr;
+}
+
+UAnimMontage* UUnitData::GetMiningMontage() const
+{
+	if (MiningMontage)
+	{
+		return MiningMontage;
+	}
+	return nullptr;
 }
 
 float UUnitData::GetAttackDelay() const

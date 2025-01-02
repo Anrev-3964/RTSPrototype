@@ -26,6 +26,7 @@ void ASPlayerController::HandleSelection(AActor* ActorToSelect)
 {
 	if (ISelectable* Selectable = Cast<ISelectable>(ActorToSelect))
 	{
+		//** Units already selected -> Deselect them**//
 		if (ActorToSelect && ActorSelected(ActorToSelect))
 		{
 			Selectable->DeSelect();
@@ -33,12 +34,15 @@ void ASPlayerController::HandleSelection(AActor* ActorToSelect)
 		}
 		else
 		{
+			//** Chwck if Selected Actor is in the same player Faction**//
 			if (IFactionsUtils* FactionsUtils = Cast<IFactionsUtils>(ActorToSelect))
 			{
 				if (!FactionsUtils)return;
-				
+
+				//** Selected Actor in same player Faction**//
 				if (PlayerFaction == FactionsUtils->GetFaction()) //Selected actor IS in player faction : you can select it
 				{
+					//** Selected Actor is a Unit**//
 					if (ARTSPrototypeCharacter* SelectedUnit = Cast<ARTSPrototypeCharacter>(ActorToSelect))//Selected actor IS a Unit
 					{
 						Selectable->Select();
@@ -48,13 +52,24 @@ void ASPlayerController::HandleSelection(AActor* ActorToSelect)
 							GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, "il player ha selezionato un unita  alleata");
 						}
 					}
+					//** Selected Actor is a gold mine -> Order Units to collect gold**//
 					else
 						if (AGoldMine* SelectedBuilding = Cast<AGoldMine>(ActorToSelect))// Selecte Actor is a Gold Mine
 					{
-							//TO DO : ordinare alle unita di raccogliere oro
-							if (GEngine)
+							if (SelectedActors.Num() <= 0) return;
+							for (AActor* Actor : SelectedActors)
 							{
-								GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, "il player ha selezionato un edificio  alleato");
+								if (Actor)
+								{
+									if (ICommandable* CommandableActor = Cast<ICommandable>(Actor))
+									{
+										CommandableActor->CollectGold(ActorToSelect);
+										if (GEngine)
+										{
+											GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, "il player ha ordinato alle unita di raccogliere oro");
+										}
+									}
+								}
 							}
 					}
 				}

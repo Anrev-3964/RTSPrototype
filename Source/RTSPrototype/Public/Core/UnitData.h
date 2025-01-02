@@ -43,6 +43,8 @@ private:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Unit Settings",meta = (Tooltip = "l'animazione usata dal unita quando attaca"))
 	UAnimMontage* AttackMontage;
+	UPROPERTY(EditDefaultsOnly, Category = "Unit Settings",meta = (Tooltip = "l'animazione usata dal unita quando Raccoglie oro"))
+	UAnimMontage* MiningMontage;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Unit AI ",meta = (Tooltip = "Range di attaco per l'unita (AttackRange = 200 se : AttackRange < 200)"))
 	float AttackRange;
@@ -79,7 +81,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Get Unit Data")
 	UAnimMontage* GetAttackMontage()  const;
-	
+
+	UFUNCTION(BlueprintCallable, Category = "Get Unit Data")
+	UAnimMontage* GetMiningMontage()  const;
 	UFUNCTION(BlueprintCallable, Category = "Get Unit Data")
 	float GetAttackDelay()  const;
 

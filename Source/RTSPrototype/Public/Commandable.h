@@ -23,5 +23,7 @@ public:
 	UFUNCTION()
 	virtual void Attack() = 0;
 	UFUNCTION()
-	virtual void ChaseTarget(AActor* Target) = 0; 
+	virtual void ChaseTarget(AActor* Target) = 0;
+	UFUNCTION()
+	virtual void CollectGold(AActor* Target) = 0; 
 };

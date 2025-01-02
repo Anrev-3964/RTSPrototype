@@ -35,6 +35,7 @@ class RTSPROTOTYPE_API ASAIController : public AAIController
 	void NavigateToDestination(const FVector& Destination);
 	UFUNCTION()
 	void ChaseAndAttackTarget(AActor* TargetActor);
+	void StartMiningGold(AActor* TargetActor);
 	UFUNCTION()
 	void SetUnitSightRadius(int newRadius);
 	void SetUnitLoseSightRadius(int newRadius);

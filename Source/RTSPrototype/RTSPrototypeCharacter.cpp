@@ -72,7 +72,9 @@ void ARTSPrototypeCharacter::AssignUnitStatsFromDataAsset()
 	MaxHealth = UnitData->GetMaxHealth();
 	AttackValue = UnitData->GetAttack();
 	AttackMontage = UnitData->GetAttackMontage();
-
+	MiningMontage = UnitData->GetMiningMontage();
+	CanMineGold = UnitData->GetCanMineGold();
+	
 	if (UCharacterMovementComponent* MovementComponent = GetCharacterMovement())
 	{
 		MovementComponent->MaxWalkSpeed = UnitData->GetMaxMovementSpeed();
@@ -320,6 +322,14 @@ void ARTSPrototypeCharacter::ChaseTarget(AActor* TargetActor)
 	if (ASAIController* AIController = Cast<ASAIController>(GetController()))
 	{
 		AIController->ChaseAndAttackTarget(TargetActor);
+	}
+}
+
+void ARTSPrototypeCharacter::CollectGold(AActor* Target)
+{
+	if (ASAIController* AIController = Cast<ASAIController>(GetController()))
+	{
+		//Logica da definire
 	}
 }
 

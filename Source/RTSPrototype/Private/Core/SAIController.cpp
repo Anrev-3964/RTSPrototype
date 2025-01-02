@@ -124,6 +124,7 @@ void ASAIController::HandleCurrentOrder()
 			break;
 
 		case EUnitState::MiningGold:
+			//TO DO :  per il momento niente,la logica di raccolta andra in behaivor tree tramite task
 			break;
 
 		default:
@@ -211,6 +212,27 @@ void ASAIController::ChaseAndAttackTarget(AActor* TargetActor)
 			BlackboardComponent->SetValueAsObject("TargetActor", Target);
 			BlackboardComponent->SetValueAsVector("TargetLocation",Target->GetActorLocation());
 			BlackboardComponent->SetValueAsEnum("CurrentState",AttackingTarget);
+		}
+	}
+	else
+	{
+		if (UBlackboardComponent* BlackboardComponent = GetBlackboardComponent())
+		{
+			BlackboardComponent->SetValueAsEnum("CurrentState",WaitingForOrder);
+		}
+	}
+}
+
+void ASAIController::StartMiningGold(AActor* TargetActor)
+{
+	if (TargetActor)
+	{
+		Target = TargetActor;
+		if (UBlackboardComponent* BlackboardComponent = GetBlackboardComponent())
+		{
+			BlackboardComponent->SetValueAsObject("TargetActor", Target);
+			BlackboardComponent->SetValueAsVector("TargetLocation",Target->GetActorLocation());
+			BlackboardComponent->SetValueAsEnum("CurrentState",MiningGold);
 		}
 	}
 	else
