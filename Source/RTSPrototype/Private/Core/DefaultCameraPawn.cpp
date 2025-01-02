@@ -249,19 +249,7 @@ void ADefaultCameraPawn::HandlePlayerRigthClick(const FInputActionValue& Value)/
 	FHitResult Hit = SPlayer->GetMousePositionOnSurface();
 	if (AActor* HitActor = Hit.GetActor())
 	{
-		//check what object got hit by right click
-		if (ARTSPrototypeCharacter* SelectedUnit = Cast<ARTSPrototypeCharacter>(HitActor)) //player selected a unit 
-		{
 			SPlayer->HandleSelection(HitActor);
-		}
-		else //player selected the terrain or another object which is not selectable -> order units to move (if it's possible)
-		{
-			PawnMove();
-			if (GEngine)
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, "Il Player ha colpito il terreno o qualcos'altro di non selezionabile");
-			}
-		}
 	}
 }
 

@@ -172,3 +172,28 @@ void ABuildable::Tick(float DeltaTime)
 
 }
 
+EFaction ABuildable::GetFaction() const
+{
+	return CurrentFaction;
+}
+
+void ABuildable::SetCurrentFaction(EFaction NewFaction)
+{
+	if (CurrentFaction != NewFaction)
+	{
+		CurrentFaction = NewFaction;
+	}
+}
+
+void ABuildable::Select()
+{
+}
+
+void ABuildable::DeSelect()
+{
+}
+
+void ABuildable::Highlight(const bool Highlight)
+{
+}
+

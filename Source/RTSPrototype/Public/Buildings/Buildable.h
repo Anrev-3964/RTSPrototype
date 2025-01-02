@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Core/FactionsUtils.h"
+#include "Core/Selectable.h"
 #include "GameFramework/Actor.h"
 #include "Framework/DataAssets/BuildData.h"
 #include "Buildable.generated.h"
@@ -12,7 +14,7 @@ class UBuildItemDataAsset;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBuildCompleteEvent, const TEnumAsByte<EBuildState>, BuildState);
 UCLASS()
-class RTSPROTOTYPE_API ABuildable : public AActor
+class RTSPROTOTYPE_API ABuildable : public AActor,public IFactionsUtils,public ISelectable
 {
 	GENERATED_BODY()
 	
@@ -52,14 +54,31 @@ protected:
 	UPROPERTY()
 	UMaterialInstanceDynamic* DynamicOverlayMaterial;
 
+	UPROPERTY()  
+	EFaction CurrentFaction = {EFaction::Team1};
+
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	UBoxComponent* BoxCollider;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	UStaticMeshComponent* StaticMesh;
+	
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	/**IFactionUtils Interface**/
+	virtual EFaction GetFaction()const override;
+	/**End IFactionUtils Interface**/
+	void SetCurrentFaction(EFaction NewFaction); //TO DO : add this funciton in the interface
+
+	/** ISelecatbleInterface **/
+	UFUNCTION()
+	virtual void Select();
+	UFUNCTION()
+	virtual void DeSelect();
+	UFUNCTION()
+	virtual void Highlight(const bool Highlight);
 
 };
 

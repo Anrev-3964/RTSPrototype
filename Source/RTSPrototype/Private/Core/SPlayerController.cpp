@@ -9,6 +9,7 @@
 #include "Core/DefaultCameraPawn.h"
 
 #include "Commandable.h"
+#include "Buildings/GoldMine.h"
 #include "Core/FactionsUtils.h"
 #include "Core/Selectable.h"
 #include "Framework/DataAssets/PlayerInputActions.h"
@@ -36,15 +37,26 @@ void ASPlayerController::HandleSelection(AActor* ActorToSelect)
 			{
 				if (!FactionsUtils)return;
 				
-				if (PlayerFaction == FactionsUtils->GetFaction())
+				if (PlayerFaction == FactionsUtils->GetFaction()) //Selected actor IS in player faction : you can select it
 				{
-					//Selected actor IS in player faction : you can select it
-					if (GEngine)
+					if (ARTSPrototypeCharacter* SelectedUnit = Cast<ARTSPrototypeCharacter>(ActorToSelect))//Selected actor IS a Unit
 					{
-						GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, "il player ha selezionato un alleato");
+						Selectable->Select();
+						SelectedActors.Add(ActorToSelect);
+						if (GEngine)
+						{
+							GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, "il player ha selezionato un unita  alleata");
+						}
 					}
-					Selectable->Select();
-					SelectedActors.Add(ActorToSelect);
+					else
+						if (AGoldMine* SelectedBuilding = Cast<AGoldMine>(ActorToSelect))// Selecte Actor is a Gold Mine
+					{
+							//TO DO : ordinare alle unita di raccogliere oro
+							if (GEngine)
+							{
+								GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, "il player ha selezionato un edificio  alleato");
+							}
+					}
 				}
 
 				else
@@ -70,6 +82,55 @@ void ASPlayerController::HandleSelection(AActor* ActorToSelect)
 		ClearSelected();
 	}
 }
+	/**
+	if (ISelectable* Selectable = Cast<ISelectable>(ActorToSelect))
+	{
+		if (ActorToSelect && ActorSelected(ActorToSelect))
+		{
+			Selectable->DeSelect();
+			SelectedActors.Remove(ActorToSelect);
+		}
+		else
+		{
+			if (IFactionsUtils* FactionsUtils = Cast<IFactionsUtils>(ActorToSelect))
+			{
+				if (!FactionsUtils)return;
+				
+				if (PlayerFaction == FactionsUtils->GetFaction())
+				{
+					//Selected actor IS in player faction : you can select it
+					if (GEngine)
+					{
+						GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, "il player ha selezionato un alleato");
+					}
+					Selectable->Select();
+					SelectedActors.Add(ActorToSelect);
+				}
+
+				else
+					/**Selected actor IS NOT in player faction : you order your units to attack it **/
+	/**
+				{
+					if (SelectedActors.Num() <= 0) return;
+					for (AActor* Actor : SelectedActors)
+					{
+						if (Actor)
+						{
+							if (ICommandable* CommandableActor = Cast<ICommandable>(Actor))
+							{
+								CommandableActor->ChaseTarget(ActorToSelect);
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	else
+	{
+		ClearSelected();
+	}
+	**/
 
 void ASPlayerController::HandleSelection(const TArray<AActor*>& ActorsToSelect)
 {

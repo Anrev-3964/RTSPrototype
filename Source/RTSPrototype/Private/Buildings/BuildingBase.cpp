@@ -26,11 +26,11 @@ void ABuildingBase::SetData(UBuildItemDataAsset* BuildingData)
 	{
 		return;
 	}
-
+	
 	if (UStaticMesh* CompletedMesh = Data->BuildingMeshComplete.LoadSynchronous())
 	{
 		StaticMesh->SetStaticMesh(CompletedMesh);
-	}
+	} 
 }
 
 // Called when the game starts or when spawned
@@ -44,3 +44,4 @@ void ABuildingBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
+

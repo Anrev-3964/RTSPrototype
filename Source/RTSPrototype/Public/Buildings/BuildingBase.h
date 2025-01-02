@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Core/FactionsUtils.h"
+#include "Core/Selectable.h"
 #include "Framework/DataAssets/BuildItemDataAsset.h"
 #include "GameFramework/Actor.h"
 #include "BuildingBase.generated.h"
@@ -23,10 +25,10 @@ protected:
 
 	UPROPERTY()
 	UBuildItemDataAsset* Data;
-
-private:
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	UStaticMeshComponent* StaticMesh;
+
 
 public:
 	// Called every frame
