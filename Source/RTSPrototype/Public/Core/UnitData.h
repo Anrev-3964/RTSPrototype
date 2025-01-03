@@ -24,10 +24,13 @@ private:
 	float MaxHealth;
 	UPROPERTY(EditDefaultsOnly, Category = "Unit Stats")
 	float Attack;
+	UPROPERTY(EditDefaultsOnly, Category = "Unit Stats")
+	int GoldCost;
 	UPROPERTY(EditDefaultsOnly, Category = "Unit Stats", meta = (Tooltip = "Delay in secondi tra un attacco e l'altro in consecutiva"))
 	float AttackDelay;
 	UPROPERTY(EditDefaultsOnly, Category = "Unit Stats",meta = (Tooltip = "la velocita massima che l'unita puo raggiungere"))
 	float MaxMovementSpeed;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Unit Settings",meta = (Tooltip = "l'animazione usata dal unita quando attaca"))
 	UAnimMontage* AttackMontage;
 	UPROPERTY(EditDefaultsOnly, Category = "Unit AI ",meta = (Tooltip = "Range di attaco per l'unita (AttackRange = 200 se : AttackRange < 200)"))
@@ -54,6 +57,9 @@ public:
 	float GetAttack() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Get Unit Data")
+	int GetGoldCost() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Get Unit Data")
 	float GetMaxMovementSpeed() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Get Unit Data")
@@ -65,6 +71,9 @@ public:
 	float GetAttackRange()  const;
 	UFUNCTION(BlueprintCallable, Category = "Get Unit Data")
 	float GetUnitAcceptableRadius()  const;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Unit Settings")
+	TSoftClassPtr<ACharacter> UnitClass;
 	
 	/**
 	UFUNCTION(BlueprintCallable, Category = "Get Unit Data")

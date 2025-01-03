@@ -26,6 +26,15 @@ float UUnitData::GetAttack() const
 	return Attack;
 }
 
+int UUnitData::GetGoldCost() const
+{
+	if (GoldCost <= 0)
+	{
+		return 1;
+	}
+	return GoldCost;
+}
+
 float UUnitData::GetMaxMovementSpeed() const
 {
 	if (MaxMovementSpeed <= 0)

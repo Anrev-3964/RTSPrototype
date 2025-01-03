@@ -25,7 +25,6 @@ public:
 	UBuildComponent();
 
 protected:
-	//TO CONTINUE AFTER TUTORIAL 2
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
