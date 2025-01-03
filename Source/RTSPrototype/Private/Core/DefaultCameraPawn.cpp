@@ -247,10 +247,8 @@ void ADefaultCameraPawn::HandlePlayerRigthClick(const FInputActionValue& Value)/
 	if (!SPlayer) return;
 
 	FHitResult Hit = SPlayer->GetMousePositionOnSurface();
-	if (AActor* HitActor = Hit.GetActor())
-	{
-			SPlayer->HandleSelection(HitActor);
-	}
+
+	SPlayer->GiveOrders(Hit);
 }
 
 void ADefaultCameraPawn::SelectHold(const FInputActionValue& Value)

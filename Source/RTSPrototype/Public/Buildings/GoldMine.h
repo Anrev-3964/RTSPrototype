@@ -6,6 +6,7 @@
 #include "Buildable.h"
 #include "Buildings/BuildingBase.h"
 #include "Core/FactionsUtils.h"
+#include "Framework/RTSPlayerState.h"
 #include "GoldMine.generated.h"
 
 /**
@@ -17,7 +18,7 @@ class RTSPROTOTYPE_API AGoldMine : public ABuildable
 	GENERATED_BODY()
 public:
 	AGoldMine(const FObjectInitializer& ObjectInitializer);
-	AGoldMine(EFaction Faction = EFaction::Team1,int16 GoldAmount = 9999);
+	AGoldMine(EFaction Faction = EFaction::Team1,int GoldAmount = 9999);
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Mine Settings",meta = (Tooltip = "La quantita di oro estraibile dalla miniera (default : 1000)"))
@@ -30,4 +31,7 @@ public:
 	int GetGoldAmount() const ;
 	UFUNCTION()
 	int GetCurrentGoldAmount() const;
+
+	UFUNCTION()
+	void EstractGold(int GoldAmountToEstract);
 };

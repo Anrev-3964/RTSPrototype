@@ -5,6 +5,7 @@
 #include "BehaviorTree/BlackboardComponent.h"
 
 #include "MaterialDomain.h"
+#include "Buildings/GoldMine.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -74,6 +75,7 @@ void ARTSPrototypeCharacter::AssignUnitStatsFromDataAsset()
 	AttackMontage = UnitData->GetAttackMontage();
 	MiningMontage = UnitData->GetMiningMontage();
 	CanMineGold = UnitData->GetCanMineGold();
+	GoldEstractionCapacity = UnitData->GetGoldEstractionCapacity();
 	
 	if (UCharacterMovementComponent* MovementComponent = GetCharacterMovement())
 	{
@@ -224,6 +226,11 @@ UAnimMontage* ARTSPrototypeCharacter::GetAttackMontage() const
 {
 	return AttackMontage;
 }
+UAnimMontage* ARTSPrototypeCharacter::GetMiningMontage() const
+{
+	return MiningMontage;
+}
+
 
 float ARTSPrototypeCharacter::GetMaxHealth() const
 {
@@ -325,13 +332,54 @@ void ARTSPrototypeCharacter::ChaseTarget(AActor* TargetActor)
 	}
 }
 
-void ARTSPrototypeCharacter::CollectGold(AActor* Target)
+//Target : GoldMine'sActor which the unit will reach in order to estract gold
+void ARTSPrototypeCharacter::StartMiningGold(AActor* Target)
 {
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, "l'unita ha ricevuto l'ordine di raccogliere l'oro");
+	}
+	if (!CanMineGold) return;
 	if (ASAIController* AIController = Cast<ASAIController>(GetController()))
 	{
-		//Logica da definire
+		AIController->StartMiningGold(Target);
 	}
 }
+
+void ARTSPrototypeCharacter::EstractGoldFromMine(AActor* Target)
+{
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, "l'unita inizia a raccogliere oro dalla miniera");
+	}
+	if (MiningMontage)
+	{
+		PlayAnimMontage(MiningMontage);
+
+		//Try to get the Mine from behaivor tree
+		if (Tree)
+		{
+			if (AAIController* AIController = Cast<AAIController>(GetController()))
+			{
+				if (UBlackboardComponent* BlackboardComp = AIController->GetBlackboardComponent())
+				{
+					if (UObject* TargetObject = BlackboardComp->GetValueAsObject("TargetActor"))
+					{
+						if (AGoldMine* TargetGoldMine = Cast<AGoldMine>(TargetObject))
+						{
+							//TO DO : modificare questa parte per trasferire l'oro al suo proprietario (azinche al giocatore)
+							TargetGoldMine->EstractGold(GoldEstractionCapacity);
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+
+
+
 
 
 

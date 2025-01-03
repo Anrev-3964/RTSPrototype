@@ -32,8 +32,8 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Unit Stats",meta = (Tooltip = "Il costo in valuta per creare l'unita(UnitCost = 1 se UnitCost < 1) "))
 	int UnitCost;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Unit Stats",meta = (Tooltip = "La quantita di oro che l'unita puo transportare (se puo farlo. GoldTransportCapacity = 10 se GoldTransportCapacity <= 10)"))
-	int GoldTransportCapacity; 
+	UPROPERTY(EditDefaultsOnly, Category = "Unit Stats",meta = (Tooltip = "La quantita di oro che l'unita puo estrare per volta (se puo farlo. GoldEstractionCapacity = 10 se GoldEstractionCapacity <= 10)"))
+	int GoldEstractionCapacity; 
 
 	UPROPERTY(EditDefaultsOnly, Category = "Unit Settings",meta = (Tooltip = "Il tempo di addestramenot di un unita (TrainingTime = 1 se : TrainingTime < 1)"))
 	float TrainingTime;
@@ -71,7 +71,7 @@ public:
 	int GetUnitCost() const;
 	
 	UFUNCTION(BlueprintCallable, Category = "Get Unit Data")
-	int GetGoldTransportCapacity() const;
+	int GetGoldEstractionCapacity() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Get Unit Data")
 	bool GetCanMineGold() const;

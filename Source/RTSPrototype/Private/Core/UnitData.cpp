@@ -44,14 +44,15 @@ int UUnitData::GetUnitCost() const
 	return UnitCost;
 }
 
-int UUnitData::GetGoldTransportCapacity() const
+int UUnitData::GetGoldEstractionCapacity() const
 {
-	if (GoldTransportCapacity <= 10)
+	if (GoldEstractionCapacity <= 0)
 	{
 		return 10;
 	}
-	return GoldTransportCapacity;
+	return GoldEstractionCapacity;
 }
+
 
 bool UUnitData::GetCanMineGold() const
 {

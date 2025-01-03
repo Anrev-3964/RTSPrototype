@@ -25,5 +25,7 @@ public:
 	UFUNCTION()
 	virtual void ChaseTarget(AActor* Target) = 0;
 	UFUNCTION()
-	virtual void CollectGold(AActor* Target) = 0; 
+	virtual void StartMiningGold(AActor* Target) = 0;
+	UFUNCTION()
+	virtual void EstractGoldFromMine(AActor* Target) = 0;
 };

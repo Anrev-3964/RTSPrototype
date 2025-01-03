@@ -24,6 +24,7 @@ public:
 	UFUNCTION()
 	void HandleSelection(AActor* ActorToSelect);
 	void HandleSelection(const TArray<AActor*>& ActorsToSelect);
+	void GiveOrders (const FHitResult& HitSelection);
 
 	UFUNCTION()
 	void ClearSelected();
@@ -108,3 +109,4 @@ protected:
 	EFaction PlayerFaction;
 	//TO DO : definire una funzione che ordini alle unita dentro SelectedActors di muoversi veros la destinazione
 };
+

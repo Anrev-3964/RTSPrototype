@@ -26,80 +26,6 @@ void ASPlayerController::HandleSelection(AActor* ActorToSelect)
 {
 	if (ISelectable* Selectable = Cast<ISelectable>(ActorToSelect))
 	{
-		//** Units already selected -> Deselect them**//
-		if (ActorToSelect && ActorSelected(ActorToSelect))
-		{
-			Selectable->DeSelect();
-			SelectedActors.Remove(ActorToSelect);
-		}
-		else
-		{
-			//** Chwck if Selected Actor is in the same player Faction**//
-			if (IFactionsUtils* FactionsUtils = Cast<IFactionsUtils>(ActorToSelect))
-			{
-				if (!FactionsUtils)return;
-
-				//** Selected Actor in same player Faction**//
-				if (PlayerFaction == FactionsUtils->GetFaction()) //Selected actor IS in player faction : you can select it
-				{
-					//** Selected Actor is a Unit**//
-					if (ARTSPrototypeCharacter* SelectedUnit = Cast<ARTSPrototypeCharacter>(ActorToSelect))//Selected actor IS a Unit
-					{
-						Selectable->Select();
-						SelectedActors.Add(ActorToSelect);
-						if (GEngine)
-						{
-							GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, "il player ha selezionato un unita  alleata");
-						}
-					}
-					//** Selected Actor is a gold mine -> Order Units to collect gold**//
-					else
-						if (AGoldMine* SelectedBuilding = Cast<AGoldMine>(ActorToSelect))// Selecte Actor is a Gold Mine
-					{
-							if (SelectedActors.Num() <= 0) return;
-							for (AActor* Actor : SelectedActors)
-							{
-								if (Actor)
-								{
-									if (ICommandable* CommandableActor = Cast<ICommandable>(Actor))
-									{
-										CommandableActor->CollectGold(ActorToSelect);
-										if (GEngine)
-										{
-											GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, "il player ha ordinato alle unita di raccogliere oro");
-										}
-									}
-								}
-							}
-					}
-				}
-
-				else
-					/**Selected actor IS NOT in player faction : you order your units to attack it **/
-				{
-					if (SelectedActors.Num() <= 0) return;
-					for (AActor* Actor : SelectedActors)
-					{
-						if (Actor)
-						{
-							if (ICommandable* CommandableActor = Cast<ICommandable>(Actor))
-							{
-								CommandableActor->ChaseTarget(ActorToSelect);
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-	else
-	{
-		ClearSelected();
-	}
-}
-	/**
-	if (ISelectable* Selectable = Cast<ISelectable>(ActorToSelect))
-	{
 		if (ActorToSelect && ActorSelected(ActorToSelect))
 		{
 			Selectable->DeSelect();
@@ -124,7 +50,6 @@ void ASPlayerController::HandleSelection(AActor* ActorToSelect)
 
 				else
 					/**Selected actor IS NOT in player faction : you order your units to attack it **/
-	/**
 				{
 					if (SelectedActors.Num() <= 0) return;
 					for (AActor* Actor : SelectedActors)
@@ -145,12 +70,77 @@ void ASPlayerController::HandleSelection(AActor* ActorToSelect)
 	{
 		ClearSelected();
 	}
-	**/
-
+}
 void ASPlayerController::HandleSelection(const TArray<AActor*>& ActorsToSelect)
 {
 	SelectGroup(ActorsToSelect);
 }
+
+void ASPlayerController::GiveOrders(const FHitResult& HitSelection)
+{
+	if (SelectedActors.Num() <=0) return;
+	
+	AActor* ActorToSelect = HitSelection.GetActor();
+	if (!ActorToSelect) return;
+
+	//**Player Selected something selectable **//
+	if (ISelectable* Selectable = Cast<ISelectable>(ActorToSelect))
+	{
+		//** Chwck if Selected Actor is in the same player Faction**//
+		if (IFactionsUtils* FactionsUtils = Cast<IFactionsUtils>(ActorToSelect))
+		{
+			if (!FactionsUtils)return;
+
+			//** Selected Actor isnt in same player Faction**//
+			if (PlayerFaction != FactionsUtils->GetFaction()) //Selected actor IS in player faction : you can select it
+			{
+				//for now check if it's a unit, but it can changed for enemy buildings too
+				if (ARTSPrototypeCharacter* SelectedUnit = Cast<ARTSPrototypeCharacter>(ActorToSelect))//Selected actor IS a Unit
+				{
+					if (GEngine)
+					{
+						GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, "il player ha selezionato un unita  Nemica");
+					}
+					if (SelectedActors.Num() <= 0) return;
+					for (AActor* Actor : SelectedActors)
+					{
+						if (Actor)
+						{
+							if (ICommandable* CommandableActor = Cast<ICommandable>(Actor))
+							{
+								CommandableActor->ChaseTarget(ActorToSelect);
+							}
+						}
+					}
+				}
+			}
+			//** Selected Actor is in same player Faction**//
+			else
+			{
+				if (AGoldMine* SelectedBuilding = Cast<AGoldMine>(ActorToSelect))// Selecte Actor is a Gold Mine
+				{
+					if (SelectedActors.Num() <= 0) return;
+
+					for (AActor* Actor : SelectedActors)
+					{
+						if (Actor)
+						{
+							if (ICommandable* CommandableActor = Cast<ICommandable>(Actor))
+							{
+								CommandableActor->StartMiningGold(ActorToSelect);
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	else
+	{
+		MoveUnitsToDestination(HitSelection.ImpactPoint);
+	}
+}
+
 
 void ASPlayerController::BeginPlay()
 {

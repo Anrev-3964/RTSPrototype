@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Core/FactionsUtils.h"
 #include "Core/Selectable.h"
+#include "Framework/RTSPlayerState.h"
 #include "GameFramework/Actor.h"
 #include "Framework/DataAssets/BuildData.h"
 #include "Buildable.generated.h"
@@ -41,25 +42,37 @@ protected:
 	void UpdateBuildProgressionMesh();
 	void UpdateBuildProgression();
 
+	ARTSPlayerState* GetOwnerPlayerState() const;
+	
+
 	UPROPERTY()
 	UAssetManager* AssetManager;
+
 	UPROPERTY()
 	UBuildItemDataAsset* BuildData;
+
 	UPROPERTY()
 	float BuildProgression = 0.0f;
+
 	UPROPERTY()
 	FTimerHandle BuildTimer;
+
 	UPROPERTY()
 	TEnumAsByte<EBuildState> BuildState = EBuildState::NoBuild;
+
 	UPROPERTY()
 	UMaterialInstanceDynamic* DynamicOverlayMaterial;
 
 	UPROPERTY()  
 	EFaction CurrentFaction = {EFaction::Team1};
 
+	UPROPERTY()
+	ARTSPlayerState* OwnerPlayerState;
+
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	UBoxComponent* BoxCollider;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	UStaticMeshComponent* StaticMesh;
 	

@@ -62,6 +62,8 @@ protected:
 	UPROPERTY(BlueprintReadOnly,  meta = (AllowPrivateAccess = "true"))
 	bool CanMineGold;
 	UPROPERTY(BlueprintReadOnly,  meta = (AllowPrivateAccess = "true"))
+	int GoldEstractionCapacity;
+	UPROPERTY(BlueprintReadOnly,  meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* AttackMontage;
 	UPROPERTY(BlueprintReadOnly,  meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* MiningMontage;
@@ -87,7 +89,8 @@ public:
 	virtual  void MoveToDestination(const FVector Destination) override;
 	virtual  void Attack() override;
 	virtual  void ChaseTarget(AActor* Target) override;
-	virtual void  CollectGold(AActor* Target) override;
+	virtual void  StartMiningGold(AActor* Target) override;
+	virtual void EstractGoldFromMine(AActor* Target) override;
 	/**End ICommandable Interface**/
 
 	/**IFactionUtils Interface**/
@@ -102,6 +105,7 @@ public:
 	UBehaviorTree* GetBehaviorTree() const;
 
 	UAnimMontage* GetAttackMontage() const;
+	UAnimMontage* GetMiningMontage() const;
 
 	UFUNCTION(BlueprintCallable)
 

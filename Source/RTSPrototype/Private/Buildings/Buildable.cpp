@@ -6,7 +6,9 @@
 #include "SkeletonTreeBuilder.h"
 #include "Chaos/Deformable/MuscleActivationConstraints.h"
 #include "Components/BoxComponent.h"
+#include "Framework/RTSPlayerState.h"
 #include "Framework/DataAssets/BuildItemDataAsset.h"
+#include "GameFramework/GameStateBase.h"
 #include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
@@ -156,13 +158,34 @@ void ABuildable::UpdateBuildProgression()
 		UpdateBuildProgressionMesh();
 	}
 }
+//Get The Player State of it'sown Faction
+ARTSPlayerState* ABuildable::GetOwnerPlayerState() const
+{
+	if (AGameStateBase* GameState = GetWorld()->GetGameState())
+	{
+		for (APlayerState* PlayerState : GameState->PlayerArray)
+		{
+			if (ARTSPlayerState* MyPlayerState = Cast<ARTSPlayerState>(PlayerState))
+			{
+				if (IFactionsUtils* StateFaction = Cast<IFactionsUtils>(MyPlayerState))
+				{
+					if (StateFaction->GetFaction() == CurrentFaction)
+					{
+						return MyPlayerState;
+					}
+				}
+			}
+		}
+	}
+	return nullptr;
+}
 
 
 // Called when the game starts or when spawned
 void ABuildable::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	OwnerPlayerState = GetOwnerPlayerState();
 }
 
 // Called every frame

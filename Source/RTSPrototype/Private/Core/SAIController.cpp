@@ -227,12 +227,16 @@ void ASAIController::StartMiningGold(AActor* TargetActor)
 {
 	if (TargetActor)
 	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, "l'AI controller ha ricevuto l'ordine->passa le informazioni al behaivor tree");
+		}
 		Target = TargetActor;
 		if (UBlackboardComponent* BlackboardComponent = GetBlackboardComponent())
 		{
+			BlackboardComponent->SetValueAsEnum("CurrentState",MiningGold);
 			BlackboardComponent->SetValueAsObject("TargetActor", Target);
 			BlackboardComponent->SetValueAsVector("TargetLocation",Target->GetActorLocation());
-			BlackboardComponent->SetValueAsEnum("CurrentState",MiningGold);
 		}
 	}
 	else

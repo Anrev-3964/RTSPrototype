@@ -3,6 +3,8 @@
 
 #include "Buildings/GoldMine.h"
 
+#include "GameFramework/GameStateBase.h"
+
 
 AGoldMine::AGoldMine(const FObjectInitializer& ObjectInitializer)
 {
@@ -11,11 +13,12 @@ AGoldMine::AGoldMine(const FObjectInitializer& ObjectInitializer)
 	CurrentGoldAmount = GoldAmount;
 }
 
-AGoldMine::AGoldMine(EFaction Faction, int16 GoldAmount)
+AGoldMine::AGoldMine(EFaction Faction, int GoldAmount)
 {
 	CurrentFaction = Faction;
 	CurrentGoldAmount = GoldAmount;
 }
+
 
 int AGoldMine::GetGoldAmount() const
 {
@@ -29,4 +32,14 @@ int AGoldMine::GetGoldAmount() const
 int AGoldMine::GetCurrentGoldAmount() const 
 {
 	return CurrentGoldAmount;
+}
+
+//NOTA : pe rora la quantita di oro estraibile non diminuisce a dogni estrazione
+void AGoldMine::EstractGold(int GoldAmountToEstract)
+{
+	if (!OwnerPlayerState) return;
+	if (GoldAmount >= 0)
+	{
+		OwnerPlayerState->AddGold(GoldAmountToEstract);
+	}
 }

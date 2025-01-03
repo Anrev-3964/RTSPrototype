@@ -15,6 +15,20 @@ void ARTSPlayerState::RemoveGold(int GoldSpent)
 	SetGold(Gold);
 }
 
+EFaction ARTSPlayerState::GetFaction() const
+{
+	return CurrentFaction;
+}
+
+void ARTSPlayerState::SetCurrentFaction(EFaction NewFaction)
+{
+	if (CurrentFaction != NewFaction)
+	{
+		CurrentFaction = NewFaction;
+	}
+}
+
+
 void ARTSPlayerState::BeginPlay()
 {
 	Super::BeginPlay();
