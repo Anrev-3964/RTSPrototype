@@ -76,6 +76,7 @@ void ABuildable::EndBuild()
 	GetWorldTimerManager().ClearTimer(BuildTimer);
 	if (BuildState != EBuildState::BuildComplete)
 	{
+		BuildingConstructed = true;
 		BuildState = EBuildState::BuildAborted;
 	}
 
@@ -195,6 +196,11 @@ void ABuildable::Tick(float DeltaTime)
 
 }
 
+bool ABuildable::GetBuildingConstructed()
+{
+	return BuildingConstructed;
+}
+
 EFaction ABuildable::GetFaction() const
 {
 	return CurrentFaction;
@@ -219,4 +225,5 @@ void ABuildable::DeSelect()
 void ABuildable::Highlight(const bool Highlight)
 {
 }
+
 

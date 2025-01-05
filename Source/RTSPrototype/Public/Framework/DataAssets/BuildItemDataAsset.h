@@ -38,6 +38,8 @@ public:
 	int GoldCost;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
 	int HP;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
+	bool CanBeBuiltCloseToGoldSources;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Display")
 	TArray<TSoftObjectPtr<UStaticMesh>> BuildMeshes;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Configuration")

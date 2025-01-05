@@ -5,6 +5,7 @@
 
 #include "Buildings/Buildable.h"
 #include "Buildings/BuildingBase.h"
+#include "Buildings/ITriggerBoxArea.h"
 #include "Engine/AssetManager.h"
 #include "Framework/RTSPlayerState.h"
 #include "Framework/SGameState.h"
@@ -40,10 +41,35 @@ void UBuildComponent::UpdatePlacementStatus()
 		return;
 	}
 
-	TArray<AActor*> OverlappingActors;
-	ClientBuildObject->GetOverlappingActors(OverlappingActors);
-	bIsPlaceable = OverlappingActors.Num() <= 0;
-	ClientBuildObject->UpdateOverlayMaterial(bIsPlaceable);
+	if (UBuildItemDataAsset* BuildItemData = ClientBuildObject->GetBuildItemData())
+	{
+		TArray<AActor*> OverlappingActors;
+		ClientBuildObject->GetOverlappingActors(OverlappingActors);
+
+		if (BuildItemData->CanBeBuiltCloseToGoldSources)
+		{
+			bIsPlaceable = false;
+			
+			for (AActor* Actor : OverlappingActors)
+			{
+				if (Actor != ClientBuildObject)
+				{
+					if (IITriggerBoxArea* TriggerBox = Cast<IITriggerBoxArea>(Actor))
+					{
+						bIsPlaceable = TriggerBox->ActorIsATriggerArea(); 
+						ClientBuildObject->UpdateOverlayMaterial(bIsPlaceable);
+						break;
+					}
+				}
+					
+			}
+		}
+		else
+		{
+			bIsPlaceable = OverlappingActors.Num() <= 0;
+			ClientBuildObject->UpdateOverlayMaterial(bIsPlaceable);
+		}
+	}
 }
 
 void UBuildComponent::OnBuildDataLoaded(TArray<FPrimaryAssetId> BuildAssetsIds)

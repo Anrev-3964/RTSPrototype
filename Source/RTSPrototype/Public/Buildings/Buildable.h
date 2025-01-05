@@ -14,6 +14,7 @@ class UBoxComponent;
 class UBuildItemDataAsset;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBuildCompleteEvent, const TEnumAsByte<EBuildState>, BuildState);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnBuildDestroyed);
 UCLASS()
 class RTSPROTOTYPE_API ABuildable : public AActor,public IFactionsUtils,public ISelectable
 {
@@ -29,7 +30,7 @@ public:
 	void UpdateOverlayMaterial(const bool bCanPlace = true) const;
 	
 	FOnBuildCompleteEvent OnBuildCompleteEvent;
-
+	FOnBuildDestroyed OnBuildDestroyed;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -67,31 +68,37 @@ protected:
 	EFaction CurrentFaction = {EFaction::Team1};
 
 	UPROPERTY()
+	bool BuildingConstructed = {false};
+
+	UPROPERTY()
 	ARTSPlayerState* OwnerPlayerState;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	UStaticMeshComponent* StaticMesh;
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	UBoxComponent* BoxCollider;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
-	UStaticMeshComponent* StaticMesh;
 	
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION()
+	bool GetBuildingConstructed();
+	
 	/**IFactionUtils Interface**/
 	virtual EFaction GetFaction()const override;
 	/**End IFactionUtils Interface**/
-	void SetCurrentFaction(EFaction NewFaction); //TO DO : add this funciton in the interface
+	void SetCurrentFaction(EFaction NewFaction); //TO DO : add this function in the interface
 
 	/** ISelecatbleInterface **/
 	UFUNCTION()
-	virtual void Select();
+	virtual void Select() override;
 	UFUNCTION()
-	virtual void DeSelect();
+	virtual void DeSelect() override;
 	UFUNCTION()
-	virtual void Highlight(const bool Highlight);
+	virtual void Highlight(const bool Highlight) override;
 
 };
 
