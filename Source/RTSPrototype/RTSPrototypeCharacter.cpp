@@ -283,6 +283,10 @@ EFaction ARTSPrototypeCharacter::GetFaction() const
 	return CurrentFaction;
 }
 
+void ARTSPrototypeCharacter::SetCurrentFaction(EFaction NewFaction)
+{
+}
+
 void ARTSPrototypeCharacter::MoveToDestination(const FVector Destination)
 {
 	//UE_LOG(LogTemp, Warning, TEXT("il pawn chiede al Controller di muoverlo"));
@@ -348,10 +352,29 @@ void ARTSPrototypeCharacter::StartMiningGold(AActor* Target)
 
 void ARTSPrototypeCharacter::EstractGoldFromMine(AActor* Target)
 {
-	if (GEngine)
+	/**
+	if (Tree && Target)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, "l'unita inizia a raccogliere oro dalla miniera");
+		AAIController* AIController = Cast<AAIController>(GetController());
+		if (!AIController) return;
+
+		UBlackboardComponent* BlackboardComp = AIController->GetBlackboardComponent();
+		if (!BlackboardComp) return;
+
+		if (UObject* TargetObject = BlackboardComp->GetValueAsObject("TargetActor"))
+		{
+			if (AGoldMine* TargetGoldMine = Cast<AGoldMine>(TargetObject))
+			{
+				if (TargetGoldMine->GetGoldAmount() >=0 && MiningMontage)
+				{
+					PlayAnimMontage(MiningMontage);
+					TargetGoldMine->EstractGold();
+				}
+			}
+		}
+
 	}
+	**/
 	if (MiningMontage)
 	{
 		PlayAnimMontage(MiningMontage);
@@ -368,13 +391,13 @@ void ARTSPrototypeCharacter::EstractGoldFromMine(AActor* Target)
 						if (AGoldMine* TargetGoldMine = Cast<AGoldMine>(TargetObject))
 						{
 							//TO DO : modificare questa parte per trasferire l'oro al suo proprietario (azinche al giocatore)
-							TargetGoldMine->EstractGold(GoldEstractionCapacity);
+							TargetGoldMine->EstractGold();
 						}
 					}
 				}
 			}
 		}
-	}
+	} 
 }
 
 

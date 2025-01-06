@@ -20,4 +20,7 @@ class RTSPROTOTYPE_API IFactionsUtils
 public:
 	UFUNCTION()
 	virtual EFaction GetFaction()const = 0 ;
+
+	UFUNCTION()
+	virtual void SetCurrentFaction(EFaction NewFaction) = 0;
 };

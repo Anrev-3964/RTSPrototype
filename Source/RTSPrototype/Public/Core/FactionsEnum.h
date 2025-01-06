@@ -8,6 +8,7 @@
 UENUM(BlueprintType)
 enum class  EFaction : uint8
 {
+	Neutral UMETA(DisplayName = "Neutral"),
 	Team1 UMETA(DisplayName = "Team 1"),
 	Team2 UMETA(DisplayName = "Team 2"),
 };

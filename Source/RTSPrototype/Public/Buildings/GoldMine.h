@@ -3,10 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Buildable.h"
 #include "ITriggerBoxArea.h"
 #include "Components/BoxComponent.h"
 #include "Components/SceneComponent.h"
 #include "Core/FactionsUtils.h"
+#include "Core/GoldMineData.h"
 #include "Core/Selectable.h"
 #include "Framework/RTSPlayerState.h"
 #include "Framework/DataAssets/BuildData.h"
@@ -22,16 +24,23 @@ class RTSPROTOTYPE_API AGoldMine : public AActor,public IFactionsUtils,public IS
 public:
 	AGoldMine(const FObjectInitializer& ObjectInitializer);
 	void BeginPlay();
+	void SetMineFromDataAsset();
 
 private:
 	UPROPERTY()  
-	EFaction CurrentFaction = {EFaction::Team2};
+	EFaction CurrentFaction = {EFaction::Neutral};
 
+	UPROPERTY()  
+	EFaction NewOwnerFaction = {EFaction::Neutral};
+
+	UPROPERTY(EditAnywhere, Category = "Data")
+	UGoldMineData* GoldMineData;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Mine Settings",meta = (Tooltip = "La quantita di oro estraibile dalla miniera (default : 1000)"))
 	int16  GoldAmount;
 	UPROPERTY()
 	int CurrentGoldAmount;
-
+	
 	UPROPERTY()
 	ARTSPlayerState* OwnerPlayerState;
 
@@ -41,10 +50,8 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	UStaticMeshComponent* StaticMesh;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
-	UStaticMesh* DefaultMesh;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
-	UStaticMesh* NewMesh;
+	UPROPERTY()
+	TSoftObjectPtr<UStaticMesh> CompletedMineMesh;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	USceneComponent* RootComponentIntermediate;
@@ -57,19 +64,23 @@ public:
 	
 	/**IFactionUtils Interface**/
 	virtual EFaction GetFaction()const override;
+	virtual void SetCurrentFaction(EFaction NewFaction) override;
+
+	
 	ARTSPlayerState* GetOwnerPlayerState() const;
 	/**End IFactionUtils Interface**/
 
-	void SetCurrentFaction(EFaction NewFaction); //TO DO : add this funciton in the interface
-
 	UFUNCTION(BlueprintCallable)
-	void BuildMine(AActor*  OverlapActor);
+	void PreBuildMine(AActor*  OverlapActor);
 
 	UFUNCTION()
-	void MineCompleted(TEnumAsByte<EBuildState> BuildState);
+	void MineStarted(ABuildable* Buildable);
 
 	UFUNCTION()
-	void EstractGold(int GoldAmountToEstract);
+	void MineCompleted(const TEnumAsByte<EBuildState> BuildState);
+
+	UFUNCTION()
+	void EstractGold();
 
 	/** ISelecatbleInterface UNUSED FOR NOW**/
 	UFUNCTION()

@@ -17,4 +17,9 @@ class RTSPROTOTYPE_API AGoldMineConstructor : public ABuildable
 public:
 	UFUNCTION()
 	UStaticMesh* GetFinalMesh();
+
+	virtual void BeginPlay() override;
+
+	UFUNCTION()
+	void DestroySelf(TEnumAsByte<EBuildState> NewBuildState);
 };

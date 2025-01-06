@@ -14,6 +14,7 @@ class UBoxComponent;
 class UBuildItemDataAsset;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBuildCompleteEvent, const TEnumAsByte<EBuildState>, BuildState);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBuildStarted,  ABuildable*, BuildableInstance);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnBuildDestroyed);
 UCLASS()
 class RTSPROTOTYPE_API ABuildable : public AActor,public IFactionsUtils,public ISelectable
@@ -29,6 +30,7 @@ public:
 	UBuildItemDataAsset* GetBuildItemData() const {return BuildData;}
 	void UpdateOverlayMaterial(const bool bCanPlace = true) const;
 	
+	FOnBuildStarted OnBuildStarted;
 	FOnBuildCompleteEvent OnBuildCompleteEvent;
 	FOnBuildDestroyed OnBuildDestroyed;
 protected:

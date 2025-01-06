@@ -69,6 +69,7 @@ void ABuildable::StartBuild()
 	GetWorldTimerManager().SetTimer(BuildTimer, this, &ABuildable::UpdateBuildProgression, 2.0f, true, 2.0f);
 
 	BuildState = EBuildState::Building;
+	OnBuildStarted.Broadcast(this);
 }
 
 void ABuildable::EndBuild()

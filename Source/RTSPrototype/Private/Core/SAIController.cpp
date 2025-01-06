@@ -3,11 +3,9 @@
 
 #include "Core/SAIController.h"
 
-#include "MeshPaintVisualize.h"
-#include "VectorTypes.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "Core/FactionsEnum.h"
+#include "Buildings/GoldMine.h"
 #include "Core/FactionsUtils.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "RTSPrototype/RTSPrototypeCharacter.h"
@@ -124,7 +122,18 @@ void ASAIController::HandleCurrentOrder()
 			break;
 
 		case EUnitState::MiningGold:
-			//TO DO :  per il momento niente,la logica di raccolta andra in behaivor tree tramite task
+			if (Target)
+			{
+				if (const AGoldMine* Mine = Cast<AGoldMine>(Target))
+				{
+					if (Mine->GetGoldAmount() <= 0)
+					{
+						BlackboardComponent->SetValueAsEnum("CurrentState",WaitingForOrder);
+						BlackboardComponent->SetValueAsObject("TargetActor", nullptr);
+						Target = nullptr;
+					}
+				}
+			}
 			break;
 
 		default:

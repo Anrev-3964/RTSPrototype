@@ -4,6 +4,7 @@
 #include "Buildings/GoldMineConstructor.h"
 
 #include "Framework/DataAssets/BuildItemDataAsset.h"
+#include "UObject/FastReferenceCollector.h"
 
 UStaticMesh* AGoldMineConstructor::GetFinalMesh()
 {
@@ -17,3 +18,19 @@ UStaticMesh* AGoldMineConstructor::GetFinalMesh()
 	}
 	return nullptr;
 }
+
+void AGoldMineConstructor::BeginPlay()
+{
+	Super::BeginPlay();
+	SetCurrentFaction(EFaction::Team1);
+	OnBuildCompleteEvent.AddDynamic(this, &AGoldMineConstructor::DestroySelf);
+}
+
+void AGoldMineConstructor::DestroySelf(const TEnumAsByte<EBuildState> NewBuildState)
+{
+	Destroy();  
+}
+
+
+
+

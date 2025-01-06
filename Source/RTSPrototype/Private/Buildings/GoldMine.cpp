@@ -5,6 +5,7 @@
 
 #include "Buildings/GoldMineConstructor.h"
 #include "Components/BoxComponent.h"
+#include "Framework/DataAssets/BuildItemDataAsset.h"
 #include "GameFramework/GameStateBase.h"
 
 
@@ -31,17 +32,30 @@ AGoldMine::AGoldMine(const FObjectInitializer& ObjectInitializer)
 
 void AGoldMine::BeginPlay()
 {
+	SetMineFromDataAsset();
+}
+
+void AGoldMine::SetMineFromDataAsset()
+{
+	if (!GoldMineData) return;
+
+	GoldAmount = GoldMineData->GetMineGoldAmount();
 	if (StaticMesh)
 	{
-		DefaultMesh = StaticMesh->GetStaticMesh();
+		if (UStaticMesh* Mesh = GoldMineData->MeshReference.LoadSynchronous())
+		{
+			StaticMesh->SetStaticMesh(Mesh);
+		}
 	}
+
+	
 }
 
 int AGoldMine::GetGoldAmount() const
 {
 	if (GoldAmount <= 0)
 	{
-		return 1000;
+		return 0;
 	}
 	return GoldAmount;
 }
@@ -88,43 +102,80 @@ void AGoldMine::SetCurrentFaction(EFaction NewFaction)
 }
 
 //Called in bueprint 
-void AGoldMine::BuildMine(AActor*  OverlapActor)
+void AGoldMine::PreBuildMine(AActor*  OverlapActor)
 {
 	if (OverlapActor)
 	{
-		if (AGoldMineConstructor* GoldMineConstructor =   Cast<AGoldMineConstructor>(OverlapActor))
+		if (AGoldMineConstructor* GoldMineConstructor =   Cast<AGoldMineConstructor>(OverlapActor)) //MUST DERIVE FROM BUILDABLE
 		{
-			if (GEngine)
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Orange, "Inizia la costruzione della miniera");
-			}
-			GoldMineConstructor->OnBuildCompleteEvent.AddDynamic(this, &AGoldMine::MineCompleted);
-			NewMesh = GoldMineConstructor->GetFinalMesh();
+			GoldMineConstructor->OnBuildStarted.AddDynamic(this, &AGoldMine::MineStarted);
 		}
 	}
-	OwnerPlayerState = GetOwnerPlayerState();
 }
 
-void AGoldMine:: MineCompleted(TEnumAsByte<EBuildState> BuildState)
+void AGoldMine::MineStarted(ABuildable* Buildable)
 {
-	if (GEngine)
+	if (!Buildable) return;
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Orange, "Miniera finita");
+		
+		if (UBuildItemDataAsset* BuildItemDataAsset = Buildable->GetBuildItemData())
+		{
+			TSoftObjectPtr<UStaticMesh> NewMesh = BuildItemDataAsset->BuildingMeshComplete;
+			CompletedMineMesh = NewMesh;
+			Buildable->OnBuildCompleteEvent.AddDynamic(this, &AGoldMine::MineCompleted);
+			Buildable->SetActorLocation(GetActorLocation());
+		}
+
+		NewOwnerFaction = Buildable->GetFaction();
 	}
-	if (NewMesh)
+}
+
+void AGoldMine:: MineCompleted(const TEnumAsByte<EBuildState> BuildState)
+{
+	CurrentFaction = NewOwnerFaction;
+	
+	if (StaticMesh && CompletedMineMesh.IsValid())
 	{
-		StaticMesh->SetStaticMesh(NewMesh);
+		UStaticMesh* LoadedMesh = CompletedMineMesh.Get();
+
+		if (!LoadedMesh)
+		{
+			LoadedMesh = CompletedMineMesh.LoadSynchronous();
+		}
+		
+		if (LoadedMesh)
+		{
+			StaticMesh->SetStaticMesh(LoadedMesh);
+		}
 	}
-	//To DO : darela nuova mesh
-	//To DO : cambiare la fazione
+
+	OwnerPlayerState = GetOwnerPlayerState();
+	
 }
 //NOTA : pe rora la quantita di oro estraibile non diminuisce a dogni estrazione
-void AGoldMine::EstractGold(int GoldAmountToEstract)
+void AGoldMine::EstractGold()
 {
+	int Amount = 5;
 	if (!OwnerPlayerState) return;
-	if (GoldAmount >= 0)
+
+	if (Amount >= GoldAmount)
 	{
-		OwnerPlayerState->AddGold(GoldAmountToEstract);
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red , "Oro finito");
+		}
+		OwnerPlayerState->AddGold(GoldAmount);
+		GoldAmount = 0;
+		Destroy();
+	}
+	else
+	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, "c'e ancora oro");
+		}
+		GoldAmount -= Amount;
+		OwnerPlayerState->AddGold(Amount);
 	}
 }
 

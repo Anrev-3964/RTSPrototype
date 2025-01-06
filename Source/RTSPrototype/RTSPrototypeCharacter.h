@@ -95,6 +95,7 @@ public:
 
 	/**IFactionUtils Interface**/
 	virtual EFaction GetFaction()const override;
+	virtual void SetCurrentFaction(EFaction NewFaction) override;
 	/**End IFactionUtils Interface**/
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Settings")
