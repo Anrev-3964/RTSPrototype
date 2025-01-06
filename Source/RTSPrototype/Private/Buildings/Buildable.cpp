@@ -174,6 +174,11 @@ void ABuildable::UpdateBuildProgression()
 	}
 }
 
+UBuildItemDataAsset* ABuildable::GetBuildData() const
+{
+	return BuildData;
+}
+
 UMaterialInstance* ABuildable::GetHighlightMaterial() const
 {
 	if (const UBuildItemDataAsset* BuildItemData = GetBuildItemData())
@@ -195,12 +200,15 @@ void ABuildable::Select()
 	bSelected = true;
 	UE_LOG(LogTemp, Warning, TEXT("BUILDING SELECTED"));
 	Highlight(bSelected);
+	OnMyEventTriggered.Broadcast();
+	
 }
 
 void ABuildable::DeSelect()
 {
 	bSelected = false;
 	Highlight(bSelected);
+	OnMyEventTriggered.Broadcast();
 }
 
 void ABuildable::Highlight(const bool Highlight)

@@ -13,6 +13,8 @@ class UBoxComponent;
 class UBuildItemDataAsset;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBuildCompleteEvent, const TEnumAsByte<EBuildState>, BuildState);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnMyEventTriggered);
+
 UCLASS()
 class RTSPROTOTYPE_API ABuildable : public AActor, public ISelectable, public IFactionsUtils
 {
@@ -36,7 +38,14 @@ public:
 	EFaction CurrentFaction;
 
 protected:
+
+	// Delegato esposto a Blueprint
+	UPROPERTY(BlueprintAssignable, Category = "Events")
+	FOnMyEventTriggered OnMyEventTriggered;
+	
+	UFUNCTION(BlueprintCallable)
 	virtual void Select() override;
+	UFUNCTION(BlueprintCallable)
 	virtual void DeSelect() override;
 	virtual void Highlight(const bool Highlight) override;
 	// Called when the game starts or when spawned
@@ -52,7 +61,7 @@ protected:
 
 	UPROPERTY()
 	UAssetManager* AssetManager;
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Buildable Data")
 	UBuildItemDataAsset* BuildData;
 	UPROPERTY()
 	float BuildProgression = 0.0f;
@@ -74,6 +83,9 @@ private:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	UFUNCTION(BlueprintCallable)
+	UBuildItemDataAsset* GetBuildData() const;
 
 };
 
