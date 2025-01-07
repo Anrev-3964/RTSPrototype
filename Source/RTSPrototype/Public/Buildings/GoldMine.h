@@ -40,7 +40,9 @@ private:
 	int16  GoldAmount;
 	UPROPERTY()
 	int CurrentGoldAmount;
-	
+
+	UPROPERTY()
+	int GoldEstractAmount = {5};
 	UPROPERTY()
 	ARTSPlayerState* OwnerPlayerState;
 
@@ -81,6 +83,9 @@ public:
 
 	UFUNCTION()
 	void EstractGold();
+
+	UFUNCTION(BlueprintCallable)
+	int GetGoldEstractionAmount();
 
 	/** ISelecatbleInterface UNUSED FOR NOW**/
 	UFUNCTION()

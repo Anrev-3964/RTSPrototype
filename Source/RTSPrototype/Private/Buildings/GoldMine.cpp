@@ -155,10 +155,10 @@ void AGoldMine:: MineCompleted(const TEnumAsByte<EBuildState> BuildState)
 //NOTA : pe rora la quantita di oro estraibile non diminuisce a dogni estrazione
 void AGoldMine::EstractGold()
 {
-	int Amount = 5;
+	GoldEstractAmount = 5;
 	if (!OwnerPlayerState) return;
 
-	if (Amount >= GoldAmount)
+	if (GoldEstractAmount >= GoldAmount)
 	{
 		if (GEngine)
 		{
@@ -174,9 +174,18 @@ void AGoldMine::EstractGold()
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, "c'e ancora oro");
 		}
-		GoldAmount -= Amount;
-		OwnerPlayerState->AddGold(Amount);
+		GoldAmount -= GoldEstractAmount;
+		OwnerPlayerState->AddGold(GoldEstractAmount);
 	}
+}
+
+int AGoldMine::GetGoldEstractionAmount()
+{
+	if (GoldEstractAmount >0)
+	{
+		return GoldEstractAmount;
+	}
+	return 1;
 }
 
 void AGoldMine::Select()

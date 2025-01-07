@@ -17,6 +17,8 @@
 //Delegate
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDamageTaken);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnUnitSelected,bool, UnitSelected);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnOrderChanged,EUnitState, NewOrder);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGoldEstracted,int, GoldEstracted);
 
 UCLASS(Blueprintable)
 class ARTSPrototypeCharacter : public ACharacter, public ISelectable, public ICommandable, public IFactionsUtils
@@ -49,6 +51,7 @@ protected:
 	void LoadData() const;
 	UCharacterData* GetCharacterData() const;
 	UMaterialInstance* GetHighlightMaterial() const;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Data, meta=(AllowedTypes="CharacterData"))
 	FPrimaryAssetId CharacterDataAssetId;
 	/** End Data Management**/
@@ -56,14 +59,19 @@ protected:
 	/**Statistics and Settings **/
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	float AttackValue;
+
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	float MaxHealth;
+
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	float Health;
+
 	UPROPERTY(BlueprintReadOnly,  meta = (AllowPrivateAccess = "true"))
 	int GoldEstractionCapacity;
+
 	UPROPERTY(BlueprintReadOnly,  meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* AttackMontage;
+
 	UPROPERTY(BlueprintReadOnly,  meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* MiningMontage;
 	//Unit Data Asset
@@ -137,11 +145,18 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Settings", meta=(AllowPrivateAccess="true"))
 	UBehaviorTree* Tree;
 	//Delegate variable. it can be called by blueprint
+
 	UPROPERTY(BlueprintAssignable, Category = "Events")
 	FOnDamageTaken OnDamageTakenEvent;
 
 	UPROPERTY(BlueprintAssignable, Category = "Events")
 	FOnUnitSelected OnUnitSelected;
+
+	UPROPERTY(BlueprintAssignable, Category = "Events")
+	FOnOrderChanged OnOrderChanged;
+
+	UPROPERTY(BlueprintAssignable, Category = "Events")
+	FOnGoldEstracted OnGoldEstracted;
 	
 	UFUNCTION()
 	void DestroyCharacter();

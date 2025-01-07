@@ -367,11 +367,11 @@ void ARTSPrototypeCharacter::SetCurrentFaction(EFaction NewFaction)
 
 void ARTSPrototypeCharacter::MoveToDestination(const FVector Destination)
 {
-	//UE_LOG(LogTemp, Warning, TEXT("il pawn chiede al Controller di muoverlo"));
 	//get the pawn AI controller
 	if (ASAIController* AIController = Cast<ASAIController>(GetController()))
 	{
 		AIController->NavigateToDestination(Destination);
+		OnOrderChanged.Broadcast(EUnitState::MovingToDestination);
 	}
 	else
 	{
@@ -415,6 +415,7 @@ void ARTSPrototypeCharacter::ChaseTarget(AActor* TargetActor)
 	if (ASAIController* AIController = Cast<ASAIController>(GetController()))
 	{
 		AIController->ChaseAndAttackTarget(TargetActor);
+		OnOrderChanged.Broadcast(EUnitState::AttackingTarget);
 	}
 }
 
@@ -429,6 +430,7 @@ void ARTSPrototypeCharacter::StartMiningGold(AActor* Target)
 	if (ASAIController* AIController = Cast<ASAIController>(GetController()))
 	{
 		AIController->StartMiningGold(Target);
+		OnOrderChanged.Broadcast(EUnitState::MiningGold);
 	}
 }
 
@@ -472,7 +474,7 @@ void ARTSPrototypeCharacter::EstractGoldFromMine(AActor* Target)
 					{
 						if (AGoldMine* TargetGoldMine = Cast<AGoldMine>(TargetObject))
 						{
-							//TO DO : modificare questa parte per trasferire l'oro al suo proprietario (azinche al giocatore)
+							OnGoldEstracted.Broadcast(TargetGoldMine->GetGoldEstractionAmount());
 							TargetGoldMine->EstractGold();
 						}
 					}
