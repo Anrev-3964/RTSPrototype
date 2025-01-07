@@ -80,7 +80,7 @@ void ARTSPrototypeCharacter::AssignUnitStatsFromDataAsset()
 	AttackValue = UnitData->GetAttack();
 	AttackMontage = UnitData->GetAttackMontage();
 	MiningMontage = UnitData->GetMiningMontage();
-	CanMineGold = UnitData->GetCanMineGold();
+	bCanMine = UnitData->GetCanMineGold();
 	GoldEstractionCapacity = UnitData->GetGoldEstractionCapacity();
 	
 	if (UCharacterMovementComponent* MovementComponent = GetCharacterMovement())
@@ -137,6 +137,7 @@ void ARTSPrototypeCharacter::Select()
 {
 	bSelected = true;
 	Highlight(bSelected);
+	OnUnitSelected.Broadcast(bSelected);
 	if (UnitData)
 	{
 		if (UnitData->GetName() == TEXT("Peone"))
@@ -158,6 +159,7 @@ void ARTSPrototypeCharacter::DeSelect()
 {
 	bSelected = false;
 	Highlight(bSelected);
+	OnUnitSelected.Broadcast(bSelected);
 	if (UnitData)
 	{
 		if (UnitData->GetName() == TEXT("Peone"))
@@ -423,7 +425,7 @@ void ARTSPrototypeCharacter::StartMiningGold(AActor* Target)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, "l'unita ha ricevuto l'ordine di raccogliere l'oro");
 	}
-	if (!CanMineGold) return;
+	if (!bCanMine) return;
 	if (ASAIController* AIController = Cast<ASAIController>(GetController()))
 	{
 		AIController->StartMiningGold(Target);

@@ -18,7 +18,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBuildStarted,  ABuildable*, Build
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnBuildDestroyed);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnMyEventTriggered);
 UCLASS()
-class RTSPROTOTYPE_API ABuildable : public AActor
+class RTSPROTOTYPE_API ABuildable : public AActor,public IFactionsUtils, public ISelectable
 {
 	GENERATED_BODY()
 	
@@ -32,6 +32,9 @@ public:
 	void UpdateOverlayMaterial(const bool bCanPlace = true) const;
 	
 	FOnBuildCompleteEvent OnBuildCompleteEvent;
+	FOnBuildStarted OnBuildStarted;
+	UPROPERTY(BlueprintAssignable, Category = "Events")
+	FOnMyEventTriggered OnMyEventTriggered;
 
 protected:
 	// Called when the game starts or when spawned
@@ -44,28 +47,65 @@ protected:
 	void SetOverlayMaterial();
 	void UpdateBuildProgressionMesh();
 	void UpdateBuildProgression();
+	ARTSPlayerState* GetOwnerPlayerState() const;
+	UBuildItemDataAsset* GetBuildData() const;
+	UMaterialInstance* GetHighlightMaterial() const;
+
+	/**ISelectable **/
+	void Select();
+	void DeSelect();
+	void Highlight(bool Highlight);
+
+	/**IFaction Utils **/
+	UFUNCTION()
+	virtual void SetCurrentFaction(EFaction NewFaction) override;
 
 	UPROPERTY()
 	UAssetManager* AssetManager;
-	UPROPERTY()
+
+	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="BuildData")
 	UBuildItemDataAsset* BuildData;
+
 	UPROPERTY()
 	float BuildProgression = 0.0f;
+
+	UPROPERTY()
+	bool bBuildingConstructed = false;
+
+	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="BuildData")
+	bool bIsProducingUnit = false;
+	UPROPERTY()
+	bool bSelected = false;
+	
 	UPROPERTY()
 	FTimerHandle BuildTimer;
+	
+	
 	UPROPERTY()
 	TEnumAsByte<EBuildState> BuildState = EBuildState::NoBuild;
+
+	UPROPERTY()
+	EFaction  ECurrentFaction = {EFaction::Neutral};
 	UPROPERTY()
 	UMaterialInstanceDynamic* DynamicOverlayMaterial;
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	UBoxComponent* BoxCollider;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	UStaticMeshComponent* StaticMesh;
+
+	UPROPERTY()
+	ARTSPlayerState* OwnerPlayerState;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	bool GetBuildingConstructed();
 
+	/**IFaction Utils **/
+	UFUNCTION()
+	virtual EFaction GetFaction()const override;
+	
 };
 

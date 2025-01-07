@@ -78,7 +78,7 @@ void ABuildable::EndBuild()
 	if (BuildState != EBuildState::BuildComplete)
 	{
 		BuildState = BuildAborted;
-		BuildingConstructed = true;
+		bBuildingConstructed = true;
 	}
 
 	OnBuildCompleteEvent.Broadcast(BuildState);
@@ -174,7 +174,7 @@ ARTSPlayerState* ABuildable::GetOwnerPlayerState() const
 			{
 				if (IFactionsUtils* StateFaction = Cast<IFactionsUtils>(MyPlayerState))
 				{
-					if (StateFaction->GetFaction() == CurrentFaction)
+					if (StateFaction->GetFaction() == ECurrentFaction)
 					{
 						return MyPlayerState;
 					}
@@ -203,7 +203,7 @@ UMaterialInstance* ABuildable::GetHighlightMaterial() const
 
 EFaction ABuildable::GetFaction() const
 {
-	return CurrentFaction;
+	return ECurrentFaction;
 }
 
 void ABuildable::Select()
@@ -300,32 +300,17 @@ void ABuildable::Tick(float DeltaTime)
 
 bool ABuildable::GetBuildingConstructed()
 {
-	return BuildingConstructed;
+	return bBuildingConstructed;
 }
 
-EFaction ABuildable::GetFaction() const
-{
-	return CurrentFaction;
-}
 
 void ABuildable::SetCurrentFaction(EFaction NewFaction)
 {
-	if (CurrentFaction != NewFaction)
+	if (ECurrentFaction != NewFaction)
 	{
-		CurrentFaction = NewFaction;
+		ECurrentFaction = NewFaction;
 	}
 }
 
-void ABuildable::Select()
-{
-}
-
-void ABuildable::DeSelect()
-{
-}
-
-void ABuildable::Highlight(const bool Highlight)
-{
-}
 
 

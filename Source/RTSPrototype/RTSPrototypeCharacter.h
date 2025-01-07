@@ -16,6 +16,7 @@
 
 //Delegate
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDamageTaken);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnUnitSelected,bool, UnitSelected);
 
 UCLASS(Blueprintable)
 class ARTSPrototypeCharacter : public ACharacter, public ISelectable, public ICommandable, public IFactionsUtils
@@ -139,6 +140,9 @@ protected:
 	UPROPERTY(BlueprintAssignable, Category = "Events")
 	FOnDamageTaken OnDamageTakenEvent;
 
+	UPROPERTY(BlueprintAssignable, Category = "Events")
+	FOnUnitSelected OnUnitSelected;
+	
 	UFUNCTION()
 	void DestroyCharacter();
 };
