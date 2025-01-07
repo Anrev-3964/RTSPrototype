@@ -3,8 +3,7 @@
 
 #include "Buildings/Buildable.h"
 
-#include "SkeletonTreeBuilder.h"
-#include "Chaos/Deformable/MuscleActivationConstraints.h"
+#include "MaterialDomain.h"
 #include "Components/BoxComponent.h"
 #include "Framework/RTSPlayerState.h"
 #include "Framework/DataAssets/BuildItemDataAsset.h"
@@ -21,7 +20,8 @@ ABuildable::ABuildable()
 	BoxCollider = CreateDefaultSubobject<UBoxComponent>("BoxCollider");
 	RootComponent = BoxCollider;
 	BoxCollider->SetCollisionProfileName("OverlapAll");
-	
+	BoxCollider->SetGenerateOverlapEvents(true);
+
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>("StaticMesh");
 	StaticMesh->SetupAttachment(RootComponent);
 	StaticMesh->SetCollisionProfileName("OverlapAll");
@@ -35,7 +35,7 @@ void ABuildable::Init(UBuildItemDataAsset* BuildItemData, const TEnumAsByte<EBui
 	BuildState = NewBuildState;
 	BuildData = BuildItemData;
 
-	if (BuildState == EBuildState::Building)
+	if (BuildState == Building)
 	{
 		StartBuild();
 	}
@@ -47,7 +47,7 @@ void ABuildable::Init(UBuildItemDataAsset* BuildItemData, const TEnumAsByte<EBui
 
 void ABuildable::UpdateOverlayMaterial(const bool bCanPlace) const
 {
-	DynamicOverlayMaterial->SetScalarParameterValue("Status", bCanPlace? 1.0f:0.0f);
+	DynamicOverlayMaterial->SetScalarParameterValue("Status", bCanPlace ? 1.0f : 0.0f);
 }
 
 void ABuildable::InitBuildPreview()
@@ -68,7 +68,7 @@ void ABuildable::StartBuild()
 	UpdateBuildProgressionMesh();
 	GetWorldTimerManager().SetTimer(BuildTimer, this, &ABuildable::UpdateBuildProgression, 2.0f, true, 2.0f);
 
-	BuildState = EBuildState::Building;
+	BuildState = Building;
 	OnBuildStarted.Broadcast(this);
 }
 
@@ -77,8 +77,8 @@ void ABuildable::EndBuild()
 	GetWorldTimerManager().ClearTimer(BuildTimer);
 	if (BuildState != EBuildState::BuildComplete)
 	{
+		BuildState = BuildAborted;
 		BuildingConstructed = true;
-		BuildState = EBuildState::BuildAborted;
 	}
 
 	OnBuildCompleteEvent.Broadcast(BuildState);
@@ -145,14 +145,17 @@ void ABuildable::UpdateBuildProgressionMesh()
 void ABuildable::UpdateBuildProgression()
 {
 	if (!StaticMesh) return;
+	
 	BuildProgression += 1.0f / BuildData->BuildMeshes.Num();
 	if (BuildProgression > 1.0f)
 	{
 		if (UStaticMesh* DisplayMesh = BuildData->BuildingMeshComplete.LoadSynchronous())
 		{
 			StaticMesh->SetStaticMesh(DisplayMesh);
+			StaticMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+			StaticMesh->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 		}
-		BuildState = EBuildState::BuildComplete;
+		BuildState = BuildComplete;
 		EndBuild();
 	}
 	else
@@ -182,6 +185,105 @@ ARTSPlayerState* ABuildable::GetOwnerPlayerState() const
 	return nullptr;
 }
 
+UBuildItemDataAsset* ABuildable::GetBuildData() const
+{
+	return BuildData;
+}
+
+UMaterialInstance* ABuildable::GetHighlightMaterial() const
+{
+	if (const UBuildItemDataAsset* BuildItemData = GetBuildItemData())
+	{
+		const FSoftObjectPath AssetPath = BuildItemData->HighlightMaterial.ToSoftObjectPath();
+		return Cast<UMaterialInstance>(AssetPath.TryLoad());
+	}
+
+	return nullptr;
+}
+
+EFaction ABuildable::GetFaction() const
+{
+	return CurrentFaction;
+}
+
+void ABuildable::Select()
+{
+	bSelected = true;
+	UE_LOG(LogTemp, Warning, TEXT("BUILDING SELECTED"));
+	Highlight(bSelected);
+	OnMyEventTriggered.Broadcast();
+	
+}
+
+void ABuildable::DeSelect()
+{
+	bSelected = false;
+	Highlight(bSelected);
+	OnMyEventTriggered.Broadcast();
+}
+
+void ABuildable::Highlight(const bool Highlight)
+{
+	 TArray<UStaticMeshComponent*> StaticMeshComponents;
+    GetComponents<UStaticMeshComponent>(StaticMeshComponents);
+
+    for (UStaticMeshComponent* MeshComponent : StaticMeshComponents)
+    {
+        if (Highlight)
+        {
+            if (UMaterialInstance* HighlightMaterial = GetHighlightMaterial())
+            {
+                if (HighlightMaterial->GetMaterial()->MaterialDomain == MD_PostProcess)
+                {
+                    UE_LOG(LogTemp, Log, TEXT("Applying Custom Depth for post-process material"));
+
+                    TArray<UPrimitiveComponent*> PrimitiveComponents;
+                    GetComponents<UPrimitiveComponent>(PrimitiveComponents);
+
+                    for (UPrimitiveComponent* VisualComponent : PrimitiveComponents)
+                    {
+                        if (VisualComponent)
+                        {
+                            VisualComponent->SetRenderCustomDepth(true);
+                            UE_LOG(LogTemp, Log, TEXT("Enabled Custom Depth for %s"), *VisualComponent->GetName());
+                        }
+                    }
+                }
+                else
+                {
+                    MeshComponent->SetOverlayMaterial(HighlightMaterial);
+                    UE_LOG(LogTemp, Log, TEXT("Applied Overlay Material: %s to %s"), 
+                        *HighlightMaterial->GetName(), *MeshComponent->GetName());
+                }
+            }
+            else
+            {
+                UE_LOG(LogTemp, Warning, TEXT("Failed to get Highlight Material. Falling back."));
+            }
+        }
+        else
+        {
+            UE_LOG(LogTemp, Log, TEXT("Disabling highlight"));
+
+            // Disable overlay material
+            MeshComponent->SetOverlayMaterial(nullptr);
+            UE_LOG(LogTemp, Log, TEXT("Removed Overlay Material from %s"), *MeshComponent->GetName());
+
+            // Disable custom depth
+            TArray<UPrimitiveComponent*> PrimitiveComponents;
+            GetComponents<UPrimitiveComponent>(PrimitiveComponents);
+
+            for (UPrimitiveComponent* VisualComponent : PrimitiveComponents)
+            {
+                if (VisualComponent)
+                {
+                    VisualComponent->SetRenderCustomDepth(false);
+                    UE_LOG(LogTemp, Log, TEXT("Disabled Custom Depth for %s"), *VisualComponent->GetName());
+                }
+            }
+        }
+    }
+}
 
 // Called when the game starts or when spawned
 void ABuildable::BeginPlay()
@@ -194,7 +296,6 @@ void ABuildable::BeginPlay()
 void ABuildable::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 bool ABuildable::GetBuildingConstructed()

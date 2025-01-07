@@ -7,6 +7,7 @@
 #include "Core/SPlayerController.h"
 #include "UHudWidget.generated.h"
 
+class UButton;
 class UGameMenuWidget;
 /**
  * 
@@ -26,6 +27,8 @@ protected:
 	ASPlayerController* SPlayer;
 	UPROPERTY()
 	UWorld* WorldContext;
+
+public:
 	UPROPERTY()
 	UGameMenuWidget* GameMenuWidget;
 };

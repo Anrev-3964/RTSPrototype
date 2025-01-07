@@ -6,8 +6,10 @@
 
 #include "MaterialDomain.h"
 #include "Buildings/GoldMine.h"
+#include "RTSPrototypeGameMode.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Camera/CameraComponent.h"
+#include "Components/Button.h"
 #include "Components/CapsuleComponent.h"
 #include "Core/SAIController.h"
 #include "Engine/AssetManager.h"
@@ -17,6 +19,9 @@
 #include "Materials/Material.h"
 #include "Engine/World.h"
 #include "Framework/DataAssets/CharacterData.h"
+#include "Framework/HUD/CustomHUD.h"
+#include "Framework/HUD/GameMenuWidget.h"
+#include "Framework/HUD/UHudWidget.h"
 
 ARTSPrototypeCharacter::ARTSPrototypeCharacter()
 {
@@ -46,16 +51,15 @@ ARTSPrototypeCharacter::ARTSPrototypeCharacter()
 	TopDownCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("TopDownCamera"));
 	TopDownCameraComponent->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	TopDownCameraComponent->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
-	
+
 	// Activate ticking in order to update the cursor every frame.
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
-	
 }
 
 void ARTSPrototypeCharacter::Tick(float DeltaSeconds)
 {
-    Super::Tick(DeltaSeconds);
+	Super::Tick(DeltaSeconds);
 }
 
 void ARTSPrototypeCharacter::BeginPlay()
@@ -68,7 +72,9 @@ void ARTSPrototypeCharacter::BeginPlay()
 void ARTSPrototypeCharacter::AssignUnitStatsFromDataAsset()
 {
 	if (!UnitData)
+	{
 		return;
+	}
 	Health = UnitData->GetMaxHealth();
 	MaxHealth = UnitData->GetMaxHealth();
 	AttackValue = UnitData->GetAttack();
@@ -131,77 +137,147 @@ void ARTSPrototypeCharacter::Select()
 {
 	bSelected = true;
 	Highlight(bSelected);
+	if (UnitData)
+	{
+		if (UnitData->GetName() == TEXT("Peone"))
+		{
+			ManageBuildMenu(bSelected);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("Unit is not Peone!"));
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("CharacterDataAssetId is not valid!"));
+	}
 }
 
 void ARTSPrototypeCharacter::DeSelect()
 {
 	bSelected = false;
 	Highlight(bSelected);
+	if (UnitData)
+	{
+		if (UnitData->GetName() == TEXT("Peone"))
+		{
+			ManageBuildMenu(bSelected);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("Unit is not Peone!"));
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("CharacterDataAssetId is not valid!"));
+	}
 }
+
+void ARTSPrototypeCharacter::ManageBuildMenu(bool bIsSelected)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Entering ManageBuildMenu"));
+
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	if (PlayerController)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Found PlayerController in ManageBuildMenu"));
+
+		ACustomHUD* Hud = Cast<ACustomHUD>(PlayerController->GetHUD());
+		if (Hud && Hud->HUD)
+		{
+			if (Hud->HUD->GameMenuWidget)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Build button visibility should change"));
+				Hud->HUD->GameMenuWidget->SetVisibility(
+					bIsSelected ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
+			}
+			else
+			{
+				UE_LOG(LogTemp, Error, TEXT("Buildbutton is not valid in the GameMenuWidget!"));
+			}
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("GameMenuWidget is NOT valid"));
+			if (Hud)
+			{
+				UE_LOG(LogTemp, Error, TEXT("HudWidget is valid but GameMenuWidget is NULL"));
+			}
+			else
+			{
+				UE_LOG(LogTemp, Error, TEXT("HudWidget is NULL"));
+			}
+		}
+	}
+}
+
 
 void ARTSPrototypeCharacter::Highlight(const bool Highlight)
 {
 TArray<USkeletalMeshComponent*> SkeletalComponents;
 GetComponents<USkeletalMeshComponent>(SkeletalComponents);
 
-for (int32 i = 0; i < SkeletalComponents.Num(); i++)
-{
-    if (Highlight)
-    {
-        if (UMaterialInstance* HighlightMaterial = GetHighlightMaterial())
-        {
-            if (HighlightMaterial->GetMaterial()->MaterialDomain == MD_PostProcess)
-            {
-                UE_LOG(LogTemp, Log, TEXT("Applying Custom Depth for post-process material"));
+	for (int32 i = 0; i < SkeletalComponents.Num(); i++)
+	{
+		if (Highlight)
+		{
+			if (UMaterialInstance* HighlightMaterial = GetHighlightMaterial())
+			{
+				if (HighlightMaterial->GetMaterial()->MaterialDomain == MD_PostProcess)
+				{
+					UE_LOG(LogTemp, Log, TEXT("Applying Custom Depth for post-process material"));
 
-                TArray<UPrimitiveComponent*> PrimitiveComponents;
-                GetComponents<UPrimitiveComponent>(PrimitiveComponents);
+					TArray<UPrimitiveComponent*> PrimitiveComponents;
+					GetComponents<UPrimitiveComponent>(PrimitiveComponents);
 
-                for (UPrimitiveComponent* VisualComponent : PrimitiveComponents)
-                {
-                    if (VisualComponent)
-                    {
-                        VisualComponent->SetRenderCustomDepth(true);
-                        UE_LOG(LogTemp, Log, TEXT("Enabled Custom Depth for %s"), *VisualComponent->GetName());
-                    }
-                }
-            }
-            else
-            {
-                SkeletalComponents[i]->SetOverlayMaterial(HighlightMaterial);
-                UE_LOG(LogTemp, Log, TEXT("Applied Overlay Material: %s to %s"), *HighlightMaterial->GetName(), *SkeletalComponents[i]->GetName());
-            }
-        }
-        else
-        {
-            UE_LOG(LogTemp, Warning, TEXT("Failed to get Highlight Material. Falling back."));
-        }
-    }
-    else
-    {
-        UE_LOG(LogTemp, Log, TEXT("Disabling highlight"));
+					for (UPrimitiveComponent* VisualComponent : PrimitiveComponents)
+					{
+						if (VisualComponent)
+						{
+							VisualComponent->SetRenderCustomDepth(true);
+							UE_LOG(LogTemp, Log, TEXT("Enabled Custom Depth for %s"), *VisualComponent->GetName());
+						}
+					}
+				}
+				else
+				{
+					SkeletalComponents[i]->SetOverlayMaterial(HighlightMaterial);
+					UE_LOG(LogTemp, Log, TEXT("Applied Overlay Material: %s to %s"), *HighlightMaterial->GetName(),
+					       *SkeletalComponents[i]->GetName());
+				}
+			}
+			else
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Failed to get Highlight Material. Falling back."));
+			}
+		}
+		else
+		{
+			UE_LOG(LogTemp, Log, TEXT("Disabling highlight"));
 
-        // Disable overlay material
-        if (SkeletalComponents[i])
-        {
-            SkeletalComponents[i]->SetOverlayMaterial(nullptr);
-            UE_LOG(LogTemp, Log, TEXT("Removed Overlay Material from %s"), *SkeletalComponents[i]->GetName());
-        }
+			// Disable overlay material
+			if (SkeletalComponents[i])
+			{
+				SkeletalComponents[i]->SetOverlayMaterial(nullptr);
+				UE_LOG(LogTemp, Log, TEXT("Removed Overlay Material from %s"), *SkeletalComponents[i]->GetName());
+			}
 
-        // Disable custom depth
-        TArray<UPrimitiveComponent*> PrimitiveComponents;
-        GetComponents<UPrimitiveComponent>(PrimitiveComponents);
+			// Disable custom depth
+			TArray<UPrimitiveComponent*> PrimitiveComponents;
+			GetComponents<UPrimitiveComponent>(PrimitiveComponents);
 
-        for (UPrimitiveComponent* VisualComponent : PrimitiveComponents)
-        {
-            if (VisualComponent)
-            {
-                VisualComponent->SetRenderCustomDepth(false);
-                UE_LOG(LogTemp, Log, TEXT("Disabled Custom Depth for %s"), *VisualComponent->GetName());
-            }
-        }
-    }
-}
+			for (UPrimitiveComponent* VisualComponent : PrimitiveComponents)
+			{
+				if (VisualComponent)
+				{
+					VisualComponent->SetRenderCustomDepth(false);
+					UE_LOG(LogTemp, Log, TEXT("Disabled Custom Depth for %s"), *VisualComponent->GetName());
+				}
+			}
+		}
+	}
 }
 
 FString ARTSPrototypeCharacter::GetFactionName() const
@@ -294,6 +370,10 @@ void ARTSPrototypeCharacter::MoveToDestination(const FVector Destination)
 	if (ASAIController* AIController = Cast<ASAIController>(GetController()))
 	{
 		AIController->NavigateToDestination(Destination);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("AIController not found for this Pawn!"));
 	}
 }
 

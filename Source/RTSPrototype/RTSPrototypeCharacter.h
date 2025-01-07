@@ -18,7 +18,7 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDamageTaken);
 
 UCLASS(Blueprintable)
-class ARTSPrototypeCharacter : public ACharacter, public ISelectable, public  ICommandable, public IFactionsUtils
+class ARTSPrototypeCharacter : public ACharacter, public ISelectable, public ICommandable, public IFactionsUtils
 {
 	GENERATED_BODY()
 
@@ -57,10 +57,8 @@ protected:
 	float AttackValue;
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	float MaxHealth;
-	UPROPERTY(BlueprintReadOnly,  meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	float Health;
-	UPROPERTY(BlueprintReadOnly,  meta = (AllowPrivateAccess = "true"))
-	bool CanMineGold;
 	UPROPERTY(BlueprintReadOnly,  meta = (AllowPrivateAccess = "true"))
 	int GoldEstractionCapacity;
 	UPROPERTY(BlueprintReadOnly,  meta = (AllowPrivateAccess = "true"))
@@ -68,13 +66,17 @@ protected:
 	UPROPERTY(BlueprintReadOnly,  meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* MiningMontage;
 	//Unit Data Asset
-	UPROPERTY(EditAnywhere,Category = "Unit Stats")
+	UPROPERTY(EditAnywhere, Category = "Unit Stats")
 	UUnitData* UnitData;
+
+	bool bCanMine = false;
 
 	UFUNCTION()
 	void AssignUnitStatsFromDataAsset();
-public:
+	UFUNCTION()
+	void ManageBuildMenu(bool bIsSelected);
 
+public:
 	/**ISelectable Interface**/
 	virtual void Select() override;
 	virtual void DeSelect() override;
@@ -131,7 +133,7 @@ public:
 
 protected:
 	//must be set in editor
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Settings",meta=(AllowPrivateAccess="true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Settings", meta=(AllowPrivateAccess="true"))
 	UBehaviorTree* Tree;
 	//Delegate variable. it can be called by blueprint
 	UPROPERTY(BlueprintAssignable, Category = "Events")

@@ -28,7 +28,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings|UI")
 	TSubclassOf<UUserWidget> HudClass;
 
-
+public:
 	UPROPERTY()
 	UUHudWidget* HUD;
 
