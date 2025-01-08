@@ -30,6 +30,8 @@ public:
 	FText TitleText;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Configuration")
 	TSoftObjectPtr<UTexture2D> Image;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Configuration")
+	int BuildID;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Classes")
 	TSoftClassPtr<AActor> BuildClass;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Classes")
