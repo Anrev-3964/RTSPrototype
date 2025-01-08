@@ -11,7 +11,7 @@ enum EBuildAssetFilter
 	Filter2
 };
 
-UENUM()
+UENUM(BlueprintType)
 enum EBuildState
 {
 	NoBuild,

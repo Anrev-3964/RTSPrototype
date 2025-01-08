@@ -30,7 +30,8 @@ public:
 	void Init(UBuildItemDataAsset* BuildItemData, const TEnumAsByte<EBuildState> NewBuildState = EBuildState::NoBuild);
 	UBuildItemDataAsset* GetBuildItemData() const {return BuildData;}
 	void UpdateOverlayMaterial(const bool bCanPlace = true) const;
-	
+
+	UPROPERTY(BlueprintAssignable)
 	FOnBuildCompleteEvent OnBuildCompleteEvent;
 	FOnBuildStarted OnBuildStarted;
 	UPROPERTY(BlueprintAssignable, Category = "Events")
