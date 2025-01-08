@@ -120,10 +120,15 @@ void AGoldMine::MineStarted(ABuildable* Buildable)
 		
 		if (UBuildItemDataAsset* BuildItemDataAsset = Buildable->GetBuildItemData())
 		{
+			/**
 			TSoftObjectPtr<UStaticMesh> NewMesh = BuildItemDataAsset->BuildingMeshComplete;
 			CompletedMineMesh = NewMesh;
 			Buildable->OnBuildCompleteEvent.AddDynamic(this, &AGoldMine::MineCompleted);
 			Buildable->SetActorLocation(GetActorLocation());
+			**/
+			Buildable->OnBuildCompleteEvent.AddDynamic(this, &AGoldMine::MineCompleted);
+			Buildable->SetActorLocation(GetActorLocation());
+			BuildingActorCompleteClass =  BuildItemDataAsset->BuildingActorComplete;
 		}
 
 		NewOwnerFaction = Buildable->GetFaction();
@@ -133,7 +138,8 @@ void AGoldMine::MineStarted(ABuildable* Buildable)
 void AGoldMine:: MineCompleted(const TEnumAsByte<EBuildState> BuildState)
 {
 	CurrentFaction = NewOwnerFaction;
-	
+
+	/**
 	if (StaticMesh && CompletedMineMesh.IsValid())
 	{
 		UStaticMesh* LoadedMesh = CompletedMineMesh.Get();
@@ -147,8 +153,10 @@ void AGoldMine:: MineCompleted(const TEnumAsByte<EBuildState> BuildState)
 		{
 			StaticMesh->SetStaticMesh(LoadedMesh);
 		}
+	
 	}
-
+	**/
+	SetStaticMeshFromActor();
 	OwnerPlayerState = GetOwnerPlayerState();
 	
 }
@@ -186,6 +194,57 @@ int AGoldMine::GetGoldEstractionAmount()
 		return GoldEstractAmount;
 	}
 	return 1;
+}
+
+void AGoldMine::SetStaticMeshFromActor()
+{
+	if (!BuildingActorCompleteClass) return;
+
+	// load Actor from soft pointer
+
+	//instantiate Actor
+	AActor* BuildingActorComplete = GetWorld()->SpawnActor<AActor>(BuildingActorCompleteClass);
+	if (!BuildingActorComplete) return;
+	TArray<UStaticMeshComponent*> PreviewComponents;
+	GetComponents<UStaticMeshComponent>(PreviewComponents);
+
+	for (UStaticMeshComponent* Comp : PreviewComponents)
+	{
+		if (Comp && Comp != StaticMesh)
+		{
+			Comp->DestroyComponent();
+		}
+	}
+
+	// Get al  UStaticMeshComponent from BuildingActorComplete
+	TArray<UStaticMeshComponent*> MeshComponents;
+	BuildingActorComplete->GetComponents<UStaticMeshComponent>(MeshComponents);
+	
+	for (UStaticMeshComponent* MeshComp : MeshComponents)
+	{
+		if (MeshComp && MeshComp->GetStaticMesh())
+		{
+			// For every UStaticMeshComponent in ABuildingActorComplete, create a new mesh 
+			UStaticMeshComponent* NewPreviewComp = NewObject<UStaticMeshComponent>(this);
+			if (NewPreviewComp)
+			{
+				NewPreviewComp->SetStaticMesh(MeshComp->GetStaticMesh());
+				NewPreviewComp->SetRelativeTransform(MeshComp->GetRelativeTransform());
+				FVector NewScale(0.5f, 0.5f, 0.5f); // Scala su tutti gli assi X, Y e Z
+				NewPreviewComp->SetRelativeScale3D(NewScale);
+				NewPreviewComp->AttachToComponent(BoxCollider, FAttachmentTransformRules::KeepRelativeTransform);
+
+				NewPreviewComp->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
+				
+				NewPreviewComp->SetCollisionResponseToChannel(ECC_Camera, ECR_Block);
+				
+				NewPreviewComp->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Ignore);
+				
+				NewPreviewComp->RegisterComponent();
+			}
+		}
+	}
+	BuildingActorComplete->Destroy();
 }
 
 void AGoldMine::Select()

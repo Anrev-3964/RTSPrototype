@@ -52,14 +52,63 @@ void ABuildable::UpdateOverlayMaterial(const bool bCanPlace) const
 
 void ABuildable::InitBuildPreview()
 {
-	if (!StaticMesh || !BuildData || !BoxCollider) return;
+	if (!BuildData || !BoxCollider) return;
 
-	if (UStaticMesh* PreviewMesh = BuildData->BuildingMeshComplete.LoadSynchronous())
+	// load Actor from soft pointer
+	TSubclassOf<AActor> BuildingActorClass = BuildData->BuildingActorComplete;
+	if (!BuildingActorClass) return;
+
+	//instantiate Actor
+	AActor* BuildingActorComplete = GetWorld()->SpawnActor<AActor>(BuildingActorClass);
+	if (!BuildingActorComplete) return;
+
+	// remove already existing meshComponents
+	TArray<UStaticMeshComponent*> PreviewComponents;
+	GetComponents<UStaticMeshComponent>(PreviewComponents);
+
+	for (UStaticMeshComponent* Comp : PreviewComponents)
 	{
-		StaticMesh->SetStaticMesh(PreviewMesh);
-		UpdateCollider();
-		SetOverlayMaterial();
+		if (Comp && Comp != StaticMesh)
+		{
+			Comp->DestroyComponent();
+		}
 	}
+
+	// Get al  UStaticMeshComponent from BuildingActorComplete
+	TArray<UStaticMeshComponent*> MeshComponents;
+	BuildingActorComplete->GetComponents<UStaticMeshComponent>(MeshComponents);
+
+	for (UStaticMeshComponent* MeshComp : MeshComponents)
+	{
+		if (MeshComp && MeshComp->GetStaticMesh())
+		{
+			// For every UStaticMeshComponent in ABuildingActorComplete, create a new mesh 
+			UStaticMeshComponent* NewPreviewComp = NewObject<UStaticMeshComponent>(this);
+			if (NewPreviewComp)
+			{
+				NewPreviewComp->SetStaticMesh(MeshComp->GetStaticMesh());
+				NewPreviewComp->SetRelativeTransform(MeshComp->GetRelativeTransform());
+				NewPreviewComp->AttachToComponent(BoxCollider, FAttachmentTransformRules::KeepRelativeTransform);
+
+				NewPreviewComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+				
+				NewPreviewComp->RegisterComponent();
+			}
+		}
+	}
+
+	/**
+	// Imposta il primo StaticMesh per la preview principale (se necessario)
+	if (StaticMesh && MeshComponents.Num() > 0 && MeshComponents[0]->GetStaticMesh())
+	{
+		StaticMesh->SetStaticMesh(MeshComponents[0]->GetStaticMesh());
+	}
+	**/
+
+	// Aggiorna il collider e il materiale di overlay
+	BuildingActorComplete->Destroy();
+	UpdateCollider();
+	SetOverlayMaterial();
 }
 
 void ABuildable::StartBuild()
@@ -149,12 +198,32 @@ void ABuildable::UpdateBuildProgression()
 	BuildProgression += 1.0f / BuildData->BuildMeshes.Num();
 	if (BuildProgression > 1.0f)
 	{
+		TSubclassOf<AActor> BuildingActorClass = BuildData->BuildingActorComplete;
+		if (BuildingActorClass)
+		{
+			// Spawna l'attore come figlio dell'attore corrente
+			FActorSpawnParameters SpawnParams;
+			SpawnParams.Owner = this;
+			SpawnParams.Instigator = GetInstigator();
+
+			FTransform SpawnTransform = GetActorTransform(); // Posizione e orientamento dell'attore corrente
+			WeakActorPtr = GetWorld()->SpawnActor<AActor>(BuildingActorClass, SpawnTransform, SpawnParams);
+
+			if (WeakActorPtr.IsValid())
+			{
+				AActor* ValidActor = WeakActorPtr.Get();
+				ValidActor->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
+			}
+		}
+		
+		/**
 		if (UStaticMesh* DisplayMesh = BuildData->BuildingMeshComplete.LoadSynchronous())
 		{
 			StaticMesh->SetStaticMesh(DisplayMesh);
 			StaticMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 			StaticMesh->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 		}
+		**/
 		BuildState = BuildComplete;
 		EndBuild();
 	}
@@ -303,6 +372,14 @@ bool ABuildable::GetBuildingConstructed()
 	return bBuildingConstructed;
 }
 
+AActor* ABuildable::GetActor()
+{
+	if (WeakActorPtr.IsValid())
+	{
+		return WeakActorPtr.Get();
+	}
+	return nullptr;  // Restituisce nullptr se il puntatore è non valido
+}
 
 void ABuildable::SetCurrentFaction(EFaction NewFaction)
 {

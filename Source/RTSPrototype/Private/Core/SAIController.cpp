@@ -236,10 +236,6 @@ void ASAIController::StartMiningGold(AActor* TargetActor)
 {
 	if (TargetActor)
 	{
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, "l'AI controller ha ricevuto l'ordine->passa le informazioni al behaivor tree");
-		}
 		Target = TargetActor;
 		if (UBlackboardComponent* BlackboardComponent = GetBlackboardComponent())
 		{

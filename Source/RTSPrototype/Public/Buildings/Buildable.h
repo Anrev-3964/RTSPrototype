@@ -68,6 +68,9 @@ protected:
 	UBuildItemDataAsset* BuildData;
 
 	UPROPERTY()
+	TWeakObjectPtr<AActor> WeakActorPtr;
+
+	UPROPERTY()
 	float BuildProgression = 0.0f;
 
 	UPROPERTY()
@@ -103,6 +106,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	bool GetBuildingConstructed();
+	AActor* GetActor();
 
 	/**IFaction Utils **/
 	UFUNCTION()

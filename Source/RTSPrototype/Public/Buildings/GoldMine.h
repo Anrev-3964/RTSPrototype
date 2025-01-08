@@ -54,7 +54,10 @@ private:
 
 	UPROPERTY()
 	TSoftObjectPtr<UStaticMesh> CompletedMineMesh;
-	
+
+	UPROPERTY()
+	TSubclassOf<AActor> BuildingActorCompleteClass;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	USceneComponent* RootComponentIntermediate;
 
@@ -86,6 +89,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	int GetGoldEstractionAmount();
+	void SetStaticMeshFromActor();
 
 	/** ISelecatbleInterface UNUSED FOR NOW**/
 	UFUNCTION()

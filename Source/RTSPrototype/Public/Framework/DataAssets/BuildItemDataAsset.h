@@ -44,6 +44,8 @@ public:
 	TArray<TSoftObjectPtr<UStaticMesh>> BuildMeshes;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Configuration")
 	TSoftObjectPtr<UStaticMesh> BuildingMeshComplete;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Configuration")
+	TSubclassOf<AActor> BuildingActorComplete;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Selection")
 	TSoftObjectPtr<UMaterialInstance> PlaceMaterial;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Selection")
