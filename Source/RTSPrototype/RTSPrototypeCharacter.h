@@ -67,7 +67,7 @@ protected:
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* AttackMontage;
 	//Unit Data Asset
-	UPROPERTY(EditAnywhere, Category = "Unit Stats")
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Unit Stats")
 	UUnitData* UnitData;
 
 	bool bCanMine = false;
