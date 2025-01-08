@@ -137,7 +137,12 @@ void AGoldMine::MineStarted(ABuildable* Buildable)
 
 void AGoldMine:: MineCompleted(const TEnumAsByte<EBuildState> BuildState)
 {
+	FTimerHandle TimerHandle;
+	//GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AGoldMine::SetStaticMeshFromActor, 0.5f, false);
+	MineCurrentLevel++;
+	SetStaticMeshFromActor();
 	CurrentFaction = NewOwnerFaction;
+	OwnerPlayerState = GetOwnerPlayerState();
 
 	/**
 	if (StaticMesh && CompletedMineMesh.IsValid())
@@ -156,9 +161,6 @@ void AGoldMine:: MineCompleted(const TEnumAsByte<EBuildState> BuildState)
 	
 	}
 	**/
-	SetStaticMeshFromActor();
-	OwnerPlayerState = GetOwnerPlayerState();
-	
 }
 //NOTA : pe rora la quantita di oro estraibile non diminuisce a dogni estrazione
 void AGoldMine::EstractGold()
@@ -204,7 +206,28 @@ void AGoldMine::SetStaticMeshFromActor()
 
 	//instantiate Actor
 	AActor* BuildingActorComplete = GetWorld()->SpawnActor<AActor>(BuildingActorCompleteClass);
+
 	if (!BuildingActorComplete) return;
+
+	//Call an event form blueprint
+
+	FName EventName("SetTierMeshes");
+
+	//Find The vent to call
+	if (UFunction* EventFunction = BuildingActorComplete->FindFunction(EventName))
+	{
+
+		struct FCustomEventParams
+		{
+			int NewTier = 1; 
+		};
+		
+		FCustomEventParams Params;
+		Params.NewTier = MineCurrentLevel;
+		
+		BuildingActorComplete->ProcessEvent(EventFunction, &Params);
+	}
+	
 	TArray<UStaticMeshComponent*> PreviewComponents;
 	GetComponents<UStaticMeshComponent>(PreviewComponents);
 
@@ -216,7 +239,7 @@ void AGoldMine::SetStaticMeshFromActor()
 		}
 	}
 
-	// Get al  UStaticMeshComponent from BuildingActorComplete
+	// Get all  UStaticMeshComponent from BuildingActorComplete
 	TArray<UStaticMeshComponent*> MeshComponents;
 	BuildingActorComplete->GetComponents<UStaticMeshComponent>(MeshComponents);
 	
@@ -249,10 +272,16 @@ void AGoldMine::SetStaticMeshFromActor()
 
 void AGoldMine::Select()
 {
+	OnSelect.Broadcast();
 }
 
 void AGoldMine::DeSelect()
 {
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, "Miniera deselezionata (c++)");
+	}
+	OnDeselect.Broadcast();
 }
 
 void AGoldMine::Highlight(const bool Highlight)

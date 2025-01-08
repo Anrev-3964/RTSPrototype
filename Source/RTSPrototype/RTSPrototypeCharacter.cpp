@@ -363,6 +363,7 @@ EFaction ARTSPrototypeCharacter::GetFaction() const
 
 void ARTSPrototypeCharacter::SetCurrentFaction(EFaction NewFaction)
 {
+	
 }
 
 void ARTSPrototypeCharacter::MoveToDestination(const FVector Destination)

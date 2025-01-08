@@ -14,9 +14,11 @@
 #include "Framework/DataAssets/BuildData.h"
 #include "GoldMine.generated.h"
 
-/**
- * 
- */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnMineUpgradedStart);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnMineUpgradedEnd);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSelected);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDeselect);
 UCLASS()
 class RTSPROTOTYPE_API AGoldMine : public AActor,public IFactionsUtils,public ISelectable,public IITriggerBoxArea
 {
@@ -27,20 +29,24 @@ public:
 	void SetMineFromDataAsset();
 
 private:
-	UPROPERTY()  
+	UPROPERTY(BlueprintReadOnly,Category = "Variables",meta = (AllowPrivateAccess = "true"))  
 	EFaction CurrentFaction = {EFaction::Neutral};
 
 	UPROPERTY()  
 	EFaction NewOwnerFaction = {EFaction::Neutral};
 	
-	
 	UPROPERTY(EditDefaultsOnly, Category = "Mine Settings",meta = (Tooltip = "La quantita di oro estraibile dalla miniera (default : 1000)"))
 	int16  GoldAmount;
+	
 	UPROPERTY()
 	int CurrentGoldAmount;
 
 	UPROPERTY()
 	int GoldEstractAmount = {5};
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	int  MineCurrentLevel = {0};
+	
 	UPROPERTY()
 	ARTSPlayerState* OwnerPlayerState;
 
@@ -55,10 +61,16 @@ private:
 
 	UPROPERTY()
 	TSubclassOf<AActor> BuildingActorCompleteClass;
+	
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	USceneComponent* RootComponentIntermediate;
 
+	UPROPERTY(BlueprintAssignable, Category = "Events", meta = (AllowPrivateAccess = "true"))
+	FOnSelected OnSelect;
+
+	UPROPERTY(BlueprintAssignable, Category = "Events", meta = (AllowPrivateAccess = "true"))
+	FOnDeselect OnDeselect;
 public:
 	UFUNCTION()
 	int GetGoldAmount() const ;
