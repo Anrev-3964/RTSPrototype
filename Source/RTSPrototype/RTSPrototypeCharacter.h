@@ -14,6 +14,7 @@
 #include "Core/UnitData.h"
 #include "RTSPrototypeCharacter.generated.h"
 
+class UTexture;
 //Delegate
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDamageTaken);
 
@@ -59,6 +60,10 @@ protected:
 	float MaxHealth;
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	float Health;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	float SpawnDelay;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UTexture* UnitImage;
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* AttackMontage;
 	//Unit Data Asset
@@ -110,6 +115,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	float GetHealth() const;
+
+	UFUNCTION(BlueprintCallable)
+	float GetSpawnDelay() const;
 	/** GetFunctions**/
 
 	/** Set Functions**/

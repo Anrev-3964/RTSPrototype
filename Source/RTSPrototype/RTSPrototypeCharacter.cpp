@@ -77,6 +77,8 @@ void ARTSPrototypeCharacter::AssignUnitStatsFromDataAsset()
 	Health = UnitData->GetMaxHealth();
 	MaxHealth = UnitData->GetMaxHealth();
 	AttackValue = UnitData->GetAttack();
+	UnitImage = UnitData->GetImage();
+	SpawnDelay = UnitData->GetSpawnDelay();
 	AttackMontage = UnitData->GetAttackMontage();
 
 	if (UnitData->GetName() == "Peone")
@@ -323,6 +325,11 @@ UUnitData* ARTSPrototypeCharacter::GetUnitData() const
 float ARTSPrototypeCharacter::GetHealth() const
 {
 	return Health;
+}
+
+float ARTSPrototypeCharacter::GetSpawnDelay() const
+{
+	return SpawnDelay;
 }
 
 void ARTSPrototypeCharacter::SetHealth(const float NewHealth)
