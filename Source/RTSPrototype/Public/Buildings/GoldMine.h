@@ -32,9 +32,7 @@ private:
 
 	UPROPERTY()  
 	EFaction NewOwnerFaction = {EFaction::Neutral};
-
-	UPROPERTY(EditAnywhere, Category = "Data")
-	UGoldMineData* GoldMineData;
+	
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Mine Settings",meta = (Tooltip = "La quantita di oro estraibile dalla miniera (default : 1000)"))
 	int16  GoldAmount;
@@ -66,7 +64,11 @@ public:
 	int GetGoldAmount() const ;
 	UFUNCTION()
 	int GetCurrentGoldAmount() const;
+
+	UPROPERTY(EditAnywhere,BlueprintReadOnly ,Category = "Data")
+	UGoldMineData* GoldMineData;
 	
+
 	/**IFactionUtils Interface**/
 	virtual EFaction GetFaction()const override;
 	virtual void SetCurrentFaction(EFaction NewFaction) override;

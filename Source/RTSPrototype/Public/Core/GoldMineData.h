@@ -23,6 +23,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Mine Settings")
 	float GetMineGoldAmount() const;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Configuration")
+	TSoftObjectPtr<UTexture2D> Image;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Configuration")
+	FText TitleText;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh")
 	TSoftObjectPtr<UStaticMesh> MeshReference;
 };

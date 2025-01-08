@@ -16,6 +16,7 @@
 
 //Delegate
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDamageTaken);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAttack);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnUnitSelected,bool, UnitSelected);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnOrderChanged,EUnitState, NewOrder);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGoldEstracted,int, GoldEstracted);
@@ -31,10 +32,6 @@ public:
 	// Called every frame.
 	virtual void Tick(float DeltaSeconds) override;
 
-	/** Returns TopDownCameraComponent subobject **/
-	FORCEINLINE class UCameraComponent* GetTopDownCameraComponent() const { return TopDownCameraComponent; }
-	/** Returns CameraBoom subobject **/
-	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 
 private:
 	/** Top down camera */
@@ -149,6 +146,9 @@ protected:
 	UPROPERTY(BlueprintAssignable, Category = "Events")
 	FOnDamageTaken OnDamageTakenEvent;
 
+	UPROPERTY(BlueprintAssignable, Category = "Events")
+	FOnAttack OnAttack;
+	
 	UPROPERTY(BlueprintAssignable, Category = "Events")
 	FOnUnitSelected OnUnitSelected;
 
