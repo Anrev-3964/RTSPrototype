@@ -20,6 +20,7 @@ class RTSPROTOTYPE_API ARTSPlayerState : public APlayerState,public IFactionsUti
 
 public:
 	void AddGold(int GoldGained);
+	UFUNCTION(BlueprintCallable)
 	void RemoveGold(int GoldSpent);
 	int GetGold() { return Gold; };
 

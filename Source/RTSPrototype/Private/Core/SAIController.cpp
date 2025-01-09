@@ -13,30 +13,27 @@
 
 ASAIController::ASAIController(FObjectInitializer const& FObjectInitializer)
 {
-	//AIPerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AI Perception Component"));	
+	// Crea e associa il componente di percezione
+	AIPerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AIPerceptionComponent"));
 
-	/**
-	UAISenseConfig_Sight* AISightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("SightConfig"));
-
-	if (AIPerceptionComponent && AISightConfig)
+	// Configura il senso di vista
+	SightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("SightConfig"));
+	if (SightConfig)
 	{
-		// Imposta il senso visivo come principale
-		AIPerceptionComponent->SetDominantSense(UAISense_Sight::StaticClass());
-		
-		AISightConfig->SightRadius = 1000.f; 
-		AISightConfig->LoseSightRadius = 1200.f;          
-		AISightConfig->PeripheralVisionAngleDegrees = 360.f; 
-		AISightConfig->SetMaxAge(1.0f);                    
-		
-		AIPerceptionComponent->ConfigureSense(*AISightConfig);
-        
-		AISightConfig->DetectionByAffiliation.bDetectEnemies = true;
-		AISightConfig->DetectionByAffiliation.bDetectFriendlies = true;
-		AISightConfig->DetectionByAffiliation.bDetectNeutrals = true;
-		
-		AIPerceptionComponent->SetDominantSense(UAISense_Sight::StaticClass());
+		SightConfig->SightRadius = 1000.0f;
+		SightConfig->LoseSightRadius = 1100.0f;
+		SightConfig->PeripheralVisionAngleDegrees = 360.0f;
+		SightConfig->SetMaxAge(0.1f);
+
+		// Configura il canale di collisione per il senso
+		SightConfig->DetectionByAffiliation.bDetectEnemies = true;
+		SightConfig->DetectionByAffiliation.bDetectFriendlies = true;
+		SightConfig->DetectionByAffiliation.bDetectNeutrals = true;
+
+		// Aggiungi il senso configurato al componente di percezione
+		AIPerceptionComponent->ConfigureSense(*SightConfig);
+		AIPerceptionComponent->SetDominantSense(SightConfig->GetSenseImplementation());
 	}
-	**/
 }
 
 void ASAIController::Tick(float DeltaSeconds)
@@ -166,7 +163,6 @@ void ASAIController::OnPossess(APawn* InPawn)
 			if (IFactionsUtils* FactionsUtils = Cast<IFactionsUtils>(ControlledPawn))
 			{
 				PawnFaction = FactionsUtils->GetFaction();
-				UE_LOG(LogTemp, Warning, TEXT("Unit Type: %hhd"), PawnFaction);
 			}
 		}
 		

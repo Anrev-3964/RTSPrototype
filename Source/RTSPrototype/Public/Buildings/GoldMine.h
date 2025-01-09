@@ -17,15 +17,14 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnMineUpgradedStart);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnMineUpgradedEnd);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSelected);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDeselect);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnMineSelected);
 UCLASS()
 class RTSPROTOTYPE_API AGoldMine : public AActor,public IFactionsUtils,public ISelectable,public IITriggerBoxArea
 {
 	GENERATED_BODY()
 public:
 	AGoldMine(const FObjectInitializer& ObjectInitializer);
-	void BeginPlay();
+	virtual void  BeginPlay() override;
 	void SetMineFromDataAsset();
 
 private:
@@ -46,7 +45,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	int  MineCurrentLevel = {0};
-	
+
+	UPROPERTY(BlueprintReadWrite, Category = "Variables", meta = (AllowPrivateAccess = "true"))
+	bool bIsUpgrading = {false};
 	UPROPERTY()
 	ARTSPlayerState* OwnerPlayerState;
 
@@ -67,10 +68,8 @@ private:
 	USceneComponent* RootComponentIntermediate;
 
 	UPROPERTY(BlueprintAssignable, Category = "Events", meta = (AllowPrivateAccess = "true"))
-	FOnSelected OnSelect;
+	FOnMineSelected OnMineSelect;
 
-	UPROPERTY(BlueprintAssignable, Category = "Events", meta = (AllowPrivateAccess = "true"))
-	FOnDeselect OnDeselect;
 public:
 	UFUNCTION()
 	int GetGoldAmount() const ;
@@ -103,6 +102,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	int GetGoldEstractionAmount();
+
+	UFUNCTION(BlueprintCallable)
 	void SetStaticMeshFromActor();
 
 	/** ISelecatbleInterface UNUSED FOR NOW**/

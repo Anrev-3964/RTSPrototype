@@ -24,8 +24,11 @@ class RTSPROTOTYPE_API ASAIController : public AAIController
 	void BeginPLay();
 	virtual void Tick(float DeltaSeconds) override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AI")
 	UAIPerceptionComponent* AIPerceptionComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AI")
+	UAISenseConfig_Sight* SightConfig;
 
 	UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
 	UAIPerceptionStimuliSourceComponent* AIPerceptionStimuliSource;
@@ -44,8 +47,6 @@ private:
 
 	UPROPERTY()
 	float AcceptanceRadius = 50.f;
-	UPROPERTY()
-	UAISenseConfig_Sight* SightConfig;
 	
 	UPROPERTY()
 	EFaction PawnFaction;

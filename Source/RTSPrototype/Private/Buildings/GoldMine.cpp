@@ -32,6 +32,7 @@ AGoldMine::AGoldMine(const FObjectInitializer& ObjectInitializer)
 
 void AGoldMine::BeginPlay()
 {
+	Super::BeginPlay();
 	SetMineFromDataAsset();
 }
 
@@ -47,8 +48,6 @@ void AGoldMine::SetMineFromDataAsset()
 			StaticMesh->SetStaticMesh(Mesh);
 		}
 	}
-
-	
 }
 
 int AGoldMine::GetGoldAmount() const
@@ -272,7 +271,11 @@ void AGoldMine::SetStaticMeshFromActor()
 
 void AGoldMine::Select()
 {
-	OnSelect.Broadcast();
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, "Miniera selezionata (c++)");
+	}
+	OnMineSelect.Broadcast();
 }
 
 void AGoldMine::DeSelect()
@@ -281,7 +284,7 @@ void AGoldMine::DeSelect()
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, "Miniera deselezionata (c++)");
 	}
-	OnDeselect.Broadcast();
+	OnMineSelect.Broadcast();
 }
 
 void AGoldMine::Highlight(const bool Highlight)
