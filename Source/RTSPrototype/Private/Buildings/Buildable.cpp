@@ -4,6 +4,8 @@
 #include "Buildings/Buildable.h"
 
 #include "MaterialDomain.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
 #include "Components/BoxComponent.h"
 #include "Framework/RTSPlayerState.h"
 #include "Framework/DataAssets/BuildItemDataAsset.h"
@@ -119,10 +121,56 @@ void ABuildable::StartBuild()
 
 	BuildState = Building;
 	OnBuildStarted.Broadcast(this);
+
+	//Spawn NiagaraSystem
+	if (BuildData->BuildingInProgressNiagaraSystem)
+	{
+		FVector Location = GetActorLocation() + BuildData->BuildingInProgressNiagara_SpawnOffset;
+		FRotator Rotation = FRotator::ZeroRotator;
+
+		SpawnedBuildingNiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+			GetWorld(),         // World
+			BuildData->BuildingInProgressNiagaraSystem,      // Niagara System To Spawn
+			Location,           // Position
+			Rotation,           // Rotation
+			FVector(1.0f)); // Scale
+	}
+
+	if (SpawnedBuildingNiagaraComponent)
+	{
+		// Imposta il parametro utente "LoopDuration" su 5.0f
+		float LoopDuration = BuildData->BuildingInProgressNiagara_LoopDuration;
+		SpawnedBuildingNiagaraComponent->SetVariableFloat(FName("LoopDuration"), LoopDuration);
+	}
 }
 
 void ABuildable::EndBuild()
 {
+	//Build complete Niagara Compoent 
+	if (BuildData->BuildingCompletedNiagaraSystem)
+	{
+		//Spawn NiagaraSystem
+		if (BuildData->BuildingCompletedNiagaraSystem)
+		{
+			FVector Location = GetActorLocation() + BuildData->BuildingCompletedNiagara_SpawnOffset;
+			FRotator Rotation = FRotator::ZeroRotator;
+
+			SpawnedBuildingNiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+				GetWorld(),         // World
+				BuildData->BuildingCompletedNiagaraSystem,      // Niagara System To Spawn
+				Location,           // Position
+				Rotation,           // Rotation
+				FVector(1.0f)); // Scale
+		}
+		//Set Niagara Loop Duration
+		if (SpawnedBuildingNiagaraComponent)
+		{
+			float LoopDuration = BuildData->BuildingCompletedNiagara_LoopDuration;
+			SpawnedBuildingNiagaraComponent->SetVariableFloat(FName("Lifetime"), LoopDuration);
+		}
+	}
+
+	
 	GetWorldTimerManager().ClearTimer(BuildTimer);
 	if (BuildState != EBuildState::BuildComplete)
 	{

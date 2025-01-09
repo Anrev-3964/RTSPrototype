@@ -41,7 +41,7 @@ private:
 	int CurrentGoldAmount;
 
 	UPROPERTY()
-	int GoldEstractAmount = {5};
+	int GoldEstractAmount;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	int  MineCurrentLevel = {0};

@@ -164,27 +164,47 @@ void AGoldMine:: MineCompleted(const TEnumAsByte<EBuildState> BuildState)
 //NOTA : pe rora la quantita di oro estraibile non diminuisce a dogni estrazione
 void AGoldMine::EstractGold()
 {
-	GoldEstractAmount = 5;
-	if (!OwnerPlayerState) return;
+	if (GoldMineData)
+	{
+		//Set GoldAmountEstract Based On current level
+		switch (MineCurrentLevel)
+		{
+			case 1:
+			GoldEstractAmount = GoldMineData->TierOneGoldEstractionAmount;
+			break;
+			case 2:
+				GoldEstractAmount = GoldMineData->TierTwoGoldEstractionAmount;
+			break;
+			case 3:
+				GoldEstractAmount = GoldMineData->TierThreeGoldEstractionAmount;
+			break;
 
-	if (GoldEstractAmount >= GoldAmount)
-	{
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red , "Oro finito");
+			default:
+				GoldEstractAmount = 1;
+			break;
 		}
-		OwnerPlayerState->AddGold(GoldAmount);
-		GoldAmount = 0;
-		Destroy();
-	}
-	else
-	{
-		if (GEngine)
+		
+		if (!OwnerPlayerState) return;
+
+		if (GoldEstractAmount >= GoldAmount)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, "c'e ancora oro");
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red , "Oro finito");
+			}
+			OwnerPlayerState->AddGold(GoldAmount);
+			GoldAmount = 0;
+			Destroy();
 		}
-		GoldAmount -= GoldEstractAmount;
-		OwnerPlayerState->AddGold(GoldEstractAmount);
+		else
+		{
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, "c'e ancora oro");
+			}
+			GoldAmount -= GoldEstractAmount;
+			OwnerPlayerState->AddGold(GoldEstractAmount);
+		}
 	}
 }
 

@@ -8,6 +8,7 @@
 #include "Framework/RTSPlayerState.h"
 #include "GameFramework/Actor.h"
 #include "Framework/DataAssets/BuildData.h"
+#include "Framework/DataAssets/BuildItemDataAsset.h"
 #include "Buildable.generated.h"
 
 class UBoxComponent;
@@ -94,6 +95,10 @@ protected:
 	UMaterialInstanceDynamic* DynamicOverlayMaterial;
 
 private:
+
+	UPROPERTY()
+	UNiagaraComponent* SpawnedBuildingNiagaraComponent = nullptr;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	UBoxComponent* BoxCollider;
 

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "NiagaraSystem.h"
 #include "Engine/DataAsset.h"
 #include "BuildData.h"
 #include "BuildItemDataAsset.generated.h"
@@ -46,6 +47,25 @@ public:
 	TSoftObjectPtr<UStaticMesh> BuildingMeshComplete;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Configuration")
 	TSubclassOf<AActor> BuildingActorComplete;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Building In Progress Effect Configuration")
+	UNiagaraSystem* BuildingInProgressNiagaraSystem;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Building In Progress Effect Configuration")
+	float BuildingInProgressNiagara_LoopDuration = {1.f};
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Building In Progress Effect Configuration")
+	FVector BuildingInProgressNiagara_SpawnOffset = {FVector::Zero()};
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Building Completed Configuration")
+	UNiagaraSystem* BuildingCompletedNiagaraSystem;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Building Completed Configuration")
+	float BuildingCompletedNiagara_LoopDuration = {1.f};
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Building Completed Configuration")
+	FVector BuildingCompletedNiagara_SpawnOffset = {FVector::Zero()};
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Selection")
 	TSoftObjectPtr<UMaterialInstance> PlaceMaterial;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Selection")

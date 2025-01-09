@@ -41,6 +41,14 @@ public:
 	TSubclassOf<AActor> TierTwoBuildingActorClass;
 	**/
 
+	/** Tier 1 settings **/ 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tier 1 Settings")
+	int TierOneGoldEstractionAmount = {1};
+
+	/** Tier 2 settings **/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tier 2 Settings")
+	int TierTwoGoldEstractionAmount = {2};
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tier 2 Settings")
 	float TierTwoBuildingUpgradeTime;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tier 2 Settings")
@@ -48,6 +56,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tier 2 Settings")
 	UNiagaraSystem* TierTwoCompleteNiagaraSystem;
 
+	/** Tier 3 settings **/
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tier 3 Settings")
+	int TierThreeGoldEstractionAmount = {3};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tier 3 Settings")
 	float TierThreeBuildingUpgradeTime;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tier 3 Settings")
@@ -57,7 +69,5 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Upgrading")
 	UNiagaraSystem* UpgradingNiagaraSystem;
-
-	
 	
 };
