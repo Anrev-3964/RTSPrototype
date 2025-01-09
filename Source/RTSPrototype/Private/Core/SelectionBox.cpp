@@ -115,7 +115,7 @@ void ASelectionBox::Adjust() const
 	const FVector EndPoint = FVector(CurrentMouseLocOnTerrain.X, CurrentMouseLocOnTerrain.Y, 0);
 	BoxCollider->SetWorldLocation(UKismetMathLibrary::VLerp(StartLocation, EndPoint, 0.5f));
 
-	FVector NewExtent = FVector(GetActorLocation().X, GetActorLocation().Y, 0) - EndPoint;
+	FVector NewExtent = FVector(GetActorLocation().X, GetActorLocation().Y, 10) - EndPoint;
 	NewExtent = GetActorRotation().GetInverse().RotateVector(NewExtent);
 	NewExtent = NewExtent.GetAbs();
 	NewExtent.Z += 100000.0f;
