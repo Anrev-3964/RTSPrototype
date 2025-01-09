@@ -27,6 +27,8 @@ class RTSPROTOTYPE_API UUnitData : public UDataAsset
 	float MaxHealth;
 	UPROPERTY(EditDefaultsOnly, Category = "Unit Stats")
 	float Attack;
+	UPROPERTY(EditDefaultsOnly, Category = "Unit Stats")
+	int GoldCost;
 	UPROPERTY(EditDefaultsOnly, Category = "Unit Stats",
 		meta = (Tooltip = "Delay in secondi tra un attacco e l'altro in consecutiva"))
 	float AttackDelay;
@@ -66,6 +68,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Get Unit Data")
 	float GetAttack() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Get Unit Data")
+	int GetGoldCost() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Get Unit Data")
 	float GetSpawnDelay() const;

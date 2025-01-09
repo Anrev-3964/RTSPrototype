@@ -33,6 +33,15 @@ float UUnitData::GetAttack() const
 	return Attack;
 }
 
+int UUnitData::GetGoldCost() const
+{
+	if (GoldCost <= 0)
+	{
+		return 100;
+	}
+	return GoldCost;
+}
+
 float UUnitData::GetSpawnDelay() const
 {
 	if (SpawnDelay <= 0)
