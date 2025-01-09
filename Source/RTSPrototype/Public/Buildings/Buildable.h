@@ -25,7 +25,9 @@ public:
 	ABuildable();
 
 	//Data Management
+	UFUNCTION(BlueprintCallable)
 	void Init(UBuildItemDataAsset* BuildItemData, const TEnumAsByte<EBuildState> NewBuildState = EBuildState::NoBuild);
+	
 	UBuildItemDataAsset* GetBuildItemData() const {return BuildData;}
 	void UpdateOverlayMaterial(const bool bCanPlace = true) const;
 	UMaterialInstance* GetHighlightMaterial() const;
@@ -34,8 +36,11 @@ public:
 
 	virtual EFaction GetFaction() const override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit Settings")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Build Settings")
 	EFaction CurrentFaction;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Build Settings")
+	int BuildID;
 
 protected:
 
@@ -86,6 +91,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	UBuildItemDataAsset* GetBuildData() const;
+
+	UFUNCTION(BlueprintCallable)
+	int GetBuildID() const;
 
 };
 

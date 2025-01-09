@@ -34,6 +34,8 @@ void ABuildable::Init(UBuildItemDataAsset* BuildItemData, const TEnumAsByte<EBui
 
 	BuildState = NewBuildState;
 	BuildData = BuildItemData;
+	BuildID = BuildData->BuildID;
+	UE_LOG(LogTemp, Error, TEXT("BuildID: %u"), BuildID);
 
 	if (BuildState == Building)
 	{
@@ -177,6 +179,11 @@ void ABuildable::UpdateBuildProgression()
 UBuildItemDataAsset* ABuildable::GetBuildData() const
 {
 	return BuildData;
+}
+
+int ABuildable::GetBuildID() const
+{
+	return BuildID;
 }
 
 UMaterialInstance* ABuildable::GetHighlightMaterial() const
