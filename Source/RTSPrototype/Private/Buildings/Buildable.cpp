@@ -6,6 +6,8 @@
 #include "MaterialDomain.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
+#include "SkeletonTreeBuilder.h"
+#include "Chaos/Deformable/MuscleActivationConstraints.h"
 #include "Components/BoxComponent.h"
 #include "Framework/RTSPlayerState.h"
 #include "Framework/DataAssets/BuildItemDataAsset.h"
@@ -18,7 +20,7 @@ ABuildable::ABuildable()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
-	
+
 	BoxCollider = CreateDefaultSubobject<UBoxComponent>("BoxCollider");
 	RootComponent = BoxCollider;
 	BoxCollider->SetCollisionProfileName("OverlapAll");
@@ -27,7 +29,6 @@ ABuildable::ABuildable()
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>("StaticMesh");
 	StaticMesh->SetupAttachment(RootComponent);
 	StaticMesh->SetCollisionProfileName("OverlapAll");
-
 }
 
 void ABuildable::Init(UBuildItemDataAsset* BuildItemData, const TEnumAsByte<EBuildState> NewBuildState)
@@ -36,8 +37,10 @@ void ABuildable::Init(UBuildItemDataAsset* BuildItemData, const TEnumAsByte<EBui
 
 	BuildState = NewBuildState;
 	BuildData = BuildItemData;
+	BuildID = BuildData->BuildID;
+	UE_LOG(LogTemp, Error, TEXT("BuildID: %u"), BuildID);
 
-	if (BuildState == Building)
+	if (BuildState == EBuildState::Building)
 	{
 		StartBuild();
 	}
@@ -49,7 +52,7 @@ void ABuildable::Init(UBuildItemDataAsset* BuildItemData, const TEnumAsByte<EBui
 
 void ABuildable::UpdateOverlayMaterial(const bool bCanPlace) const
 {
-	DynamicOverlayMaterial->SetScalarParameterValue("Status", bCanPlace ? 1.0f : 0.0f);
+	DynamicOverlayMaterial->SetScalarParameterValue("Status", bCanPlace? 1.0f:0.0f);
 }
 
 void ABuildable::InitBuildPreview()
@@ -99,18 +102,19 @@ void ABuildable::InitBuildPreview()
 		}
 	}
 
-	/**
-	// Imposta il primo StaticMesh per la preview principale (se necessario)
-	if (StaticMesh && MeshComponents.Num() > 0 && MeshComponents[0]->GetStaticMesh())
-	{
-		StaticMesh->SetStaticMesh(MeshComponents[0]->GetStaticMesh());
-	}
-	**/
-
 	// Aggiorna il collider e il materiale di overlay
 	BuildingActorComplete->Destroy();
 	UpdateCollider();
 	SetOverlayMaterial();
+	
+	/**
+	if (UStaticMesh* PreviewMesh = BuildData->BuildingMeshComplete.LoadSynchronous())
+	{
+		StaticMesh->SetStaticMesh(PreviewMesh);
+		UpdateCollider();
+		SetOverlayMaterial();
+	}
+	**/
 }
 
 void ABuildable::StartBuild()
@@ -119,7 +123,8 @@ void ABuildable::StartBuild()
 	UpdateBuildProgressionMesh();
 	GetWorldTimerManager().SetTimer(BuildTimer, this, &ABuildable::UpdateBuildProgression, 2.0f, true, 2.0f);
 
-	BuildState = Building;
+	BuildState = EBuildState::Building;
+
 	OnBuildStarted.Broadcast(this);
 
 	//Spawn NiagaraSystem
@@ -174,7 +179,7 @@ void ABuildable::EndBuild()
 	GetWorldTimerManager().ClearTimer(BuildTimer);
 	if (BuildState != EBuildState::BuildComplete)
 	{
-		BuildState = BuildAborted;
+		BuildState = EBuildState::BuildAborted;
 		bBuildingConstructed = true;
 	}
 
@@ -194,7 +199,6 @@ void ABuildable::UpdateCollider()
 	), true);
 
 	BoxCollider->SetWorldRotation(UKismetMathLibrary::MakeRotFromX(FVector(1.0f, 0.0f, 0.0f)));
-
 }
 
 void ABuildable::SetOverlayMaterial()
@@ -222,7 +226,6 @@ void ABuildable::SetOverlayMaterial()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("FAILED DYNAMIC OVERLAY MATERIAL"));
 	}
-	
 }
 
 void ABuildable::UpdateBuildProgressionMesh()
@@ -272,7 +275,7 @@ void ABuildable::UpdateBuildProgression()
 			StaticMesh->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 		}
 		**/
-		BuildState = BuildComplete;
+		BuildState = EBuildState::BuildComplete;
 		EndBuild();
 	}
 	else
@@ -316,6 +319,12 @@ UMaterialInstance* ABuildable::GetHighlightMaterial() const
 	}
 
 	return nullptr;
+}
+
+
+int ABuildable::GetBuildID() const
+{
+	return BuildID;
 }
 
 EFaction ABuildable::GetFaction() const
@@ -402,6 +411,10 @@ void ABuildable::Highlight(const bool Highlight)
     }
 }
 
+bool ABuildable::GetBuildingConstructed()
+{
+	return bBuildingConstructed;
+}
 // Called when the game starts or when spawned
 void ABuildable::BeginPlay()
 {
@@ -413,11 +426,6 @@ void ABuildable::BeginPlay()
 void ABuildable::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-}
-
-bool ABuildable::GetBuildingConstructed()
-{
-	return bBuildingConstructed;
 }
 
 AActor* ABuildable::GetActor()
@@ -436,6 +444,5 @@ void ABuildable::SetCurrentFaction(EFaction NewFaction)
 		ECurrentFaction = NewFaction;
 	}
 }
-
 
 

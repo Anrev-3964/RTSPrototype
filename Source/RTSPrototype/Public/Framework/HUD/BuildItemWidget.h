@@ -29,6 +29,8 @@ public:
 	UTextBlock* TitleText;
 	UPROPERTY(meta = (BindWidget))
 	UImage* Image;
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* GoldCostText;
 
 protected:
 	UFUNCTION()

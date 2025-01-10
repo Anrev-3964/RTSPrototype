@@ -14,6 +14,7 @@
 #include "Core/UnitData.h"
 #include "RTSPrototypeCharacter.generated.h"
 
+class UTexture;
 //Delegate
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDamageTaken);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAttack);
@@ -31,7 +32,6 @@ public:
 
 	// Called every frame.
 	virtual void Tick(float DeltaSeconds) override;
-
 
 private:
 	/** Top down camera */
@@ -59,20 +59,19 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	float MaxHealth;
-
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	float Health;
-
-	UPROPERTY(BlueprintReadOnly,  meta = (AllowPrivateAccess = "true"))
-	int GoldEstractionCapacity;
-
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	float SpawnDelay;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UTexture* UnitImage;
 	UPROPERTY(BlueprintReadOnly,  meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* AttackMontage;
 
 	UPROPERTY(BlueprintReadOnly,  meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* MiningMontage;
 	//Unit Data Asset
-	UPROPERTY(EditAnywhere, Category = "Unit Stats")
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Unit Stats")
 	UUnitData* UnitData;
 
 	bool bCanMine = false;
@@ -91,8 +90,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	FString GetFactionName() const;
-	
-	
+
+
 	/**ICommandable Interface**/
 	virtual  void MoveToDestination(const FVector Destination) override;
 	virtual  void Attack() override;
@@ -125,6 +124,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	float GetHealth() const;
+
+	UFUNCTION(BlueprintCallable)
+	float GetSpawnDelay() const;
 	/** GetFunctions**/
 
 	/** Set Functions**/
@@ -161,4 +163,3 @@ protected:
 	UFUNCTION()
 	void DestroyCharacter();
 };
-

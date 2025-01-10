@@ -3,9 +3,16 @@
 
 #include "Core/UnitData.h"
 
+#include "CrossCompilerCommon.h"
+
 FString UUnitData::GetName() const
 {
 	return Name;
+}
+
+UTexture2D* UUnitData::GetImage() const
+{
+	return UnitImage;
 }
 
 float UUnitData::GetMaxHealth() const
@@ -24,6 +31,24 @@ float UUnitData::GetAttack() const
 		return 1;
 	}
 	return Attack;
+}
+
+int UUnitData::GetGoldCost() const
+{
+	if (GoldCost <= 0)
+	{
+		return 100;
+	}
+	return GoldCost;
+}
+
+float UUnitData::GetSpawnDelay() const
+{
+	if (SpawnDelay <= 0)
+	{
+		return 1;
+	}
+	return SpawnDelay;
 }
 
 float UUnitData::GetMaxMovementSpeed() const
@@ -106,6 +131,6 @@ float UUnitData::GetUnitAcceptableRadius() const
 	{
 		return 100;
 	}
-	return  UnitAcceptableRadius;
+	return UnitAcceptableRadius;
 }
 

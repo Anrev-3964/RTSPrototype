@@ -19,6 +19,7 @@ class RTSPROTOTYPE_API ARTSPlayerState : public APlayerState,public IFactionsUti
 	GENERATED_BODY()
 
 public:
+	UFUNCTION(BlueprintCallable)
 	void AddGold(int GoldGained);
 	UFUNCTION(BlueprintCallable)
 	void RemoveGold(int GoldSpent);

@@ -5,9 +5,9 @@
 #include "BehaviorTree/BlackboardComponent.h"
 
 #include "MaterialDomain.h"
+#include "UObject/ConstructorHelpers.h"
 #include "Buildings/GoldMine.h"
 #include "RTSPrototypeGameMode.h"
-#include "UObject/ConstructorHelpers.h"
 #include "Camera/CameraComponent.h"
 #include "Components/Button.h"
 #include "Components/CapsuleComponent.h"
@@ -71,18 +71,15 @@ void ARTSPrototypeCharacter::BeginPlay()
 
 void ARTSPrototypeCharacter::AssignUnitStatsFromDataAsset()
 {
-	if (!UnitData)
-	{
-		return;
-	}
+	if (!UnitData) return;
 	Health = UnitData->GetMaxHealth();
 	MaxHealth = UnitData->GetMaxHealth();
 	AttackValue = UnitData->GetAttack();
+	UnitImage = UnitData->GetImage();
+	SpawnDelay = UnitData->GetSpawnDelay();
 	AttackMontage = UnitData->GetAttackMontage();
 	MiningMontage = UnitData->GetMiningMontage();
 	bCanMine = UnitData->GetCanMineGold();
-	GoldEstractionCapacity = UnitData->GetGoldEstractionCapacity();
-	
 	if (UCharacterMovementComponent* MovementComponent = GetCharacterMovement())
 	{
 		MovementComponent->MaxWalkSpeed = UnitData->GetMaxMovementSpeed();
@@ -159,62 +156,7 @@ void ARTSPrototypeCharacter::DeSelect()
 {
 	bSelected = false;
 	Highlight(bSelected);
-	OnUnitSelected.Broadcast(bSelected);
-	if (UnitData)
-	{
-		if (UnitData->GetName() == TEXT("Peone"))
-		{
-			ManageBuildMenu(bSelected);
-		}
-		else
-		{
-			UE_LOG(LogTemp, Error, TEXT("Unit is not Peone!"));
-		}
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("CharacterDataAssetId is not valid!"));
-	}
 }
-
-void ARTSPrototypeCharacter::ManageBuildMenu(bool bIsSelected)
-{
-	UE_LOG(LogTemp, Warning, TEXT("Entering ManageBuildMenu"));
-
-	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
-	if (PlayerController)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Found PlayerController in ManageBuildMenu"));
-
-		ACustomHUD* Hud = Cast<ACustomHUD>(PlayerController->GetHUD());
-		if (Hud && Hud->HUD)
-		{
-			if (Hud->HUD->GameMenuWidget)
-			{
-				UE_LOG(LogTemp, Warning, TEXT("Build button visibility should change"));
-				Hud->HUD->GameMenuWidget->SetVisibility(
-					bIsSelected ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
-			}
-			else
-			{
-				UE_LOG(LogTemp, Error, TEXT("Buildbutton is not valid in the GameMenuWidget!"));
-			}
-		}
-		else
-		{
-			UE_LOG(LogTemp, Error, TEXT("GameMenuWidget is NOT valid"));
-			if (Hud)
-			{
-				UE_LOG(LogTemp, Error, TEXT("HudWidget is valid but GameMenuWidget is NULL"));
-			}
-			else
-			{
-				UE_LOG(LogTemp, Error, TEXT("HudWidget is NULL"));
-			}
-		}
-	}
-}
-
 
 void ARTSPrototypeCharacter::Highlight(const bool Highlight)
 {
@@ -323,6 +265,11 @@ UUnitData* ARTSPrototypeCharacter::GetUnitData() const
 float ARTSPrototypeCharacter::GetHealth() const
 {
 	return Health;
+}
+
+float ARTSPrototypeCharacter::GetSpawnDelay() const
+{
+	return SpawnDelay;
 }
 
 void ARTSPrototypeCharacter::SetHealth(const float NewHealth)
@@ -497,12 +444,3 @@ void ARTSPrototypeCharacter::EstractGoldFromMine(AActor* Target)
 		}
 	} 
 }
-
-
-
-
-
-
-
-
-

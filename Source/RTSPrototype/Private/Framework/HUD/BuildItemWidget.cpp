@@ -57,6 +57,7 @@ void UBuildItemWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 		UE_LOG(LogTemp, Error, TEXT("Found data"));
 		TitleText->SetText(Data->TitleText);
 		Image->SetBrushFromTexture(Data->Image.LoadSynchronous());
+		GoldCostText->SetText(FText::AsNumber(Data->GoldCost));
 	}
 	else
 	{

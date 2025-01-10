@@ -41,10 +41,12 @@ void ASPlayerController::HandleSelection(AActor* ActorToSelect)
 				if (FactionsUtils->GetFaction() == PlayerFaction)
 				{
 					//Selected actor IS in player faction : you can select it
+					/**
 					if (GEngine)
 					{
 						GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, "il player ha selezionato un alleato");
 					}
+					**/
 					Selectable->Select();
 					SelectedActors.Add(ActorToSelect);
 				}
@@ -459,24 +461,7 @@ FHitResult ASPlayerController::GetMousePositionOnSurface() const
 
 	return FHitResult();
 }
-/**
-FVector ASPlayerController::GetMousePositionOnSurface() const
-{
-	FVector WorldLocation, WorldDirection;
-	DeprojectMousePositionToWorld(WorldLocation, WorldDirection);
-	FHitResult OutHit;
-	if (GetWorld()->LineTraceSingleByChannel(OutHit, WorldLocation,
-	                                         WorldLocation + (WorldDirection * 100000.0f), ECC_Visibility))
-	{
-		if (OutHit.bBlockingHit)
-		{
-				return OutHit.Location;
-		}
-	}
 
-	return FVector::ZeroVector;
-}
-**/
 void ASPlayerController::MoveUnitsToDestination(const FVector& Destination)
 {
 	if (SelectedActors.Num() <= 0)

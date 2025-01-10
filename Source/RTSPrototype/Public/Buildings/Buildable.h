@@ -19,7 +19,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBuildStarted,  ABuildable*, Build
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnBuildDestroyed);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnMyEventTriggered);
 UCLASS()
-class RTSPROTOTYPE_API ABuildable : public AActor,public IFactionsUtils, public ISelectable
+class RTSPROTOTYPE_API ABuildable : public AActor, public ISelectable, public IFactionsUtils
 {
 	GENERATED_BODY()
 	
@@ -28,17 +28,48 @@ public:
 	ABuildable();
 
 	//Data Management
+	UFUNCTION(BlueprintCallable)
 	void Init(UBuildItemDataAsset* BuildItemData, const TEnumAsByte<EBuildState> NewBuildState = EBuildState::NoBuild);
+	
 	UBuildItemDataAsset* GetBuildItemData() const {return BuildData;}
 	void UpdateOverlayMaterial(const bool bCanPlace = true) const;
+	UMaterialInstance* GetHighlightMaterial() const;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnBuildCompleteEvent OnBuildCompleteEvent;
 	FOnBuildStarted OnBuildStarted;
+
 	UPROPERTY(BlueprintAssignable, Category = "Events")
 	FOnMyEventTriggered OnMyEventTriggered;
 
+	virtual EFaction GetFaction() const override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Build Settings")
+	EFaction CurrentFaction;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Build Settings")
+	int BuildID;
+
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
+	bool GetBuildingConstructed();
+	AActor* GetActor();
+
+	UFUNCTION(BlueprintCallable)
+	UBuildItemDataAsset* GetBuildData() const;
+
+	UFUNCTION(BlueprintCallable)
+	int GetBuildID() const;
+
 protected:
+	
+	
+	UFUNCTION(BlueprintCallable)
+	virtual void Select() override;
+	UFUNCTION(BlueprintCallable)
+	virtual void DeSelect() override;
+	virtual void Highlight(const bool Highlight) override;
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
@@ -50,13 +81,7 @@ protected:
 	void UpdateBuildProgressionMesh();
 	void UpdateBuildProgression();
 	ARTSPlayerState* GetOwnerPlayerState() const;
-	UBuildItemDataAsset* GetBuildData() const;
-	UMaterialInstance* GetHighlightMaterial() const;
-
-	/**ISelectable **/
-	void Select();
-	void DeSelect();
-	void Highlight(bool Highlight);
+	
 
 	/**IFaction Utils **/
 	UFUNCTION()
@@ -64,8 +89,7 @@ protected:
 
 	UPROPERTY()
 	UAssetManager* AssetManager;
-
-	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="BuildData")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Buildable Data")
 	UBuildItemDataAsset* BuildData;
 
 	UPROPERTY()
@@ -85,12 +109,12 @@ protected:
 	UPROPERTY()
 	FTimerHandle BuildTimer;
 	
-	
 	UPROPERTY()
 	TEnumAsByte<EBuildState> BuildState = EBuildState::NoBuild;
 
 	UPROPERTY()
 	EFaction  ECurrentFaction = {EFaction::Neutral};
+
 	UPROPERTY()
 	UMaterialInstanceDynamic* DynamicOverlayMaterial;
 
@@ -107,15 +131,6 @@ private:
 
 	UPROPERTY()
 	ARTSPlayerState* OwnerPlayerState;
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-	bool GetBuildingConstructed();
-	AActor* GetActor();
-
-	/**IFaction Utils **/
-	UFUNCTION()
-	virtual EFaction GetFaction()const override;
 	
 };
 
