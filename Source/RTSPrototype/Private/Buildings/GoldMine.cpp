@@ -248,7 +248,7 @@ void AGoldMine::SetStaticMeshFromActor()
 	
 	TArray<UStaticMeshComponent*> PreviewComponents;
 	GetComponents<UStaticMeshComponent>(PreviewComponents);
-
+	
 	for (UStaticMeshComponent* Comp : PreviewComponents)
 	{
 		if (Comp && Comp != StaticMesh)
