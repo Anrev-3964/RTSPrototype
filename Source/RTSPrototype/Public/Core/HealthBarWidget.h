@@ -21,6 +21,6 @@ public:
 
 private:
 	//BindWidgte : link a c++ widget in a created blueprint and manipulate it
-	UPROPERTY(BlueprintReadOnly,  meta = (BindWidget, AllowPrivateAccess = true))
+	UPROPERTY(BlueprintReadWrite,  meta = (BindWidget, AllowPrivateAccess = true))
 	UProgressBar* HealthBar = nullptr; //i will be se in the blueprint
 };

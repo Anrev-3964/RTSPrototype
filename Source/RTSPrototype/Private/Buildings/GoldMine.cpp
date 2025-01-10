@@ -251,7 +251,7 @@ void AGoldMine::SetStaticMeshFromActor()
 	
 	for (UStaticMeshComponent* Comp : PreviewComponents)
 	{
-		if (Comp && Comp != StaticMesh)
+		if (Comp)
 		{
 			Comp->DestroyComponent();
 		}
