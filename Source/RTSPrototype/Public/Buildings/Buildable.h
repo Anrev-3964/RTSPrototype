@@ -70,6 +70,7 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	virtual void DeSelect() override;
 	virtual void Highlight(const bool Highlight) override;
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
@@ -80,6 +81,7 @@ protected:
 	void SetOverlayMaterial();
 	void UpdateBuildProgressionMesh();
 	void UpdateBuildProgression();
+	void SetStaticMeshFromActor();
 	ARTSPlayerState* GetOwnerPlayerState() const;
 	
 
@@ -100,11 +102,9 @@ protected:
 
 	UPROPERTY()
 	bool bBuildingConstructed = false;
-
-	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="BuildData")
-	bool bIsProducingUnit = false;
+	
 	UPROPERTY()
-	bool bSelected = false;
+	bool bSelected;
 	
 	UPROPERTY()
 	FTimerHandle BuildTimer;
@@ -120,6 +120,8 @@ protected:
 
 private:
 
+	UPROPERTY()
+	TSubclassOf<AActor> BuildingActorCompleteClass;
 	UPROPERTY()
 	UNiagaraComponent* SpawnedBuildingNiagaraComponent = nullptr;
 	

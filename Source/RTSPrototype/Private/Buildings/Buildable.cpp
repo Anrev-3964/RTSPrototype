@@ -38,6 +38,7 @@ void ABuildable::Init(UBuildItemDataAsset* BuildItemData, const TEnumAsByte<EBui
 	BuildState = NewBuildState;
 	BuildData = BuildItemData;
 	BuildID = BuildData->BuildID;
+	BuildingActorCompleteClass =  BuildData->BuildingActorComplete;
 	UE_LOG(LogTemp, Error, TEXT("BuildID: %u"), BuildID);
 
 	if (BuildState == EBuildState::Building)
@@ -151,6 +152,7 @@ void ABuildable::StartBuild()
 
 void ABuildable::EndBuild()
 {
+	ECurrentFaction = EFaction::Team1;
 	//Build complete Niagara Compoent 
 	if (BuildData->BuildingCompletedNiagaraSystem)
 	{
@@ -188,6 +190,7 @@ void ABuildable::EndBuild()
 
 void ABuildable::UpdateCollider()
 {
+	/**
 	if (!StaticMesh && !BoxCollider) return;
 	FVector MinMeshBounds, MaxMeshBounds;
 	StaticMesh->GetLocalBounds(MinMeshBounds, MaxMeshBounds);
@@ -199,6 +202,7 @@ void ABuildable::UpdateCollider()
 	), true);
 
 	BoxCollider->SetWorldRotation(UKismetMathLibrary::MakeRotFromX(FVector(1.0f, 0.0f, 0.0f)));
+	**/
 }
 
 void ABuildable::SetOverlayMaterial()
@@ -249,9 +253,10 @@ void ABuildable::UpdateBuildProgression()
 	BuildProgression += 1.0f / BuildData->BuildMeshes.Num();
 	if (BuildProgression > 1.0f)
 	{
-		TSubclassOf<AActor> BuildingActorClass = BuildData->BuildingActorComplete;
-		if (BuildingActorClass)
+		if (TSubclassOf<AActor> BuildingActorClass = BuildData->BuildingActorComplete)
 		{
+			SetStaticMeshFromActor();
+			/**
 			// Spawna l'attore come figlio dell'attore corrente
 			FActorSpawnParameters SpawnParams;
 			SpawnParams.Owner = this;
@@ -265,6 +270,7 @@ void ABuildable::UpdateBuildProgression()
 				AActor* ValidActor = WeakActorPtr.Get();
 				ValidActor->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
 			}
+			**/
 		}
 		
 		/**
@@ -282,6 +288,77 @@ void ABuildable::UpdateBuildProgression()
 	{
 		UpdateBuildProgressionMesh();
 	}
+}
+
+void ABuildable::SetStaticMeshFromActor()
+{
+	if (!BuildingActorCompleteClass) return;
+
+	// load Actor from soft pointer
+	//instantiate Actor
+	AActor* BuildingActorComplete = GetWorld()->SpawnActor<AActor>(BuildingActorCompleteClass);
+
+	if (!BuildingActorComplete) return;
+
+	//Call an event form blueprint
+
+	FName EventName("SetTierMeshes");
+
+	//Find The vent to call
+	if (UFunction* EventFunction = BuildingActorComplete->FindFunction(EventName))
+	{
+
+		struct FCustomEventParams
+		{
+			int NewTier = 1; 
+		};
+		
+		FCustomEventParams Params;
+		Params.NewTier = 0;
+		
+		BuildingActorComplete->ProcessEvent(EventFunction, &Params);
+	}
+	
+	TArray<UStaticMeshComponent*> PreviewComponents;
+	GetComponents<UStaticMeshComponent>(PreviewComponents);
+
+	for (UStaticMeshComponent* Comp : PreviewComponents)
+	{
+		if (Comp && Comp != StaticMesh)
+		{
+			Comp->DestroyComponent();
+		}
+	}
+
+	// Get all  UStaticMeshComponent from BuildingActorComplete
+	TArray<UStaticMeshComponent*> MeshComponents;
+	BuildingActorComplete->GetComponents<UStaticMeshComponent>(MeshComponents);
+	
+	for (UStaticMeshComponent* MeshComp : MeshComponents)
+	{
+		if (MeshComp && MeshComp->GetStaticMesh())
+		{
+			// For every UStaticMeshComponent in ABuildingActorComplete, create a new mesh 
+			UStaticMeshComponent* NewPreviewComp = NewObject<UStaticMeshComponent>(this);
+			if (NewPreviewComp)
+			{
+				NewPreviewComp->SetStaticMesh(MeshComp->GetStaticMesh());
+				NewPreviewComp->SetRelativeTransform(MeshComp->GetRelativeTransform());
+				FVector NewScale(0.5f, 0.5f, 0.5f); // Scala su tutti gli assi X, Y e Z
+				NewPreviewComp->SetRelativeScale3D(NewScale);
+				NewPreviewComp->AttachToComponent(BoxCollider, FAttachmentTransformRules::KeepRelativeTransform);
+
+				NewPreviewComp->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
+				
+				NewPreviewComp->SetCollisionResponseToChannel(ECC_Camera, ECR_Block);
+				
+				NewPreviewComp->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Ignore);
+				
+				NewPreviewComp->RegisterComponent();
+			}
+		}
+	}
+	BuildingActorComplete->Destroy();
 }
 //Get The Player State of it'sown Faction
 ARTSPlayerState* ABuildable::GetOwnerPlayerState() const
@@ -338,7 +415,6 @@ void ABuildable::Select()
 	UE_LOG(LogTemp, Warning, TEXT("BUILDING SELECTED"));
 	Highlight(bSelected);
 	OnMyEventTriggered.Broadcast();
-	
 }
 
 void ABuildable::DeSelect()

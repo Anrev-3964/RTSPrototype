@@ -60,38 +60,12 @@ float UUnitData::GetMaxMovementSpeed() const
 	return MaxMovementSpeed;
 }
 
-int UUnitData::GetUnitCost() const
-{
-	if (UnitCost <= 1)
-	{
-		return 1;
-	}
-	return UnitCost;
-}
-
-int UUnitData::GetGoldEstractionCapacity() const
-{
-	if (GoldEstractionCapacity <= 0)
-	{
-		return 10;
-	}
-	return GoldEstractionCapacity;
-}
-
 
 bool UUnitData::GetCanMineGold() const
 {
 	return CanMineGold;
 }
 
-float UUnitData::GetTrainingTime() const
-{
-	if (TrainingTime  <= 1)
-	{
-		return  1;
-	}
-	return TrainingTime;
-}
 
 UAnimMontage* UUnitData::GetAttackMontage() const
 {

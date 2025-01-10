@@ -86,6 +86,44 @@ void ARTSPrototypeCharacter::AssignUnitStatsFromDataAsset()
 	}
 }
 
+void ARTSPrototypeCharacter::ManageBuildMenu(bool bIsSelected)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Entering ManageBuildMenu"));
+
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	if (PlayerController)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Found PlayerController in ManageBuildMenu"));
+
+		ACustomHUD* Hud = Cast<ACustomHUD>(PlayerController->GetHUD());
+		if (Hud && Hud->HUD)
+		{
+			if (Hud->HUD->GameMenuWidget)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Build button visibility should change"));
+				Hud->HUD->GameMenuWidget->SetVisibility(
+					bIsSelected ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
+			}
+			else
+			{
+				UE_LOG(LogTemp, Error, TEXT("Buildbutton is not valid in the GameMenuWidget!"));
+			}
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("GameMenuWidget is NOT valid"));
+			if (Hud)
+			{
+				UE_LOG(LogTemp, Error, TEXT("HudWidget is valid but GameMenuWidget is NULL"));
+			}
+			else
+			{
+				UE_LOG(LogTemp, Error, TEXT("HudWidget is NULL"));
+			}
+		}
+	}
+}
+
 void ARTSPrototypeCharacter::LoadData() const
 {
 	if (UAssetManager* AssetManager = UAssetManager::GetIfInitialized())

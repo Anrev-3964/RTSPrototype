@@ -222,7 +222,6 @@ void AGoldMine::SetStaticMeshFromActor()
 	if (!BuildingActorCompleteClass) return;
 
 	// load Actor from soft pointer
-
 	//instantiate Actor
 	AActor* BuildingActorComplete = GetWorld()->SpawnActor<AActor>(BuildingActorCompleteClass);
 
