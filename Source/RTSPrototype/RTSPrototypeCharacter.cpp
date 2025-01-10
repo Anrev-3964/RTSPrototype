@@ -194,6 +194,22 @@ void ARTSPrototypeCharacter::DeSelect()
 {
 	bSelected = false;
 	Highlight(bSelected);
+	OnUnitSelected.Broadcast(bSelected);
+	if (UnitData)
+	{
+		if (UnitData->GetName() == TEXT("Peone"))
+		{
+			ManageBuildMenu(bSelected);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("Unit is not Peone!"));
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("CharacterDataAssetId is not valid!"));
+	}
 }
 
 void ARTSPrototypeCharacter::Highlight(const bool Highlight)
