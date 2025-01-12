@@ -35,5 +35,8 @@
 			"Name": "WaterAdvanced",
 			"Enabled": true
 		}
+	],
+	"TargetPlatforms": [
+		"Windows"
 	]
 }

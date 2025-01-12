@@ -6,7 +6,6 @@
 #include "MaterialDomain.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
-#include "SkeletonTreeBuilder.h"
 #include "Chaos/Deformable/MuscleActivationConstraints.h"
 #include "Components/BoxComponent.h"
 #include "Framework/RTSPlayerState.h"

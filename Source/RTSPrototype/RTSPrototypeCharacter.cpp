@@ -344,6 +344,7 @@ void ARTSPrototypeCharacter::InflictDamage(const float Damage)
 	//Health =< 0 :  target death
 	if (Health <= 0.f)
 	{
+		OnDeath.Broadcast();
 		DestroyCharacter();
 	}
 }

@@ -18,6 +18,7 @@ class UTexture;
 //Delegate
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDamageTaken);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAttack);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDeath);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnUnitSelected,bool, UnitSelected);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnOrderChanged,EUnitState, NewOrder);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGoldEstracted,int, GoldEstracted);
@@ -150,6 +151,9 @@ protected:
 
 	UPROPERTY(BlueprintAssignable, Category = "Events")
 	FOnAttack OnAttack;
+
+	UPROPERTY(BlueprintAssignable, Category = "Events")
+	FOnDeath OnDeath;
 	
 	UPROPERTY(BlueprintAssignable, Category = "Events")
 	FOnUnitSelected OnUnitSelected;
