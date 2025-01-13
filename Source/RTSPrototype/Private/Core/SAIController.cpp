@@ -21,8 +21,8 @@ ASAIController::ASAIController(FObjectInitializer const& FObjectInitializer)
 	SightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("SightConfig"));
 	if (SightConfig)
 	{
-		SightConfig->SightRadius = 1000.0f;
-		SightConfig->LoseSightRadius = 1100.0f;
+		SightConfig->SightRadius = 1200.0f;
+		SightConfig->LoseSightRadius = 1300.0f;
 		SightConfig->PeripheralVisionAngleDegrees = 360.0f;
 		SightConfig->SetMaxAge(0.1f);
 

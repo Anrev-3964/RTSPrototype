@@ -25,7 +25,7 @@ class RTSPROTOTYPE_API ASAIController : public ADetourCrowdAIController
 	void BeginPLay();
 	virtual void Tick(float DeltaSeconds) override;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AI")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
 	UAIPerceptionComponent* AIPerceptionComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AI")
