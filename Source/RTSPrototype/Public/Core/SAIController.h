@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
+#include "DetourCrowdAIController.h"
 #include "FactionsEnum.h"
 #include "UnitStateEnum.h"
 #include "Core/UnitData.h"
@@ -14,7 +15,7 @@
 #include "SAIController.generated.h"
 
 UCLASS()
-class RTSPROTOTYPE_API ASAIController : public AAIController
+class RTSPROTOTYPE_API ASAIController : public ADetourCrowdAIController
 {
 	GENERATED_BODY()
 
