@@ -45,6 +45,8 @@ public:
 	bool CanBeBuiltCloseToGoldSources;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Display")
 	TArray<TSoftObjectPtr<UStaticMesh>> BuildMeshes;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Display")
+	FVector DesiredScale = FVector{1, 1, 1};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Configuration")
 	TSoftObjectPtr<UStaticMesh> BuildingMeshComplete;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Configuration")

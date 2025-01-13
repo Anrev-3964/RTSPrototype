@@ -241,6 +241,8 @@ void ABuildable::UpdateBuildProgressionMesh()
 		if (UStaticMesh* DisplayMesh = BuildData->BuildMeshes[BuildMeshIndex].LoadSynchronous())
 		{
 			StaticMesh->SetStaticMesh(DisplayMesh);
+			
+			StaticMesh->SetRelativeScale3D(BuildData->DesiredScale);
 		}
 	}
 }
