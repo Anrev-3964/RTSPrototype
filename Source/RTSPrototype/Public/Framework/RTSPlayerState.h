@@ -41,7 +41,7 @@ public:
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	int Gold = 300;
+	int Gold = 500;
 	virtual void BeginPlay() override;
 
 	UPROPERTY()  
