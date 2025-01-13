@@ -50,6 +50,11 @@ protected:
 	float ZoomMax = 3000.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera Settings")
 	float EdgeScrollSpeed = 20.0f;
+	UPROPERTY(EditAnywhere, Category="Camera Settings")
+	FVector2D MapBoundsMin = FVector2D(-5000, -5000);
+
+	UPROPERTY(EditAnywhere, Category="Camera Settings")
+	FVector2D MapBoundsMax = FVector2D(5000, 5000);
 
 public:	
 	// Called every frame
@@ -105,6 +110,7 @@ protected:
 	FVector SelectHitLocation;
 	UPROPERTY()
 	UBuildComponent* BuildComponent;
+	
 
 	/** Enahnced Input **/
 	UFUNCTION()

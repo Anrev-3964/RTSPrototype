@@ -65,18 +65,19 @@ void ADefaultCameraPawn::DisableRotate()
 
 void ADefaultCameraPawn::CameraBounds()
 {
+	TargetLocation.X = FMath::Clamp(TargetLocation.X, MapBoundsMin.X, MapBoundsMax.X);
+	TargetLocation.Y = FMath::Clamp(TargetLocation.Y, MapBoundsMin.Y, MapBoundsMax.Y);
+	
 	float NewPitch = TargetRotation.Pitch;
 	if (TargetRotation.Pitch < (RotationPitchMax * -1))
 	{
 		NewPitch = (RotationPitchMax * -1);
 	}
-
 	else if (TargetRotation.Pitch > (RotationPitchMin * -1))
 	{
 		NewPitch = (RotationPitchMin * -1);
 	}
-
-	TargetRotation = FRotator(NewPitch, TargetRotation.Yaw, 0);
+	TargetRotation.Pitch = NewPitch;
 }
 
 AActor* ADefaultCameraPawn::GetSelectedObject()
@@ -144,6 +145,8 @@ void ADefaultCameraPawn::Move(const FInputActionValue& Value)
 	if (ensure(Value.GetValueType() == EInputActionValueType::Axis2D))
 	{
 		TargetLocation += SpringArm->GetTargetRotation().RotateVector(Value.Get<FVector>()) * MovementSpeed;
+
+		CameraBounds();
 		GetTerrainPosition(TargetLocation);
 	}
 }
@@ -178,6 +181,7 @@ void ADefaultCameraPawn::EdgeScroll()
 			TargetLocation += SpringArm->GetTargetRotation().RotateVector(FVector(1, 0, 0)) * EdgeScrollSpeed;
 		}
 
+		CameraBounds();
 		GetTerrainPosition(TargetLocation);
 	}
 }
