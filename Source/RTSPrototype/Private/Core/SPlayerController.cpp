@@ -458,7 +458,6 @@ FHitResult ASPlayerController::GetMousePositionOnSurface() const
 			return OutHit;
 		}
 	}
-
 	return FHitResult();
 }
 

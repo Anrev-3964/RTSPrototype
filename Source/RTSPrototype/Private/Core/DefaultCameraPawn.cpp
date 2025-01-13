@@ -93,8 +93,8 @@ AActor* ADefaultCameraPawn::GetSelectedObject()
 		if (World->LineTraceSingleByChannel(Hit, WorldLocation, EndLocation, ECC_Visibility, Params))
 		{
 
-			DrawDebugLine(World, WorldLocation, Hit.ImpactPoint, FColor::Green, false, 2.0f, 0, 1.0f);
-			DrawDebugSphere(World, Hit.ImpactPoint, 10.0f, 12, FColor::Red, false, 2.0f);
+			//DrawDebugLine(World, WorldLocation, Hit.ImpactPoint, FColor::Green, false, 2.0f, 0, 1.0f);
+			//DrawDebugSphere(World, Hit.ImpactPoint, 10.0f, 12, FColor::Red, false, 2.0f);
 			
 			if (AActor* Actor = Hit.GetActor())
 			{

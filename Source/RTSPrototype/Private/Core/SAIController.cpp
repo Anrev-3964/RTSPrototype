@@ -7,6 +7,7 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Buildings/GoldMine.h"
 #include "Core/FactionsUtils.h"
+#include "Navigation/CrowdFollowingComponent.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "RTSPrototype/RTSPrototypeCharacter.h"
 
@@ -143,6 +144,16 @@ void ASAIController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 
+	//Set Crowd Manager
+	if (UCrowdFollowingComponent* CrowdFollowingComponent = FindComponentByClass<UCrowdFollowingComponent>())
+	{
+		CrowdFollowingComponent->SetCrowdSeparation(true);
+		CrowdFollowingComponent->SetCrowdSeparationWeight(50.0f);
+		CrowdFollowingComponent->SetCrowdAvoidanceRangeMultiplier(1.15f);
+	}
+	
+
+	
 	LastInteractionTime = GetWorld()->GetTimeSeconds();
 	if (ARTSPrototypeCharacter* const Unit =Cast<ARTSPrototypeCharacter>(InPawn))
 	{

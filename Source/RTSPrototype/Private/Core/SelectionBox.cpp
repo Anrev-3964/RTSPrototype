@@ -4,6 +4,7 @@
 #include "Core/SelectionBox.h"
 
 #include "Components/DecalComponent.h"
+#include "Core/FactionsUtils.h"
 #include "Core/Selectable.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -171,8 +172,14 @@ void ASelectionBox::HandleHighlight(AActor* ActorInBox, const bool Highlight) co
 	{
 		UE_LOG(LogTemp, Log, TEXT("HandleHighlight: Highlighting Actor %s with value %s"), 
 			*ActorInBox->GetName(), Highlight ? TEXT("true") : TEXT("false"));
-        
-		Selectable->Highlight(Highlight); // Ensure this function is implemented correctly
+		
+		if (IFactionsUtils* FactionsUtils = Cast<IFactionsUtils>(ActorInBox))
+		{
+			if (FactionsUtils->GetFaction() == EFaction::Team1)
+			{
+				Selectable->Highlight(Highlight); // Ensure this function is implemented correctly
+			}
+		}
 	}
 	else
 	{

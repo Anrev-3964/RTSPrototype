@@ -170,7 +170,8 @@ UMaterialInstance* ARTSPrototypeCharacter::GetHighlightMaterial() const
 
 void ARTSPrototypeCharacter::Select()
 {
-	bSelected = true;
+	bSelected = (CurrentFaction == EFaction::Team1);
+
 	Highlight(bSelected);
 	OnUnitSelected.Broadcast(bSelected);
 	if (UnitData)
