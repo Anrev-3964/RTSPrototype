@@ -7,6 +7,7 @@
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
 #include "Chaos/Deformable/MuscleActivationConstraints.h"
+#include "Components/AudioComponent.h"
 #include "Components/BoxComponent.h"
 #include "Framework/RTSPlayerState.h"
 #include "Framework/DataAssets/BuildItemDataAsset.h"
@@ -29,6 +30,9 @@ ABuildable::ABuildable()
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>("StaticMesh");
 	StaticMesh->SetupAttachment(RootComponent);
 	StaticMesh->SetCollisionProfileName("OverlapAll");
+
+	AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComponent"));
+	AudioComponent->SetupAttachment(RootComponent);
 }
 
 void ABuildable::Init(UBuildItemDataAsset* BuildItemData, const TEnumAsByte<EBuildState> NewBuildState)
@@ -153,9 +157,10 @@ void ABuildable::StartBuild()
 		}
 
 		//PlaySound At Location
-		if (BuildData->BuildingInProgressAudioClip)
+		if (BuildData->BuildingInProgressAudioClip && AudioComponent)
 		{
-			UGameplayStatics::PlaySoundAtLocation(this, BuildData->BuildingInProgressAudioClip, GetActorLocation());
+			AudioComponent->SetSound(BuildData->BuildingInProgressAudioClip);
+			AudioComponent->Play();
 		}
 	}
 }
@@ -163,7 +168,10 @@ void ABuildable::StartBuild()
 void ABuildable::EndBuild()
 {
 	ECurrentFaction = EFaction::Team1;
-
+	if (AudioComponent)
+	{
+		AudioComponent->Stop();
+	}
 	if (BuildData)
 	{
 		//Build complete Niagara Compoent 
@@ -190,10 +198,19 @@ void ABuildable::EndBuild()
 			}
 		}
 
-		//PlaySound At Location
-		if (BuildData->BuildingCompletedAudioClip)
+		if (BuildData->CanBeBuiltCloseToGoldSources)
 		{
+			//Buildable get destroyed if built clos eto Gold Source, this play the sound on it's own in way to work after BuildableDestroy
 			UGameplayStatics::PlaySoundAtLocation(this, BuildData->BuildingCompletedAudioClip, GetActorLocation());
+		}
+		else
+		{
+			//PlaySound At Location
+			if (BuildData->BuildingCompletedAudioClip && AudioComponent)
+			{
+				AudioComponent->SetSound(BuildData->BuildingCompletedAudioClip);
+				AudioComponent->Play();
+			}
 		}
 	}
 	

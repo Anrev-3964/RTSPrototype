@@ -118,13 +118,15 @@ protected:
 	UPROPERTY()
 	UMaterialInstanceDynamic* DynamicOverlayMaterial;
 
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	UAudioComponent* AudioComponent;
+
 private:
 
 	UPROPERTY()
 	TSubclassOf<AActor> BuildingActorCompleteClass;
 	UPROPERTY()
 	UNiagaraComponent* SpawnedBuildingNiagaraComponent = nullptr;
-	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	UBoxComponent* BoxCollider;
 
