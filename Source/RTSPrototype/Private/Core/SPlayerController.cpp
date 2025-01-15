@@ -9,6 +9,7 @@
 #include "Core/DefaultCameraPawn.h"
 
 #include "Commandable.h"
+#include "NiagaraFunctionLibrary.h"
 #include "Buildings/GoldMine.h"
 #include "Core/FactionsUtils.h"
 #include "Core/Selectable.h"
@@ -89,7 +90,7 @@ void ASPlayerController::GiveOrders(const FHitResult& HitSelection)
 	//**Player Selected something selectable **//
 	if (ISelectable* Selectable = Cast<ISelectable>(ActorToSelect))
 	{
-		//** Chwck if Selected Actor is in the same player Faction**//
+		//** Check if Selected Actor is in the same player Faction**//
 		if (IFactionsUtils* FactionsUtils = Cast<IFactionsUtils>(ActorToSelect))
 		{
 			if (!FactionsUtils)return;
@@ -141,6 +142,29 @@ void ASPlayerController::GiveOrders(const FHitResult& HitSelection)
 	else
 	{
 		MoveUnitsToDestination(HitSelection.ImpactPoint);
+		//SpawnNiagaraEffect
+		if (MoveToLocationNiagaraEffect)
+		{
+			//Spawn Niagara Effect
+			FVector Location = HitSelection.ImpactPoint;
+			FRotator Rotation = FRotator::ZeroRotator;
+
+			UNiagaraComponent* SpawnedBuildingNiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+				GetWorld(),         // World
+				MoveToLocationNiagaraEffect,      // Niagara System To Spawn
+				Location,           // Position
+				Rotation,           // Rotation
+				FVector(1.5f)); // Scale
+		}
+
+		/**
+		if (SpawnedBuildingNiagaraComponent)
+		{
+			// Imposta il parametro utente "LoopDuration" su 5.0f
+			float LoopDuration = BuildData->BuildingInProgressNiagara_LoopDuration;
+			SpawnedBuildingNiagaraComponent->SetVariableFloat(FName("LoopDuration"), LoopDuration);
+		}
+		**/
 	}
 }
 

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "NiagaraSystem.h"
 #include "Framework/DataAssets/BuildData.h"
 #include "Core/FactionsEnum.h"
 #include "GameFramework/PlayerController.h"
@@ -88,6 +89,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player Settings")
 	UDataAsset* PlayerActionAsset;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
+	UNiagaraSystem* MoveToLocationNiagaraEffect;
 
 	UFUNCTION()
 	void ServerPlace(AActor* PlacementPreviewToSpawn);
