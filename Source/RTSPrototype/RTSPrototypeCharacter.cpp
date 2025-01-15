@@ -22,6 +22,7 @@
 #include "Framework/HUD/CustomHUD.h"
 #include "Framework/HUD/GameMenuWidget.h"
 #include "Framework/HUD/UHudWidget.h"
+#include "Kismet/GameplayStatics.h"
 
 ARTSPrototypeCharacter::ARTSPrototypeCharacter()
 {
@@ -61,6 +62,22 @@ void ARTSPrototypeCharacter::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 }
+
+void ARTSPrototypeCharacter::PlayRandomSound()
+{
+	if (UnitData->SelectedUnitAudioClips.Num() >0)
+	{
+		int32 ArrayLenght = UnitData->SelectedUnitAudioClips.Num();
+		int32 SelectedAudioClipIndex = FMath::RandRange(0, ArrayLenght-1);
+
+		//Play SelectedSound
+		if (USoundBase* SelectedSound = UnitData->SelectedUnitAudioClips[SelectedAudioClipIndex])
+		{
+			UGameplayStatics::PlaySoundAtLocation(this, SelectedSound, GetActorLocation());
+		}
+	}
+}
+
 
 void ARTSPrototypeCharacter::BeginPlay()
 {
@@ -124,6 +141,14 @@ void ARTSPrototypeCharacter::ManageBuildMenu(bool bIsSelected)
 	}
 }
 
+void ARTSPrototypeCharacter::PlayAudioClip(USoundBase* ClipToPlay)
+{
+	if (ClipToPlay)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, ClipToPlay, GetActorLocation());
+	}
+}
+
 void ARTSPrototypeCharacter::LoadData() const
 {
 	if (UAssetManager* AssetManager = UAssetManager::GetIfInitialized())
@@ -171,9 +196,11 @@ UMaterialInstance* ARTSPrototypeCharacter::GetHighlightMaterial() const
 void ARTSPrototypeCharacter::Select()
 {
 	bSelected = (CurrentFaction == EFaction::Team1);
-
+	
 	Highlight(bSelected);
+	PlayRandomSound();
 	OnUnitSelected.Broadcast(bSelected);
+
 	if (UnitData)
 	{
 		if (UnitData->GetName() == TEXT("Peone"))
@@ -389,7 +416,8 @@ void ARTSPrototypeCharacter::Attack()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("inizio l'animaizone di ATTACO"));
 		PlayAnimMontage(AttackMontage);
-
+		PlayAudioClip(UnitData->UnitAttackAudioClip);
+		
 		//Try to get the targe from behaivor tree
 		if (Tree)
 		{

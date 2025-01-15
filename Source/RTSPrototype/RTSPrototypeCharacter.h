@@ -43,6 +43,10 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;
 
+	UFUNCTION()
+	void PlayRandomSound();
+
+
 protected:
 	virtual void BeginPlay() override;
 	/** Data Management **/
@@ -81,6 +85,9 @@ protected:
 	void AssignUnitStatsFromDataAsset();
 	UFUNCTION()
 	void ManageBuildMenu(bool bIsSelected);
+
+	UFUNCTION()
+	void PlayAudioClip(USoundBase* ClipToPlay);
 
 public:
 	/**ISelectable Interface**/

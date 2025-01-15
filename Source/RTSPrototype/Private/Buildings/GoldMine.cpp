@@ -7,6 +7,7 @@
 #include "Components/BoxComponent.h"
 #include "Framework/DataAssets/BuildItemDataAsset.h"
 #include "GameFramework/GameStateBase.h"
+#include "Kismet/GameplayStatics.h"
 
 
 AGoldMine::AGoldMine(const FObjectInitializer& ObjectInitializer)
@@ -188,20 +189,17 @@ void AGoldMine::EstractGold()
 
 		if (GoldEstractAmount >= GoldAmount)
 		{
-			if (GEngine)
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red , "Oro finito");
-			}
 			OwnerPlayerState->AddGold(GoldAmount);
 			GoldAmount = 0;
 			Destroy();
 		}
 		else
 		{
-			if (GEngine)
+			if (GoldMineData && GoldMineData->GoldCollectedAudioClip)
 			{
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, "c'e ancora oro");
+				UGameplayStatics::PlaySoundAtLocation(this, GoldMineData->GoldCollectedAudioClip, GetActorLocation());
 			}
+			
 			GoldAmount -= GoldEstractAmount;
 			OwnerPlayerState->AddGold(GoldEstractAmount);
 		}

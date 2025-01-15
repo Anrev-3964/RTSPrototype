@@ -108,3 +108,23 @@ float UUnitData::GetUnitAcceptableRadius() const
 	return UnitAcceptableRadius;
 }
 
+/**
+float UUnitData::GetRandomMaxPitch() const
+{
+	if (RandomMaxPitch > 0)
+	{
+		return RandomMaxPitch;
+	}
+	return 1.0f;
+}
+
+float UUnitData::GetRandomMinPitch() const
+{
+	if (RandomMinPitch > 0)
+	{
+		return RandomMinPitch;
+	}
+	return 1.0f;
+}
+**/
+

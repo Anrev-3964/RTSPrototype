@@ -55,7 +55,11 @@ public:
 	float TierTwoBuildingUpgradeCost;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tier 2 Settings")
 	UNiagaraSystem* TierTwoCompleteNiagaraSystem;
-
+	UPROPERTY(EditAnywhere, BlueprintReadOnly , Category = "Tier 2 Settings")
+	USoundBase* TierTwoCompletedAudioClip;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly , Category = "General Settings")
+	USoundBase* GoldCollectedAudioClip;
 	/** Tier 3 settings **/
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tier 3 Settings")
@@ -66,6 +70,8 @@ public:
 	float TierThreeBuildingUpgradeCost;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tier 3 Settings")
 	UNiagaraSystem* TierThreeCompleteNiagaraSystem;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly , Category = "Tier 3 Settings")
+	USoundBase* TierThreeCompletedAudioClip;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Upgrading")
 	UNiagaraSystem* UpgradingNiagaraSystem;

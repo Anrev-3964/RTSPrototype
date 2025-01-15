@@ -46,6 +46,12 @@ class RTSPROTOTYPE_API UUnitData : public UDataAsset
 	UPROPERTY(EditDefaultsOnly, Category = "Unit AI ",meta = (Tooltip = "Range tolleranza per il navmesh dell'unita (UnitAcceptanceRadius = 100 se : UnitAcceptanceRadius < 100)"))
 	float UnitAcceptableRadius;
 
+	UPROPERTY(EditDefaultsOnly,Category = "Audio")
+	float RandomMaxPitch;
+	
+	UPROPERTY(EditDefaultsOnly,Category = "Audio")
+	float RandomMinPitch;
+
 public:
 	/**Get Fuctions**/
 	UFUNCTION(BlueprintCallable, Category = "Get Unit Data")
@@ -83,4 +89,19 @@ public:
 	float GetAttackRange()  const;
 	UFUNCTION(BlueprintCallable, Category = "Get Unit Data")
 	float GetUnitAcceptableRadius()  const;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly , Category = "Audio")
+	TArray<USoundBase*> SelectedUnitAudioClips;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly , Category = "Audio")
+	USoundBase* UnitAttackAudioClip;
+
+	/**
+	UFUNCTION(Category= "Audio")
+	float GetRandomMaxPitch() const;
+
+	UFUNCTION(Category= "Audio")
+	float  GetRandomMinPitch() const;
+	**/
+	
 };
