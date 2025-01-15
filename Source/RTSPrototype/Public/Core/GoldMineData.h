@@ -60,6 +60,8 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly , Category = "General Settings")
 	USoundBase* GoldCollectedAudioClip;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly , Category = "General Settings")
+	USoundBase* MineUpgradingAudioClip;
 	/** Tier 3 settings **/
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tier 3 Settings")

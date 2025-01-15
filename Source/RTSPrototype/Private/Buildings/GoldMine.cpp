@@ -199,7 +199,6 @@ void AGoldMine::EstractGold()
 			{
 				UGameplayStatics::PlaySoundAtLocation(this, GoldMineData->GoldCollectedAudioClip, GetActorLocation());
 			}
-			
 			GoldAmount -= GoldEstractAmount;
 			OwnerPlayerState->AddGold(GoldEstractAmount);
 		}

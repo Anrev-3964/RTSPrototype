@@ -61,6 +61,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Building In Progress Effect Configuration")
 	FVector BuildingInProgressNiagara_SpawnOffset = {FVector::Zero()};
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly , Category = "Building In Progress Effect Configuration")
+	USoundBase* BuildingInProgressAudioClip;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Building Completed Configuration")
 	UNiagaraSystem* BuildingCompletedNiagaraSystem;
 
@@ -69,7 +72,10 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Building Completed Configuration")
 	FVector BuildingCompletedNiagara_SpawnOffset = {FVector::Zero()};
-	
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly , Category = "Building Completed Configuration")
+	USoundBase* BuildingCompletedAudioClip;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Selection")
 	TSoftObjectPtr<UMaterialInstance> PlaceMaterial;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Selection")

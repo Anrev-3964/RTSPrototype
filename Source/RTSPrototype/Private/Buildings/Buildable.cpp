@@ -11,6 +11,7 @@
 #include "Framework/RTSPlayerState.h"
 #include "Framework/DataAssets/BuildItemDataAsset.h"
 #include "GameFramework/GameStateBase.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
@@ -127,55 +128,74 @@ void ABuildable::StartBuild()
 
 	OnBuildStarted.Broadcast(this);
 
-	//Spawn NiagaraSystem
-	if (BuildData->BuildingInProgressNiagaraSystem)
+	if (BuildData)
 	{
-		FVector Location = GetActorLocation() + BuildData->BuildingInProgressNiagara_SpawnOffset;
-		FRotator Rotation = FRotator::ZeroRotator;
+		//Spawn Niagara System
+		if (BuildData->BuildingInProgressNiagaraSystem)
+		{
+			//Spawn Niagara Effect
+			FVector Location = GetActorLocation() + BuildData->BuildingInProgressNiagara_SpawnOffset;
+			FRotator Rotation = FRotator::ZeroRotator;
 
-		SpawnedBuildingNiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
-			GetWorld(),         // World
-			BuildData->BuildingInProgressNiagaraSystem,      // Niagara System To Spawn
-			Location,           // Position
-			Rotation,           // Rotation
-			FVector(1.0f)); // Scale
-	}
+			SpawnedBuildingNiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+				GetWorld(),         // World
+				BuildData->BuildingInProgressNiagaraSystem,      // Niagara System To Spawn
+				Location,           // Position
+				Rotation,           // Rotation
+				FVector(1.0f)); // Scale
+		}
 
-	if (SpawnedBuildingNiagaraComponent)
-	{
-		// Imposta il parametro utente "LoopDuration" su 5.0f
-		float LoopDuration = BuildData->BuildingInProgressNiagara_LoopDuration;
-		SpawnedBuildingNiagaraComponent->SetVariableFloat(FName("LoopDuration"), LoopDuration);
+		if (SpawnedBuildingNiagaraComponent)
+		{
+			// Imposta il parametro utente "LoopDuration" su 5.0f
+			float LoopDuration = BuildData->BuildingInProgressNiagara_LoopDuration;
+			SpawnedBuildingNiagaraComponent->SetVariableFloat(FName("LoopDuration"), LoopDuration);
+		}
+
+		//PlaySound At Location
+		if (BuildData->BuildingInProgressAudioClip)
+		{
+			UGameplayStatics::PlaySoundAtLocation(this, BuildData->BuildingInProgressAudioClip, GetActorLocation());
+		}
 	}
 }
 
 void ABuildable::EndBuild()
 {
 	ECurrentFaction = EFaction::Team1;
-	//Build complete Niagara Compoent 
-	if (BuildData->BuildingCompletedNiagaraSystem)
+
+	if (BuildData)
 	{
-		//Spawn NiagaraSystem
+		//Build complete Niagara Compoent 
 		if (BuildData->BuildingCompletedNiagaraSystem)
 		{
-			FVector Location = GetActorLocation() + BuildData->BuildingCompletedNiagara_SpawnOffset;
-			FRotator Rotation = FRotator::ZeroRotator;
+			//Spawn NiagaraSystem
+			if (BuildData->BuildingCompletedNiagaraSystem)
+			{
+				FVector Location = GetActorLocation() + BuildData->BuildingCompletedNiagara_SpawnOffset;
+				FRotator Rotation = FRotator::ZeroRotator;
 
-			SpawnedBuildingNiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
-				GetWorld(),         // World
-				BuildData->BuildingCompletedNiagaraSystem,      // Niagara System To Spawn
-				Location,           // Position
-				Rotation,           // Rotation
-				FVector(1.0f)); // Scale
+				SpawnedBuildingNiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+					GetWorld(),         // World
+					BuildData->BuildingCompletedNiagaraSystem,      // Niagara System To Spawn
+					Location,           // Position
+					Rotation,           // Rotation
+					FVector(1.0f)); // Scale
+			}
+			//Set Niagara Loop Duration
+			if (SpawnedBuildingNiagaraComponent)
+			{
+				float LoopDuration = BuildData->BuildingCompletedNiagara_LoopDuration;
+				SpawnedBuildingNiagaraComponent->SetVariableFloat(FName("Lifetime"), LoopDuration);
+			}
 		}
-		//Set Niagara Loop Duration
-		if (SpawnedBuildingNiagaraComponent)
+
+		//PlaySound At Location
+		if (BuildData->BuildingCompletedAudioClip)
 		{
-			float LoopDuration = BuildData->BuildingCompletedNiagara_LoopDuration;
-			SpawnedBuildingNiagaraComponent->SetVariableFloat(FName("Lifetime"), LoopDuration);
+			UGameplayStatics::PlaySoundAtLocation(this, BuildData->BuildingCompletedAudioClip, GetActorLocation());
 		}
 	}
-
 	
 	GetWorldTimerManager().ClearTimer(BuildTimer);
 	if (BuildState != EBuildState::BuildComplete)
