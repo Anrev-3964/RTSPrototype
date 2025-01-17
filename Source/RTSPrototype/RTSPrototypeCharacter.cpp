@@ -7,9 +7,7 @@
 #include "MaterialDomain.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Buildings/GoldMine.h"
-#include "RTSPrototypeGameMode.h"
 #include "Camera/CameraComponent.h"
-#include "Components/Button.h"
 #include "Components/CapsuleComponent.h"
 #include "Core/SAIController.h"
 #include "Engine/AssetManager.h"
@@ -203,7 +201,7 @@ void ARTSPrototypeCharacter::Select()
 
 	if (UnitData)
 	{
-		if (UnitData->GetName() == TEXT("Peone"))
+		if (UnitData->GetCanMineGold())
 		{
 			ManageBuildMenu(bSelected);
 		}
@@ -225,7 +223,7 @@ void ARTSPrototypeCharacter::DeSelect()
 	OnUnitSelected.Broadcast(bSelected);
 	if (UnitData)
 	{
-		if (UnitData->GetName() == TEXT("Peone"))
+		if (UnitData->GetCanMineGold())
 		{
 			ManageBuildMenu(bSelected);
 		}
@@ -481,29 +479,6 @@ void ARTSPrototypeCharacter::StartMiningGold(AActor* Target)
 
 void ARTSPrototypeCharacter::EstractGoldFromMine(AActor* Target)
 {
-	/**
-	if (Tree && Target)
-	{
-		AAIController* AIController = Cast<AAIController>(GetController());
-		if (!AIController) return;
-
-		UBlackboardComponent* BlackboardComp = AIController->GetBlackboardComponent();
-		if (!BlackboardComp) return;
-
-		if (UObject* TargetObject = BlackboardComp->GetValueAsObject("TargetActor"))
-		{
-			if (AGoldMine* TargetGoldMine = Cast<AGoldMine>(TargetObject))
-			{
-				if (TargetGoldMine->GetGoldAmount() >=0 && MiningMontage)
-				{
-					PlayAnimMontage(MiningMontage);
-					TargetGoldMine->EstractGold();
-				}
-			}
-		}
-
-	}
-	**/
 	if (MiningMontage)
 	{
 		PlayAnimMontage(MiningMontage);

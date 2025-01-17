@@ -33,14 +33,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh")
 	TSoftObjectPtr<UStaticMesh> MeshReference;
 
-	/**
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tier Configuration")
-	TSubclassOf<AActor> TierOneBuildingActorClass;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tier Configuration")
-	TSubclassOf<AActor> TierTwoBuildingActorClass;
-	**/
-
 	/** Tier 1 settings **/ 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tier 1 Settings")
 	int TierOneGoldEstractionAmount = {1};

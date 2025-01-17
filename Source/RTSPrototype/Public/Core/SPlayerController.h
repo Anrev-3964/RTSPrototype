@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "NiagaraSystem.h"
-#include "Framework/DataAssets/BuildData.h"
 #include "Core/FactionsEnum.h"
 #include "GameFramework/PlayerController.h"
 #include "SPlayerController.generated.h"
@@ -33,8 +32,7 @@ public:
 	FHitResult GetMousePositionOnTerrain() const;
 	UFUNCTION()
 	FHitResult GetMousePositionOnSurface() const;
-
-	//TEnumAsByte<EBuildAssetFilter> GetBuildFilter() const { return BuildAssetFilter; };
+	
 
 	UFUNCTION()
 	void MoveUnitsToDestination(const FVector& Destination);
@@ -54,9 +52,6 @@ protected:
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UBuildComponent* BuildComponent;
-
-	//UPROPERTY()
-	//TEnumAsByte<EBuildAssetFilter> BuildAssetFilter = Filter1;
 
 	/** Enhanced Input **/
 public:
@@ -111,6 +106,5 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Other Settings")
 	EFaction PlayerFaction;
-	//TO DO : definire una funzione che ordini alle unita dentro SelectedActors di muoversi veros la destinazione
 };
 

@@ -54,8 +54,6 @@ class RTSPROTOTYPE_API UUnitData : public UDataAsset
 
 public:
 	/**Get Fuctions**/
-	UFUNCTION(BlueprintCallable, Category = "Get Unit Data")
-	FString GetName() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Get Unit Data")
 	UTexture2D* GetImage() const;
@@ -95,13 +93,4 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly , Category = "Audio")
 	USoundBase* UnitAttackAudioClip;
-
-	/**
-	UFUNCTION(Category= "Audio")
-	float GetRandomMaxPitch() const;
-
-	UFUNCTION(Category= "Audio")
-	float  GetRandomMinPitch() const;
-	**/
-	
 };

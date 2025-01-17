@@ -156,15 +156,6 @@ void ASPlayerController::GiveOrders(const FHitResult& HitSelection)
 				Rotation,           // Rotation
 				FVector(1.5f)); // Scale
 		}
-
-		/**
-		if (SpawnedBuildingNiagaraComponent)
-		{
-			// Imposta il parametro utente "LoopDuration" su 5.0f
-			float LoopDuration = BuildData->BuildingInProgressNiagara_LoopDuration;
-			SpawnedBuildingNiagaraComponent->SetVariableFloat(FName("LoopDuration"), LoopDuration);
-		}
-		**/
 	}
 }
 
@@ -451,24 +442,7 @@ FHitResult ASPlayerController::GetMousePositionOnTerrain() const
 
 	return FHitResult();
 }
-/**
-FVector ASPlayerController::GetMousePositionOnTerrain() const
-{
-	FVector WorldLocation, WorldDirection;
-	DeprojectMousePositionToWorld(WorldLocation, WorldDirection);
-	FHitResult OutHit;
-	if (GetWorld()->LineTraceSingleByChannel(OutHit, WorldLocation,
-		WorldLocation + (WorldDirection * 100000.0f), ECC_GameTraceChannel1))
-	{
-		if (OutHit.bBlockingHit)
-		{
-			return OutHit.Location;
-		}
-	}
 
-	return FVector::ZeroVector;
-}
-**/
 FHitResult ASPlayerController::GetMousePositionOnSurface() const
 {
 	FVector WorldLocation, WorldDirection;

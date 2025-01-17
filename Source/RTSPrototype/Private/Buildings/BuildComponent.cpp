@@ -101,15 +101,9 @@ void UBuildComponent::OnBuildDataLoaded(TArray<FPrimaryAssetId> BuildAssetsIds)
 			       *BuildAssetsIds[i].ToString());
 			continue;
 		}
-
-		//UE_LOG(LogTemp, Log, TEXT("Checking BuildAssetFilter: %i vs %i"), 
-		//	BuildDataAsset->BuildAssetFilter, SPlayer->GetBuildFilter());
-
-		//if (BuildDataAsset->BuildAssetFilter == SPlayer->GetBuildFilter())
-		//{
+		
 		BuildItemsData.Add(BuildAssetsIds[i]);
 		UE_LOG(LogTemp, Log, TEXT("Added asset: %s"), *BuildAssetsIds[i].ToString());
-		//}
 	}
 }
 

@@ -89,8 +89,6 @@ protected:
 	AActor* GetSelectedObject();
 	UFUNCTION()
 	void MouseRightPressed();
-	//UFUNCTION()
-	//void MouseRightReleased();
 	UFUNCTION()
 	void CreateSelectionBox();
 	

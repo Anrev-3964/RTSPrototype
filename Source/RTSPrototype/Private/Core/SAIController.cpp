@@ -83,7 +83,6 @@ AActor* ASAIController::FindClosetTarget() const
 				}
 			}
 		}
-		//UE_LOG(LogTemp, Error, TEXT("attore vicino : %p"), ClosestActor);
 		return ClosestActor;
 	}
 	return nullptr;
@@ -260,22 +259,6 @@ void ASAIController::StartMiningGold(AActor* TargetActor)
 	}
 }
 
-//TO DO : da modificare
-void ASAIController::SetUnitSightRadius(int newRadius)
-{
-	if (SightConfig)
-	{
-		SightConfig->SightRadius = newRadius;
-	}
-}
-//TO DO : da modificare
-void ASAIController::SetUnitLoseSightRadius(int newRadius)
-{
-	if (SightConfig)
-	{
-		SightConfig->LoseSightRadius = newRadius;
-	}
-}
 
 
 

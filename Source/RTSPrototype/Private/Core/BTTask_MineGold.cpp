@@ -16,8 +16,6 @@ UBTTask_MineGold::UBTTask_MineGold()
 
 EBTNodeResult::Type UBTTask_MineGold::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	//return Super::ExecuteTask(OwnerComp, NodeMemory);
-	
 	auto const* const UnitController = OwnerComp.GetAIOwner();
 	auto* const UnitPawn = Cast<ARTSPrototypeCharacter>(UnitController->GetPawn());
 

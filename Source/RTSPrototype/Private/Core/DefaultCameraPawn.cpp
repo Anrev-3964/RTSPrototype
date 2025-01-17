@@ -12,7 +12,6 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "RTSPrototype/RTSPrototypeCharacter.h"
 
 // Sets default values
 ADefaultCameraPawn::ADefaultCameraPawn()
@@ -93,10 +92,6 @@ AActor* ADefaultCameraPawn::GetSelectedObject()
 		FHitResult Hit;
 		if (World->LineTraceSingleByChannel(Hit, WorldLocation, EndLocation, ECC_Visibility, Params))
 		{
-
-			//DrawDebugLine(World, WorldLocation, Hit.ImpactPoint, FColor::Green, false, 2.0f, 0, 1.0f);
-			//DrawDebugSphere(World, Hit.ImpactPoint, 10.0f, 12, FColor::Red, false, 2.0f);
-			
 			if (AActor* Actor = Hit.GetActor())
 			{
 				return Actor;
@@ -351,7 +346,6 @@ void ADefaultCameraPawn::PawnMove()
 	RightMouseHitLocation = SPlayer->GetMousePositionOnTerrain().Location;
 	//Ask the player to move his troops
 	SPlayer->MoveUnitsToDestination(RightMouseHitLocation);
-	//TO DO : controllare cosa ha clicato il giocatore, sulla base di cosa ha cliclato, fare un azione
 }
 
 // Called every frame

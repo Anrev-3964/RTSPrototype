@@ -3,19 +3,11 @@
 
 #include "Framework/SGameState.h"
 
-#include "Net/UnrealNetwork.h"
-
 ASGameState::ASGameState()
 {
 	PrimaryActorTick.bCanEverTick = true;
-	SetReplicates(true); //to delete maybe
 }
 
-void ASGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	/*Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(ASGameState, PlacedObjects);*/ //SERVER
-}
 void ASGameState::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);

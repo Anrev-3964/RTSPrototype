@@ -8,7 +8,6 @@
 #include "FactionsEnum.h"
 #include "UnitStateEnum.h"
 #include "Core/UnitData.h"
-#include "Perception/AIPerceptionComponent.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AISense_Sight.h"
 #include "Perception/AISenseConfig_Sight.h" 
@@ -40,9 +39,6 @@ class RTSPROTOTYPE_API ASAIController : public ADetourCrowdAIController
 	UFUNCTION()
 	void ChaseAndAttackTarget(AActor* TargetActor);
 	void StartMiningGold(AActor* TargetActor);
-	UFUNCTION()
-	void SetUnitSightRadius(int newRadius);
-	void SetUnitLoseSightRadius(int newRadius);
 	
 private:
 

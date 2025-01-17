@@ -226,19 +226,6 @@ void ABuildable::EndBuild()
 
 void ABuildable::UpdateCollider()
 {
-	/**
-	if (!StaticMesh && !BoxCollider) return;
-	FVector MinMeshBounds, MaxMeshBounds;
-	StaticMesh->GetLocalBounds(MinMeshBounds, MaxMeshBounds);
-
-	BoxCollider->SetBoxExtent(FVector(
-	FMath::Max((FMath::RoundToInt(MaxMeshBounds.X + 10.0f)), 100.0f),
-	FMath::Max((FMath::RoundToInt(MaxMeshBounds.Y + 10.0f)), 100.0f),
-	FMath::Max((FMath::RoundToInt(MaxMeshBounds.Z + 10.0f)), 100.0f)
-	), true);
-
-	BoxCollider->SetWorldRotation(UKismetMathLibrary::MakeRotFromX(FVector(1.0f, 0.0f, 0.0f)));
-	**/
 }
 
 void ABuildable::SetOverlayMaterial()
@@ -294,31 +281,7 @@ void ABuildable::UpdateBuildProgression()
 		if (TSubclassOf<AActor> BuildingActorClass = BuildData->BuildingActorComplete)
 		{
 			SetStaticMeshFromActor();
-			/**
-			// Spawna l'attore come figlio dell'attore corrente
-			FActorSpawnParameters SpawnParams;
-			SpawnParams.Owner = this;
-			SpawnParams.Instigator = GetInstigator();
-
-			FTransform SpawnTransform = GetActorTransform(); // Posizione e orientamento dell'attore corrente
-			WeakActorPtr = GetWorld()->SpawnActor<AActor>(BuildingActorClass, SpawnTransform, SpawnParams);
-
-			if (WeakActorPtr.IsValid())
-			{
-				AActor* ValidActor = WeakActorPtr.Get();
-				ValidActor->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
-			}
-			**/
 		}
-		
-		/**
-		if (UStaticMesh* DisplayMesh = BuildData->BuildingMeshComplete.LoadSynchronous())
-		{
-			StaticMesh->SetStaticMesh(DisplayMesh);
-			StaticMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-			StaticMesh->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
-		}
-		**/
 		BuildState = EBuildState::BuildComplete;
 		EndBuild();
 	}
@@ -548,7 +511,7 @@ AActor* ABuildable::GetActor()
 	{
 		return WeakActorPtr.Get();
 	}
-	return nullptr;  // Restituisce nullptr se il puntatore è non valido
+	return nullptr;
 }
 
 void ABuildable::SetCurrentFaction(EFaction NewFaction)

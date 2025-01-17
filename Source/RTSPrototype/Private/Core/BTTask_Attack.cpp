@@ -33,7 +33,6 @@ EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 		//dont attack if the unit is already attacking (anim montage in play)
 		if (MontageHasFinished(UnitPawn))
 		{
-			//UE_LOG(LogTemp, Warning, TEXT("sono ABBASTANZA VICINO per attacarlo"));
 			Icommandable->Attack();
 		}
 	}

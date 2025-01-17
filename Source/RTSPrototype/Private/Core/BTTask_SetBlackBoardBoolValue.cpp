@@ -15,7 +15,6 @@ EBTNodeResult::Type UBTTask_SetBlackBoardBoolValue::ExecuteTask(UBehaviorTreeCom
 	if (UBlackboardComponent* BlackboardComp = OwnerComp.GetBlackboardComponent())
 	{
 		BlackboardComp->SetValueAsBool(GetSelectedBlackboardKey(),bNewBoolValue);
-		//UE_LOG(LogTemp, Warning, TEXT("valore della nuova blackboard %d"), BlackboardComp->GetValueAsBool(GetSelectedBlackboardKey()));
 	}
 
 	return EBTNodeResult::Succeeded;

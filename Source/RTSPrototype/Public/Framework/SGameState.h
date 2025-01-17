@@ -22,6 +22,6 @@ class RTSPROTOTYPE_API ASGameState : public AGameStateBase
 protected:
 	virtual void BeginPlay() override;
 
-	UPROPERTY(Replicated)
+	UPROPERTY()
 	TArray<FWorldSelectableData> PlacedObjects;
 };

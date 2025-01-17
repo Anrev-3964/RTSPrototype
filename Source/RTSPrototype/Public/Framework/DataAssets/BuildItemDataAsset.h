@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "NiagaraSystem.h"
 #include "Engine/DataAsset.h"
-#include "BuildData.h"
 #include "BuildItemDataAsset.generated.h"
 
 /**
@@ -24,9 +23,7 @@ public:
 	{
 		return FPrimaryAssetId(DataType, GetFName());
 	}
-
-	/*UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Display")
-	TEnumAsByte<EBuildAssetFilter> BuildAssetFilter;*/
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Configuration")
 	FText TitleText;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Configuration")

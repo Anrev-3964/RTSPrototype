@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "Buildable.h"
 #include "ITriggerBoxArea.h"
-#include "Components/BoxComponent.h"
 #include "Components/SceneComponent.h"
 #include "Core/FactionsUtils.h"
 #include "Core/GoldMineData.h"

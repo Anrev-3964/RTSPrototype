@@ -12,13 +12,6 @@ EBTNodeResult::Type UBTTask_SetBlackBoardEnumState::ExecuteTask(UBehaviorTreeCom
 {
 	if (UBlackboardComponent* BlackboardComp = OwnerComp.GetBlackboardComponent())
 	{
-		/**
-		if (EnumKey.SelectedKeyName != FName()) //FName : default value
-		{
-			BlackboardComp->SetValueAsEnum(EnumKey.SelectedKeyName, static_cast<uint8>(DesiredEnumValue));
-			return EBTNodeResult::Succeeded;
-		}
-		**/
 		{
 			BlackboardComp->SetValueAsEnum(GetSelectedBlackboardKey(), static_cast<uint8>(DesiredEnumValue));
 			return EBTNodeResult::Succeeded;

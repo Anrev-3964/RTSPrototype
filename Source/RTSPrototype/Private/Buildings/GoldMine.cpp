@@ -120,12 +120,6 @@ void AGoldMine::MineStarted(ABuildable* Buildable)
 		
 		if (UBuildItemDataAsset* BuildItemDataAsset = Buildable->GetBuildItemData())
 		{
-			/**
-			TSoftObjectPtr<UStaticMesh> NewMesh = BuildItemDataAsset->BuildingMeshComplete;
-			CompletedMineMesh = NewMesh;
-			Buildable->OnBuildCompleteEvent.AddDynamic(this, &AGoldMine::MineCompleted);
-			Buildable->SetActorLocation(GetActorLocation());
-			**/
 			Buildable->OnBuildCompleteEvent.AddDynamic(this, &AGoldMine::MineCompleted);
 			Buildable->SetActorLocation(GetActorLocation());
 			BuildingActorCompleteClass =  BuildItemDataAsset->BuildingActorComplete;
@@ -137,32 +131,12 @@ void AGoldMine::MineStarted(ABuildable* Buildable)
 
 void AGoldMine:: MineCompleted(const TEnumAsByte<EBuildState> BuildState)
 {
-	FTimerHandle TimerHandle;
-	//GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AGoldMine::SetStaticMeshFromActor, 0.5f, false);
 	MineCurrentLevel++;
 	SetStaticMeshFromActor();
 	CurrentFaction = NewOwnerFaction;
 	OwnerPlayerState = GetOwnerPlayerState();
-
-	/**
-	if (StaticMesh && CompletedMineMesh.IsValid())
-	{
-		UStaticMesh* LoadedMesh = CompletedMineMesh.Get();
-
-		if (!LoadedMesh)
-		{
-			LoadedMesh = CompletedMineMesh.LoadSynchronous();
-		}
-		
-		if (LoadedMesh)
-		{
-			StaticMesh->SetStaticMesh(LoadedMesh);
-		}
-	
-	}
-	**/
 }
-//NOTA : pe rora la quantita di oro estraibile non diminuisce a dogni estrazione
+
 void AGoldMine::EstractGold()
 {
 	if (GoldMineData)
