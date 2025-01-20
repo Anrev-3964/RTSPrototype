@@ -5,7 +5,6 @@
 #include "BehaviorTree/BlackboardComponent.h"
 
 #include "MaterialDomain.h"
-#include "UObject/ConstructorHelpers.h"
 #include "Buildings/GoldMine.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -238,6 +237,7 @@ void ARTSPrototypeCharacter::DeSelect()
 	}
 }
 
+//Prende la/le Mesh e applica l'effetto post process
 void ARTSPrototypeCharacter::Highlight(const bool Highlight)
 {
 TArray<USkeletalMeshComponent*> SkeletalComponents;
@@ -304,6 +304,7 @@ GetComponents<USkeletalMeshComponent>(SkeletalComponents);
 	}
 }
 
+//Restituisce il nome della fazione (attualmente inutilizato)
 FString ARTSPrototypeCharacter::GetFactionName() const
 {
 	switch (CurrentFaction)
@@ -357,12 +358,13 @@ void ARTSPrototypeCharacter::SetHealth(const float NewHealth)
 	Health = NewHealth;
 }
 
+//Far subire danni all'unita 
 void ARTSPrototypeCharacter::InflictDamage(const float Damage)
 {
 	Health -= Damage;
 	Health = FMath::Clamp(Health, 0.f, MaxHealth);
 
-	//call OnDamageTakenEvent if there is at least 1 subscriber
+	//call OnDamageTakenEvent if there is at least 1 subscriber (There is some extra logic in blueprint)
 	if (OnDamageTakenEvent.IsBound())
 	{
 		OnDamageTakenEvent.Broadcast();
@@ -389,11 +391,13 @@ EFaction ARTSPrototypeCharacter::GetFaction() const
 	return CurrentFaction;
 }
 
+//Impostare una nuova fazione per l'unita (attualmente non utilizata)
 void ARTSPrototypeCharacter::SetCurrentFaction(EFaction NewFaction)
 {
-	
+	CurrentFaction = NewFaction;	
 }
 
+//Ordinare all'unita di andare a destinazione
 void ARTSPrototypeCharacter::MoveToDestination(const FVector Destination)
 {
 	//get the pawn AI controller
@@ -408,11 +412,11 @@ void ARTSPrototypeCharacter::MoveToDestination(const FVector Destination)
 	}
 }
 
+//Ordinare all'Unita di attacare (Prende il bersaglio dirretamente dal Behaivor Tree)
 void ARTSPrototypeCharacter::Attack()
 {
 	if (AttackMontage)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("inizio l'animaizone di ATTACO"));
 		PlayAnimMontage(AttackMontage);
 		PlayAudioClip(UnitData->UnitAttackAudioClip);
 		
@@ -449,6 +453,7 @@ void ARTSPrototypeCharacter::Attack()
 	}
 }
 
+//Ordina all'unita di attacare il bersaglio
 void ARTSPrototypeCharacter::ChaseTarget(AActor* TargetActor)
 {
 	if (GEngine)
@@ -477,6 +482,7 @@ void ARTSPrototypeCharacter::StartMiningGold(AActor* Target)
 	}
 }
 
+//quasi identico ad "Attack", con la differenza che interagisce con una miniera
 void ARTSPrototypeCharacter::EstractGoldFromMine(AActor* Target)
 {
 	if (MiningMontage)

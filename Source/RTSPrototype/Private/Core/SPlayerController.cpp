@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "Core/SPlayerController.h"
 
 #include "EnhancedInputSubsystems.h"
@@ -23,6 +22,7 @@ ASPlayerController::ASPlayerController(const FObjectInitializer& ObjectInitializ
 	bPlacementModeEnabled = false;
 }
 
+//Selezionare le unita
 void ASPlayerController::HandleSelection(AActor* ActorToSelect)
 {
 	if (ISelectable* Selectable = Cast<ISelectable>(ActorToSelect))
@@ -51,22 +51,6 @@ void ASPlayerController::HandleSelection(AActor* ActorToSelect)
 					Selectable->Select();
 					SelectedActors.Add(ActorToSelect);
 				}
-
-				else
-					/**Selected actor IS NOT in player faction : you order your units to attack it **/
-				{
-					if (SelectedActors.Num() <= 0) return;
-					for (AActor* Actor : SelectedActors)
-					{
-						if (Actor)
-						{
-							if (ICommandable* CommandableActor = Cast<ICommandable>(Actor))
-							{
-								CommandableActor->ChaseTarget(ActorToSelect);
-							}
-						}
-					}
-				}
 			}
 		}
 	}
@@ -80,6 +64,7 @@ void ASPlayerController::HandleSelection(const TArray<AActor*>& ActorsToSelect)
 	SelectGroup(ActorsToSelect);
 }
 
+//ordinare alle unita di fare qualcosa a seconda di cosa clicchi
 void ASPlayerController::GiveOrders(const FHitResult& HitSelection)
 {
 	if (SelectedActors.Num() <=0) return;

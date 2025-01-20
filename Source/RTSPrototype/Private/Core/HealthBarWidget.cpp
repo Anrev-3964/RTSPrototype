@@ -8,7 +8,7 @@ void UHealthBarWidget::NativeConstruct()
 	Super::NativeConstruct();
 }
 
-void UHealthBarWidget::SetBarPercent(float const value)
+void UHealthBarWidget::SetBarPercent(float const Value)
 {
-	HealthBar->SetPercent(value);
+	HealthBar->SetPercent(Value);
 }

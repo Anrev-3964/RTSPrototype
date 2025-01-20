@@ -17,9 +17,10 @@ class RTSPROTOTYPE_API UHealthBarWidget : public UUserWidget
 public:
 	virtual void NativeConstruct() override;
 	UFUNCTION(BlueprintCallable)
-	void SetBarPercent(float const value);
+	void SetBarPercent(float const Value);
 
 private:
+	
 	//BindWidgte : link a c++ widget in a created blueprint and manipulate it
 	UPROPERTY(BlueprintReadWrite,  meta = (BindWidget, AllowPrivateAccess = true))
 	UProgressBar* HealthBar = nullptr; //it will be se in the blueprint
