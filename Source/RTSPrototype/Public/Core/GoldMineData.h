@@ -21,8 +21,6 @@ private:
 	float MineGoldAmount;
 
 public:
-	UPROPERTY(EditDefaultsOnly, Category = "Mine Settings")
-	int MineMaxtHP = {1};
 	UFUNCTION(BlueprintCallable, Category = "Mine Settings")
 	float GetMineGoldAmount() const;
 
@@ -38,11 +36,14 @@ public:
 	/** Tier 1 settings **/ 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tier 1 Settings")
 	int TierOneGoldEstractionAmount = {1};
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly, Category = "Tier 1 Settings")
+	int TierOneMaxHP = {1};
 
 	/** Tier 2 settings **/
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly, Category = "Tier 2 Settings")
+	int TierTwoMaxHP = {1};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tier 2 Settings")
 	int TierTwoGoldEstractionAmount = {2};
-	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tier 2 Settings")
 	float TierTwoBuildingUpgradeTime;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tier 2 Settings")
@@ -58,6 +59,8 @@ public:
 	USoundBase* MineUpgradingAudioClip;
 	/** Tier 3 settings **/
 
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly, Category = "Tier 3 Settings")
+	int TierThreeMaxHP = {1};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tier 3 Settings")
 	int TierThreeGoldEstractionAmount = {3};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tier 3 Settings")

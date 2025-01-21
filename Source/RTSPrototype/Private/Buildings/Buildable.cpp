@@ -175,10 +175,11 @@ void ABuildable::EndBuild()
 	}
 	if (BuildData)
 	{
+		BuildingMaxHealth = BuildData->HP;
+		BuildingCurrentHealth = BuildData->HP;
 		//Build complete Niagara Compoent 
 		if (BuildData->BuildingCompletedNiagaraSystem)
 		{
-			BuildingCurrentHealth = BuildData->HP;
 			//Spawn NiagaraSystem
 			if (BuildData->BuildingCompletedNiagaraSystem)
 			{

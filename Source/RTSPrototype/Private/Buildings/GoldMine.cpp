@@ -132,9 +132,10 @@ void AGoldMine:: MineCompleted(const TEnumAsByte<EBuildState> BuildState)
 {
 	MineCurrentLevel++;
 	SetStaticMeshFromActor();
+	OnBuildComplete.Broadcast(BuildComplete);
 	CurrentFaction = NewOwnerFaction;
 	OwnerPlayerState = GetOwnerPlayerState();
-	MineCurrentHp = GoldMineData->MineMaxtHP;
+	MineCurrentHp = GoldMineData->TierOneMaxHP;
 }
 
 void AGoldMine::EstractGold()

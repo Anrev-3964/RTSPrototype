@@ -45,7 +45,7 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	int  MineCurrentLevel = {0};
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	float MineCurrentHp = {1.0f};
 
 	UPROPERTY(BlueprintReadWrite, Category = "Variables", meta = (AllowPrivateAccess = "true"))
@@ -119,8 +119,11 @@ public:
 	/** ITriggerBoxArea **/
 	virtual bool ActorIsATriggerArea() override;
 
+	UPROPERTY(BlueprintAssignable)
 	FOnDamageTaken OnDamageTaken;
 	FOnBuildStarted OnBuildStarted;
+	UPROPERTY(BlueprintAssignable)
+	FOnBuildCompleteEvent OnBuildComplete;
 	FOnBuildDestroyed OnBuildDestroyed;
 };
 
