@@ -70,7 +70,7 @@ protected:
 	float SpawnDelay;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	UTexture* UnitImage;
-	UPROPERTY(BlueprintReadOnly,  meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(BlueprintReadWrite,  meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* AttackMontage;
 
 	UPROPERTY(BlueprintReadOnly,  meta = (AllowPrivateAccess = "true"))
