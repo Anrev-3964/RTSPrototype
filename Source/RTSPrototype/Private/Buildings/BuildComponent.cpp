@@ -120,8 +120,6 @@ void UBuildComponent::ClientEnterBuildPlacementMode(UBuildItemDataAsset* BuildIt
 		return;
 	}
 
-	PlayerState->RemoveGold(BuildItemData->GoldCost);
-
 	FTransform SpawnTransform;
 	SpawnTransform.SetLocation(SPlayer->GetMousePositionOnTerrain().Location);
 	FActorSpawnParameters SpawnParams;
@@ -143,6 +141,8 @@ void UBuildComponent::ServerBuildDeploy(UBuildItemDataAsset* BuildData, const FT
 	{
 		return;
 	}
+
+	PlayerState->RemoveGold(BuildData->GoldCost);
 
 	FActorSpawnParameters SpawnParameters;
 	SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
