@@ -51,7 +51,6 @@ void ASAIController::Tick(float DeltaSeconds)
 
 void ASAIController::OnPerceptionUpdated(AActor* UpdatedActor, const FAIStimulus Stimulus)
 {
-
 }
 
 AActor* ASAIController::FindClosetTarget() const
