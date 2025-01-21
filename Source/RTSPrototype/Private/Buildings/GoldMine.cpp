@@ -281,6 +281,10 @@ void AGoldMine::Highlight(const bool Highlight)
 {
 }
 
+void AGoldMine::AttackSelectable(const float DamageAmount)
+{
+}
+
 bool AGoldMine::ActorIsATriggerArea()
 {
 	return true;

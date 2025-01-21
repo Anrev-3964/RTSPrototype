@@ -304,6 +304,12 @@ GetComponents<USkeletalMeshComponent>(SkeletalComponents);
 	}
 }
 
+void ARTSPrototypeCharacter::AttackSelectable(const float DamageAmount)
+{
+	InflictDamage(DamageAmount);
+}
+
+
 //Restituisce il nome della fazione (attualmente inutilizato)
 FString ARTSPrototypeCharacter::GetFactionName() const
 {
@@ -429,6 +435,29 @@ void ARTSPrototypeCharacter::Attack()
 				{
 					if (UObject* TargetObject = BlackboardComp->GetValueAsObject("TargetActor"))
 					{
+						if (ISelectable* TargetCharacter = Cast<ISelectable>(TargetObject))
+						{
+							//Calculate rotation Towards Target
+							if (AActor* TargetActor = Cast<AActor>(TargetObject))
+							{
+								FVector DirectionToTarget = TargetActor->GetActorLocation() - GetActorLocation();
+								DirectionToTarget.Z = 0; // Ignora l'altezza per considerare solo l'asse Z
+
+								if (!DirectionToTarget.IsNearlyZero())
+								{
+									// Calcola la rotazione in base alla direzione
+									FRotator LookAtRotation = DirectionToTarget.Rotation();
+
+									// Imposta solo la rotazione lungo l'asse Z (Yaw)
+									FRotator NewRotation = FRotator(0.0f, LookAtRotation.Yaw, 0.0f);
+									SetActorRotation(NewRotation);
+								}
+							}
+							//Attack Target
+							TargetCharacter->AttackSelectable(AttackValue);
+							OnAttack.Broadcast();
+						}
+						/**
 						if (ARTSPrototypeCharacter* TargetCharacter = Cast<ARTSPrototypeCharacter>(TargetObject))
 						{
 							FVector DirectionToTarget = TargetCharacter->GetActorLocation() - GetActorLocation();
@@ -446,8 +475,9 @@ void ARTSPrototypeCharacter::Attack()
 							TargetCharacter->InflictDamage(AttackValue);
 							OnAttack.Broadcast();
 						}
-					}
-				}
+						**/
+					} 
+				} 
 			}
 		}
 	}

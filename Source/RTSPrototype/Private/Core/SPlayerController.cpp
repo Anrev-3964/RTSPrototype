@@ -79,10 +79,26 @@ void ASPlayerController::GiveOrders(const FHitResult& HitSelection)
 		if (IFactionsUtils* FactionsUtils = Cast<IFactionsUtils>(ActorToSelect))
 		{
 			if (!FactionsUtils)return;
-
 			//** Selected Actor isnt in same player Faction**//
 			if (PlayerFaction != FactionsUtils->GetFaction()) //Selected actor IS in player faction : you can select it
 			{
+				if (GEngine)
+				{
+					GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, "il player ha selezionato un unita  Nemica");
+				}
+				if (SelectedActors.Num() <= 0) return;
+				for (AActor* Actor : SelectedActors)
+				{
+					if (Actor)
+					{
+						if (ICommandable* CommandableActor = Cast<ICommandable>(Actor))
+						{
+							CommandableActor->ChaseTarget(ActorToSelect);
+						}
+					}
+				}
+				
+				/**
 				//for now check if it's a unit, but it can changed for enemy buildings too
 				if (ARTSPrototypeCharacter* SelectedUnit = Cast<ARTSPrototypeCharacter>(ActorToSelect))//Selected actor IS a Unit
 				{
@@ -102,6 +118,7 @@ void ASPlayerController::GiveOrders(const FHitResult& HitSelection)
 						}
 					}
 				}
+				**/
 			}
 			//** Selected Actor is in same player Faction**//
 			else

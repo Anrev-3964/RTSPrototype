@@ -28,4 +28,6 @@ public:
 	virtual void DeSelect() = 0;
 	UFUNCTION()
 	virtual void Highlight(const bool Highlight) = 0;
+	UFUNCTION()
+	virtual void AttackSelectable(const float AttackValue) = 0;
 };

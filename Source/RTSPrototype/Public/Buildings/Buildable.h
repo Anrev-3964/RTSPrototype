@@ -63,13 +63,16 @@ public:
 	int GetBuildID() const;
 
 protected:
-	
-	
+	/**Buildable Stats **/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Build Stats")
+	float BuildingCurrentHealth;
+	/**ISelectable Interface**/
 	UFUNCTION(BlueprintCallable)
 	virtual void Select() override;
 	UFUNCTION(BlueprintCallable)
 	virtual void DeSelect() override;
 	virtual void Highlight(const bool Highlight) override;
+	virtual void AttackSelectable(const float DamageAmount) override;
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -137,4 +140,5 @@ private:
 	ARTSPlayerState* OwnerPlayerState;
 	
 };
+
 

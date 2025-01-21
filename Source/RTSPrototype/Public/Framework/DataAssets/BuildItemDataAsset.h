@@ -37,6 +37,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
 	int GoldCost;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
+	int BuildInProgressHP;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
 	int HP;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
 	bool CanBeBuiltCloseToGoldSources;

@@ -94,6 +94,7 @@ public:
 	virtual void Select() override;
 	virtual void DeSelect() override;
 	virtual void Highlight(const bool Highlight) override;
+	virtual void AttackSelectable(const float DamageAmount) override;
 	/**End ISelectable Interface**/
 
 	UFUNCTION(BlueprintCallable)

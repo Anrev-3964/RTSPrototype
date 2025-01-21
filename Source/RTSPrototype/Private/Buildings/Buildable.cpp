@@ -33,6 +33,8 @@ ABuildable::ABuildable()
 
 	AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComponent"));
 	AudioComponent->SetupAttachment(RootComponent);
+
+	BuildingCurrentHealth = 1.0f;
 }
 
 void ABuildable::Init(UBuildItemDataAsset* BuildItemData, const TEnumAsByte<EBuildState> NewBuildState)
@@ -42,7 +44,6 @@ void ABuildable::Init(UBuildItemDataAsset* BuildItemData, const TEnumAsByte<EBui
 	BuildState = NewBuildState;
 	BuildData = BuildItemData;
 	BuildID = BuildData->BuildID;
-	BuildingActorCompleteClass =  BuildData->BuildingActorComplete;
 	UE_LOG(LogTemp, Error, TEXT("BuildID: %u"), BuildID);
 
 	if (BuildState == EBuildState::Building)
@@ -134,6 +135,8 @@ void ABuildable::StartBuild()
 
 	if (BuildData)
 	{
+		//Assign Building Stats from DataAsset
+		BuildingCurrentHealth = BuildData->BuildInProgressHP;
 		//Spawn Niagara System
 		if (BuildData->BuildingInProgressNiagaraSystem)
 		{
@@ -487,6 +490,11 @@ void ABuildable::Highlight(const bool Highlight)
         }
     }
 }
+
+void ABuildable::AttackSelectable(const float DamageAmount)
+{
+}
+
 
 bool ABuildable::GetBuildingConstructed()
 {

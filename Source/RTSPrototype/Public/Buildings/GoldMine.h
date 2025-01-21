@@ -112,6 +112,8 @@ public:
 	virtual void DeSelect() override;
 	UFUNCTION()
 	virtual void Highlight(const bool Highlight) override;
+	UFUNCTION()
+	virtual void AttackSelectable(const float DamageAmount) override;
 	/** ITriggerBoxArea **/
 	virtual bool ActorIsATriggerArea() override;
 };
