@@ -203,6 +203,7 @@ void ARTSPrototypeCharacter::Select()
 		if (UnitData->GetCanMineGold())
 		{
 			ManageBuildMenu(bSelected);
+			OnPeonSelected.Broadcast(this->GetActorLocation());
 		}
 		else
 		{

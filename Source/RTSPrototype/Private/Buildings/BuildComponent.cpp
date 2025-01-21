@@ -12,7 +12,7 @@
 #include "Framework/DataAssets/BuildItemDataAsset.h"
 #include "GameFramework/GameState.h"
 #include "Kismet/GameplayStatics.h"
-#include "Slate/SGameLayerManager.h"
+#include "RTSPrototype/RTSPrototypeCharacter.h"
 
 // Sets default values for this component's properties
 UBuildComponent::UBuildComponent()
@@ -46,29 +46,54 @@ void UBuildComponent::UpdatePlacementStatus()
 		TArray<AActor*> OverlappingActors;
 		ClientBuildObject->GetOverlappingActors(OverlappingActors);
 
-		if (BuildItemData->CanBeBuiltCloseToGoldSources)
-		{
-			bIsPlaceable = false;
+			TArray<AActor*> FoundCharacters;
+			UGameplayStatics::GetAllActorsOfClass(GetWorld(), ARTSPrototypeCharacter::StaticClass(), FoundCharacters);
+			FVector MyLocation = SPlayer->GetMousePositionOnTerrain().Location;
 			
-			for (AActor* Actor : OverlappingActors)
+			for (AActor* Actor : FoundCharacters)
 			{
 				if (Actor != ClientBuildObject)
 				{
-					if (IITriggerBoxArea* TriggerBox = Cast<IITriggerBoxArea>(Actor))
+					ARTSPrototypeCharacter* PrototypeCharacter = Cast<ARTSPrototypeCharacter>(Actor);
+					if (PrototypeCharacter->GetFaction()==EFaction::Team1 && PrototypeCharacter->GetUnitData()->GetCanMineGold())
 					{
-						bIsPlaceable = TriggerBox->ActorIsATriggerArea(); 
-						ClientBuildObject->UpdateOverlayMaterial(bIsPlaceable);
-						break;
+						float Distance = FVector::Dist(MyLocation, Actor->GetActorLocation());
+
+						if (Distance > MaxBuildDistance)
+						{
+							UE_LOG(LogTemp, Warning, TEXT("Character %s is too far: %f units away"), *Actor->GetName(), Distance);
+							bIsPlaceable = false;
+							ClientBuildObject->UpdateOverlayMaterial(bIsPlaceable);
+						}
+						else
+						{
+							if (BuildItemData->CanBeBuiltCloseToGoldSources)
+							{
+								bIsPlaceable = false;
+			
+								for (AActor* OverlappingActor : OverlappingActors)
+								{
+									if (OverlappingActor != ClientBuildObject)
+									{
+										if (IITriggerBoxArea* TriggerBox = Cast<IITriggerBoxArea>(OverlappingActor))
+										{
+											bIsPlaceable = TriggerBox->ActorIsATriggerArea(); 
+											ClientBuildObject->UpdateOverlayMaterial(bIsPlaceable);
+											break;
+										}
+									}
+								}
+							}
+							else
+							{
+								bIsPlaceable = OverlappingActors.Num() <= 0;
+							}
+							
+							ClientBuildObject->UpdateOverlayMaterial(bIsPlaceable);
+						}
 					}
 				}
-					
 			}
-		}
-		else
-		{
-			bIsPlaceable = OverlappingActors.Num() <= 0;
-			ClientBuildObject->UpdateOverlayMaterial(bIsPlaceable);
-		}
 	}
 }
 
@@ -141,6 +166,8 @@ void UBuildComponent::ServerBuildDeploy(UBuildItemDataAsset* BuildData, const FT
 	{
 		return;
 	}
+
+	
 
 	PlayerState->RemoveGold(BuildData->GoldCost);
 

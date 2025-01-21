@@ -25,7 +25,6 @@ public:
 	UBuildComponent();
 
 protected:
-	//TO CONTINUE AFTER TUTORIAL 2
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
@@ -55,11 +54,13 @@ protected:
 	UPROPERTY()
 	ABuildable* BuildObject;
 	UPROPERTY()
-	ABuildable* ClientBuildObject; //probably server, to remove
+	ABuildable* ClientBuildObject;
 	UPROPERTY()
 	bool bIsPlaceable = false;
 	UPROPERTY()
 	ARTSPlayerState* PlayerState;
+	UPROPERTY()
+	float MaxBuildDistance = 3000.0f;
 
 public:
 	// Called every frame
