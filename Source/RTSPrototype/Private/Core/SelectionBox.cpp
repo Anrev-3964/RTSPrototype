@@ -3,11 +3,13 @@
 
 #include "Core/SelectionBox.h"
 
+#include "Buildings/GoldMine.h"
 #include "Components/DecalComponent.h"
 #include "Core/FactionsUtils.h"
 #include "Core/Selectable.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "RTSPrototype/RTSPrototypeCharacter.h"
 
 // Sets default values
 ASelectionBox::ASelectionBox()
@@ -30,6 +32,7 @@ ASelectionBox::ASelectionBox()
 	
 	
 	bBoxSelected = false;
+	ConstantUnitsLimit = UnitsLimit;
 	
 }
 
@@ -135,7 +138,7 @@ void ASelectionBox::ManageUnits()
 
 	for (int i= 0; i < InBox.Num(); i++)
 	{
-		if (!InBox[i]) // Null check for safety
+		if (!InBox[i])
 		{
 			UE_LOG(LogTemp, Warning, TEXT("ManageUnits: Null Actor in InBox at index %d"), i);
 			continue;
@@ -177,7 +180,7 @@ void ASelectionBox::HandleHighlight(AActor* ActorInBox, const bool Highlight) co
 		{
 			if (FactionsUtils->GetFaction() == EFaction::Team1)
 			{
-				Selectable->Highlight(Highlight); // Ensure this function is implemented correctly
+				Selectable->Highlight(Highlight);
 			}
 		}
 	}
@@ -195,10 +198,14 @@ void ASelectionBox::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, 
 	//check is a selectable unit
 	if (ISelectable* Selectable = Cast<ISelectable>(OtherActor))
 	{
-		if (InBox.Num() < UnitsLimit)
+		if (ARTSPrototypeCharacter* Character = Cast<ARTSPrototypeCharacter>(OtherActor))
 		{
-			InBox.AddUnique(OtherActor);
-			UE_LOG(LogTemp, Warning, TEXT("OVERLAPPED WITH:%p "), OtherActor);
+			if (InBox.Num() < UnitsLimit)
+			{
+				InBox.AddUnique(OtherActor);
+				UE_LOG(LogTemp, Warning, TEXT("OVERLAPPED WITH:%p "), OtherActor);
+				UE_LOG(LogTemp, Error, TEXT("CHARACTER ADDED"));
+			}
 		}
 	}
 }

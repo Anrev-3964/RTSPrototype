@@ -58,6 +58,8 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Units Limit", meta = (AllowPrivateAccess = "true"))
 	int UnitsLimit;
 
+	int ConstantUnitsLimit;
+	
 	UPROPERTY()
 	bool bBoxSelected;
 	UPROPERTY()
