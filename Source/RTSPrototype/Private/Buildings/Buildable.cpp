@@ -42,6 +42,7 @@ void ABuildable::Init(UBuildItemDataAsset* BuildItemData, const TEnumAsByte<EBui
 	BuildState = NewBuildState;
 	BuildData = BuildItemData;
 	BuildID = BuildData->BuildID;
+	BuildingActorCompleteClass = BuildItemData->BuildingActorComplete;
 	UE_LOG(LogTemp, Error, TEXT("BuildID: %u"), BuildID);
 
 	if (BuildState == EBuildState::Building)
@@ -268,7 +269,6 @@ void ABuildable::UpdateBuildProgressionMesh()
 		if (UStaticMesh* DisplayMesh = BuildData->BuildMeshes[BuildMeshIndex].LoadSynchronous())
 		{
 			StaticMesh->SetStaticMesh(DisplayMesh);
-			
 			StaticMesh->SetRelativeScale3D(BuildData->DesiredScale);
 		}
 	}
@@ -284,7 +284,7 @@ void ABuildable::UpdateBuildProgression()
 		if (TSubclassOf<AActor> BuildingActorClass = BuildData->BuildingActorComplete)
 		{
 			SetStaticMeshFromActor();
-		}
+		} 
 		BuildState = EBuildState::BuildComplete;
 		EndBuild();
 	}
@@ -304,6 +304,10 @@ void ABuildable::SetStaticMeshFromActor()
 
 	if (!BuildingActorComplete) return;
 
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("Messaggio di debug : SetStaticMesh"));
+	}
 	//Call an event form blueprint
 
 	FName EventName("SetTierMeshes");
