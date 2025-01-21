@@ -6,7 +6,6 @@
 #include "MaterialDomain.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
-#include "Chaos/Deformable/MuscleActivationConstraints.h"
 #include "Components/AudioComponent.h"
 #include "Components/BoxComponent.h"
 #include "Framework/RTSPlayerState.h"
@@ -180,6 +179,7 @@ void ABuildable::EndBuild()
 		//Build complete Niagara Compoent 
 		if (BuildData->BuildingCompletedNiagaraSystem)
 		{
+			BuildingCurrentHealth = BuildData->HP;
 			//Spawn NiagaraSystem
 			if (BuildData->BuildingCompletedNiagaraSystem)
 			{
@@ -408,6 +408,24 @@ int ABuildable::GetBuildID() const
 	return BuildID;
 }
 
+void ABuildable::InflictDamage(const float AttackValue)
+{
+	BuildingCurrentHealth -= AttackValue;
+	BuildingCurrentHealth = FMath::Clamp(BuildingCurrentHealth, 0.f, BuildingCurrentHealth);
+
+	//call OnDamageTakenEvent if there is at least 1 subscriber (There is some extra logic in blueprint)
+	if (OnDamageTaken.IsBound())
+	{
+		OnDamageTaken.Broadcast();
+	}
+	//Health =< 0 :  target death
+	if (BuildingCurrentHealth <= 0.f)
+	{
+		OnBuildDestroyed.Broadcast();
+		Destroy();
+	}
+}
+
 EFaction ABuildable::GetFaction() const
 {
 	return ECurrentFaction;
@@ -493,6 +511,7 @@ void ABuildable::Highlight(const bool Highlight)
 
 void ABuildable::AttackSelectable(const float DamageAmount)
 {
+	InflictDamage(DamageAmount);
 }
 
 

@@ -24,17 +24,16 @@ void UBTService_IsTargetInAttackRange::OnBecomeRelevant(UBehaviorTreeComponent& 
 
 	if (UObject* TargetObject = OwnerComp.GetBlackboardComponent()->GetValueAsObject("TargetActor"))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Ho qualcosa"));
-		if (APawn* Target = Cast<APawn>(TargetObject))
+		if (AActor* Target = Cast<AActor>(TargetObject))
 		{
 			float DistanceToTarget = FVector::Dist(UnitPawn->GetActorLocation(),Target->GetActorLocation());
+
 			OwnerComp.GetBlackboardComponent()->SetValueAsBool("TargetIsInAttackRange",DistanceToTarget <= AttackRange);
 		}
 	}
 	else
 	{
 		OwnerComp.GetBlackboardComponent()->SetValueAsBool(GetSelectedBlackboardKey(),false);
-		UE_LOG(LogTemp, Warning, TEXT("Nessun bersaglio"));
 	}
 	
 }

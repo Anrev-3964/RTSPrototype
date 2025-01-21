@@ -9,6 +9,7 @@
 #include "GameFramework/Actor.h"
 #include "Framework/DataAssets/BuildData.h"
 #include "Framework/DataAssets/BuildItemDataAsset.h"
+#include "RTSPrototype/RTSPrototypeCharacter.h"
 #include "Buildable.generated.h"
 
 class UBoxComponent;
@@ -37,7 +38,9 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnBuildCompleteEvent OnBuildCompleteEvent;
+	FOnDamageTaken OnDamageTaken;
 	FOnBuildStarted OnBuildStarted;
+	FOnBuildDestroyed OnBuildDestroyed;
 
 	UPROPERTY(BlueprintAssignable, Category = "Events")
 	FOnMyEventTriggered OnMyEventTriggered;
@@ -63,6 +66,10 @@ public:
 	int GetBuildID() const;
 
 protected:
+
+	UFUNCTION()
+	void InflictDamage(const float AttackValue);
+	
 	/**Buildable Stats **/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Build Stats")
 	float BuildingCurrentHealth;
@@ -73,7 +80,7 @@ protected:
 	virtual void DeSelect() override;
 	virtual void Highlight(const bool Highlight) override;
 	virtual void AttackSelectable(const float DamageAmount) override;
-
+	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
