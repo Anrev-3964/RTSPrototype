@@ -49,7 +49,8 @@ void UBuildComponent::UpdatePlacementStatus()
 			TArray<AActor*> FoundCharacters;
 			UGameplayStatics::GetAllActorsOfClass(GetWorld(), ARTSPrototypeCharacter::StaticClass(), FoundCharacters);
 			FVector MyLocation = SPlayer->GetMousePositionOnTerrain().Location;
-			
+		
+			//if the buildable is near a Peon, it can be built
 			for (AActor* Actor : FoundCharacters)
 			{
 				if (Actor != ClientBuildObject)
@@ -67,6 +68,7 @@ void UBuildComponent::UpdatePlacementStatus()
 						}
 						else
 						{
+							//If the object to build is a mine, it can be built only on gold sources
 							if (BuildItemData->CanBeBuiltCloseToGoldSources)
 							{
 								bIsPlaceable = false;
