@@ -79,13 +79,20 @@ void ASPlayerController::GiveOrders(const FHitResult& HitSelection)
 		if (IFactionsUtils* FactionsUtils = Cast<IFactionsUtils>(ActorToSelect))
 		{
 			if (!FactionsUtils)return;
-			//** Selected Actor isnt in same player Faction**//
-			if (PlayerFaction != FactionsUtils->GetFaction()) //Selected actor IS in player faction : you can select it
+
+			EFaction TargetFaction = FactionsUtils->GetFaction();
+			if (TargetFaction == EFaction::Neutral)
 			{
 				if (GEngine)
 				{
-					GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, "il player ha selezionato un unita  Nemica");
+					GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Yellow, "Neutrale selezionato");
 				}
+				return;
+			} 
+
+			//** Selected Actor isnt in same player Faction**//
+			if (PlayerFaction != TargetFaction) //Selected actor IS in player faction : you can select it
+			{
 				if (SelectedActors.Num() <= 0) return;
 				for (AActor* Actor : SelectedActors)
 				{
@@ -97,32 +104,14 @@ void ASPlayerController::GiveOrders(const FHitResult& HitSelection)
 						}
 					}
 				}
-				
-				/**
-				//for now check if it's a unit, but it can changed for enemy buildings too
-				if (ARTSPrototypeCharacter* SelectedUnit = Cast<ARTSPrototypeCharacter>(ActorToSelect))//Selected actor IS a Unit
-				{
-					if (GEngine)
-					{
-						GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, "il player ha selezionato un unita  Nemica");
-					}
-					if (SelectedActors.Num() <= 0) return;
-					for (AActor* Actor : SelectedActors)
-					{
-						if (Actor)
-						{
-							if (ICommandable* CommandableActor = Cast<ICommandable>(Actor))
-							{
-								CommandableActor->ChaseTarget(ActorToSelect);
-							}
-						}
-					}
-				}
-				**/
 			}
 			//** Selected Actor is in same player Faction**//
 			else
 			{
+				if (GEngine)
+				{
+					GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Green, "il player ha selezionato un alleato");
+				}
 				if (AGoldMine* SelectedBuilding = Cast<AGoldMine>(ActorToSelect))// Selecte Actor is a Gold Mine
 				{
 					if (SelectedActors.Num() <= 0) return;

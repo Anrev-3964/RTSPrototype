@@ -21,6 +21,8 @@ private:
 	float MineGoldAmount;
 
 public:
+	UPROPERTY(EditDefaultsOnly, Category = "Mine Settings")
+	int MineMaxtHP = {1};
 	UFUNCTION(BlueprintCallable, Category = "Mine Settings")
 	float GetMineGoldAmount() const;
 
@@ -32,7 +34,7 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh")
 	TSoftObjectPtr<UStaticMesh> MeshReference;
-
+	
 	/** Tier 1 settings **/ 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tier 1 Settings")
 	int TierOneGoldEstractionAmount = {1};
@@ -69,5 +71,4 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Upgrading")
 	UNiagaraSystem* UpgradingNiagaraSystem;
-	
 };

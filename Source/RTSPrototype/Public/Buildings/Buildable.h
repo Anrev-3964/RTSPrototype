@@ -38,6 +38,7 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnBuildCompleteEvent OnBuildCompleteEvent;
+	UPROPERTY(BlueprintAssignable)
 	FOnDamageTaken OnDamageTaken;
 	FOnBuildStarted OnBuildStarted;
 	FOnBuildDestroyed OnBuildDestroyed;
@@ -73,6 +74,8 @@ protected:
 	/**Buildable Stats **/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Build Stats")
 	float BuildingCurrentHealth;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Build Stats")
+	float BuildingMaxHealth = {10.f};
 	/**ISelectable Interface**/
 	UFUNCTION(BlueprintCallable)
 	virtual void Select() override;
@@ -122,8 +125,10 @@ protected:
 	UPROPERTY()
 	TEnumAsByte<EBuildState> BuildState = EBuildState::NoBuild;
 
+	/**
 	UPROPERTY()
 	EFaction  ECurrentFaction = {EFaction::Neutral};
+	**/
 
 	UPROPERTY()
 	UMaterialInstanceDynamic* DynamicOverlayMaterial;

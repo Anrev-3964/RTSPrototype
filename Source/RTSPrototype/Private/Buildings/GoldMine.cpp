@@ -15,7 +15,7 @@ AGoldMine::AGoldMine(const FObjectInitializer& ObjectInitializer)
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	
-	CurrentFaction = EFaction::Team2;
+	CurrentFaction = EFaction::Neutral;
 	GoldAmount = 9999;
 	CurrentGoldAmount = GoldAmount;
 
@@ -124,7 +124,6 @@ void AGoldMine::MineStarted(ABuildable* Buildable)
 			Buildable->SetActorLocation(GetActorLocation());
 			BuildingActorCompleteClass =  BuildItemDataAsset->BuildingActorComplete;
 		}
-
 		NewOwnerFaction = Buildable->GetFaction();
 	}
 }
@@ -135,6 +134,7 @@ void AGoldMine:: MineCompleted(const TEnumAsByte<EBuildState> BuildState)
 	SetStaticMeshFromActor();
 	CurrentFaction = NewOwnerFaction;
 	OwnerPlayerState = GetOwnerPlayerState();
+	MineCurrentHp = GoldMineData->MineMaxtHP;
 }
 
 void AGoldMine::EstractGold()
@@ -281,8 +281,23 @@ void AGoldMine::Highlight(const bool Highlight)
 {
 }
 
-void AGoldMine::AttackSelectable(const float DamageAmount)
+void AGoldMine::AttackSelectable(const float AttackValue)
 {
+	MineCurrentHp -= AttackValue;
+	MineCurrentHp = FMath::Clamp(MineCurrentHp, 0.f, MineCurrentHp);
+
+	//call OnDamageTakenEvent if there is at least 1 subscriber (There is some extra logic in blueprint)
+	if (OnDamageTaken.IsBound())
+	{
+		OnDamageTaken.Broadcast();
+	}
+	
+	//Health =< 0 :  target death
+	if (MineCurrentHp <= 0.f)
+	{
+		OnBuildDestroyed.Broadcast();
+		Destroy();
+	}
 }
 
 bool AGoldMine::ActorIsATriggerArea()

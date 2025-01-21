@@ -45,6 +45,9 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	int  MineCurrentLevel = {0};
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	float MineCurrentHp = {1.0f};
+
 	UPROPERTY(BlueprintReadWrite, Category = "Variables", meta = (AllowPrivateAccess = "true"))
 	bool bIsUpgrading = {false};
 	UPROPERTY()
@@ -70,6 +73,7 @@ private:
 	FOnMineSelected OnMineSelect;
 
 public:
+	
 	UFUNCTION()
 	int GetGoldAmount() const ;
 	UFUNCTION()
@@ -78,11 +82,9 @@ public:
 	UPROPERTY(EditAnywhere,BlueprintReadOnly ,Category = "Data")
 	UGoldMineData* GoldMineData;
 	
-
 	/**IFactionUtils Interface**/
 	virtual EFaction GetFaction()const override;
 	virtual void SetCurrentFaction(EFaction NewFaction) override;
-
 	
 	ARTSPlayerState* GetOwnerPlayerState() const;
 	/**End IFactionUtils Interface**/
@@ -116,5 +118,9 @@ public:
 	virtual void AttackSelectable(const float DamageAmount) override;
 	/** ITriggerBoxArea **/
 	virtual bool ActorIsATriggerArea() override;
+
+	FOnDamageTaken OnDamageTaken;
+	FOnBuildStarted OnBuildStarted;
+	FOnBuildDestroyed OnBuildDestroyed;
 };
 

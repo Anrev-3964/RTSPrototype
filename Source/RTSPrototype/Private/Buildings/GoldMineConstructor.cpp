@@ -28,10 +28,6 @@ void AGoldMineConstructor::BeginPlay()
 
 void AGoldMineConstructor::DestroySelf(const TEnumAsByte<EBuildState> NewBuildState)
 {
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red , "Buildable Distrutto");
-	}
 	if (WeakActorPtr.IsValid())
 	{
 		AActor* ActorToDestroy = WeakActorPtr.Get(); // Ottieni il puntatore all'attore

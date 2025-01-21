@@ -12,7 +12,6 @@
 #include "Framework/DataAssets/BuildItemDataAsset.h"
 #include "GameFramework/GameStateBase.h"
 #include "Kismet/GameplayStatics.h"
-#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
 ABuildable::ABuildable()
@@ -169,7 +168,7 @@ void ABuildable::StartBuild()
 
 void ABuildable::EndBuild()
 {
-	ECurrentFaction = EFaction::Team1;
+	CurrentFaction = EFaction::Team1;
 	if (AudioComponent)
 	{
 		AudioComponent->Stop();
@@ -375,7 +374,7 @@ ARTSPlayerState* ABuildable::GetOwnerPlayerState() const
 			{
 				if (IFactionsUtils* StateFaction = Cast<IFactionsUtils>(MyPlayerState))
 				{
-					if (StateFaction->GetFaction() == ECurrentFaction)
+					if (StateFaction->GetFaction() == CurrentFaction)
 					{
 						return MyPlayerState;
 					}
@@ -428,7 +427,7 @@ void ABuildable::InflictDamage(const float AttackValue)
 
 EFaction ABuildable::GetFaction() const
 {
-	return ECurrentFaction;
+	return CurrentFaction;
 }
 
 void ABuildable::Select()
@@ -543,9 +542,9 @@ AActor* ABuildable::GetActor()
 
 void ABuildable::SetCurrentFaction(EFaction NewFaction)
 {
-	if (ECurrentFaction != NewFaction)
+	if (CurrentFaction != NewFaction)
 	{
-		ECurrentFaction = NewFaction;
+		CurrentFaction = NewFaction;
 	}
 }
 
