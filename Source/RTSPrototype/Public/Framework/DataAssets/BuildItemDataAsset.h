@@ -49,7 +49,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Configuration")
 	TSoftObjectPtr<UStaticMesh> BuildingMeshComplete;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Configuration")
-	TSubclassOf<AActor> BuildingActorComplete;
+	TSubclassOf<AActor> PreviewBuildingActor;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Building In Progress Effect Configuration")
 	UNiagaraSystem* BuildingInProgressNiagaraSystem;

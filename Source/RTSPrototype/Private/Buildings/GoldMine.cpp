@@ -122,7 +122,7 @@ void AGoldMine::MineStarted(ABuildable* Buildable)
 		{
 			Buildable->OnBuildCompleteEvent.AddDynamic(this, &AGoldMine::MineCompleted);
 			Buildable->SetActorLocation(GetActorLocation());
-			BuildingActorCompleteClass =  BuildItemDataAsset->BuildingActorComplete;
+			TierableActorClass =  GoldMineData->TierableActor;
 		}
 		NewOwnerFaction = Buildable->GetFaction();
 	}
@@ -191,11 +191,11 @@ int AGoldMine::GetGoldEstractionAmount()
 
 void AGoldMine::SetStaticMeshFromActor()
 {
-	if (!BuildingActorCompleteClass) return;
+	if (!TierableActorClass) return;
 
 	// load Actor from soft pointer
 	//instantiate Actor
-	AActor* BuildingActorComplete = GetWorld()->SpawnActor<AActor>(BuildingActorCompleteClass);
+	AActor* BuildingActorComplete = GetWorld()->SpawnActor<AActor>(TierableActorClass);
 
 	if (!BuildingActorComplete) return;
 

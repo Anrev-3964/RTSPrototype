@@ -42,7 +42,6 @@ void ABuildable::Init(UBuildItemDataAsset* BuildItemData, const TEnumAsByte<EBui
 	BuildState = NewBuildState;
 	BuildData = BuildItemData;
 	BuildID = BuildData->BuildID;
-	BuildingActorCompleteClass = BuildItemData->BuildingActorComplete;
 	UE_LOG(LogTemp, Error, TEXT("BuildID: %u"), BuildID);
 
 	if (BuildState == EBuildState::Building)
@@ -65,7 +64,7 @@ void ABuildable::InitBuildPreview()
 	if (!BuildData || !BoxCollider) return;
 
 	// load Actor from soft pointer
-	TSubclassOf<AActor> BuildingActorClass = BuildData->BuildingActorComplete;
+	TSubclassOf<AActor> BuildingActorClass = BuildData->PreviewBuildingActor;
 	if (!BuildingActorClass) return;
 
 	//instantiate Actor
@@ -87,7 +86,8 @@ void ABuildable::InitBuildPreview()
 	// Get al  UStaticMeshComponent from BuildingActorComplete
 	TArray<UStaticMeshComponent*> MeshComponents;
 	BuildingActorComplete->GetComponents<UStaticMeshComponent>(MeshComponents);
-
+	if (MeshComponents.Num() <= 0) return;
+	
 	for (UStaticMeshComponent* MeshComp : MeshComponents)
 	{
 		if (MeshComp && MeshComp->GetStaticMesh())
@@ -298,10 +298,12 @@ void ABuildable::UpdateBuildProgression()
 	BuildProgression += 1.0f / BuildData->BuildMeshes.Num();
 	if (BuildProgression > 1.0f)
 	{
+		/**
 		if (TSubclassOf<AActor> BuildingActorClass = BuildData->BuildingActorComplete)
 		{
 			SetStaticMeshFromActor();
-		} 
+		}
+		**/
 		BuildState = EBuildState::BuildComplete;
 		EndBuild();
 	}
@@ -311,80 +313,6 @@ void ABuildable::UpdateBuildProgression()
 	}
 }
 
-void ABuildable::SetStaticMeshFromActor()
-{
-	if (!BuildingActorCompleteClass) return;
-
-	// load Actor from soft pointer
-	//instantiate Actor
-	AActor* BuildingActorComplete = GetWorld()->SpawnActor<AActor>(BuildingActorCompleteClass);
-
-	if (!BuildingActorComplete) return;
-
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("Messaggio di debug : SetStaticMesh"));
-	}
-	//Call an event form blueprint
-
-	FName EventName("SetTierMeshes");
-
-	//Find The vent to call
-	if (UFunction* EventFunction = BuildingActorComplete->FindFunction(EventName))
-	{
-
-		struct FCustomEventParams
-		{
-			int NewTier = 1; 
-		};
-		
-		FCustomEventParams Params;
-		Params.NewTier = 0;
-		
-		BuildingActorComplete->ProcessEvent(EventFunction, &Params);
-	}
-	
-	TArray<UStaticMeshComponent*> PreviewComponents;
-	GetComponents<UStaticMeshComponent>(PreviewComponents);
-
-	for (UStaticMeshComponent* Comp : PreviewComponents)
-	{
-		if (Comp)
-		{
-			Comp->DestroyComponent();
-		}
-	}
-
-	// Get all  UStaticMeshComponent from BuildingActorComplete
-	TArray<UStaticMeshComponent*> MeshComponents;
-	BuildingActorComplete->GetComponents<UStaticMeshComponent>(MeshComponents);
-	
-	for (UStaticMeshComponent* MeshComp : MeshComponents)
-	{
-		if (MeshComp && MeshComp->GetStaticMesh())
-		{
-			// For every UStaticMeshComponent in ABuildingActorComplete, create a new mesh 
-			UStaticMeshComponent* NewPreviewComp = NewObject<UStaticMeshComponent>(this);
-			if (NewPreviewComp)
-			{
-				NewPreviewComp->SetStaticMesh(MeshComp->GetStaticMesh());
-				NewPreviewComp->SetRelativeTransform(MeshComp->GetRelativeTransform());
-				FVector NewScale(0.5f, 0.5f, 0.5f); // Scala su tutti gli assi X, Y e Z
-				NewPreviewComp->SetRelativeScale3D(NewScale);
-				NewPreviewComp->AttachToComponent(BoxCollider, FAttachmentTransformRules::KeepRelativeTransform);
-
-				NewPreviewComp->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
-				
-				NewPreviewComp->SetCollisionResponseToChannel(ECC_Camera, ECR_Block);
-				
-				NewPreviewComp->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Ignore);
-				
-				NewPreviewComp->RegisterComponent();
-			}
-		}
-	}
-	BuildingActorComplete->Destroy();
-}
 //Get The Player State of it'sown Faction
 ARTSPlayerState* ABuildable::GetOwnerPlayerState() const
 {

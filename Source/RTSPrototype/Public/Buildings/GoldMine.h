@@ -63,8 +63,7 @@ private:
 	TSoftObjectPtr<UStaticMesh> CompletedMineMesh;
 
 	UPROPERTY()
-	TSubclassOf<AActor> BuildingActorCompleteClass;
-	
+	TSubclassOf<AActor> TierableActorClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	USceneComponent* RootComponentIntermediate;

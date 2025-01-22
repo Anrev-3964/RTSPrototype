@@ -94,7 +94,6 @@ protected:
 	void SetOverlayMaterial();
 	void UpdateBuildProgressionMesh();
 	void UpdateBuildProgression();
-	void SetStaticMeshFromActor();
 	ARTSPlayerState* GetOwnerPlayerState() const;
 	
 
@@ -124,11 +123,6 @@ protected:
 	
 	UPROPERTY()
 	TEnumAsByte<EBuildState> BuildState = EBuildState::NoBuild;
-
-	/**
-	UPROPERTY()
-	EFaction  ECurrentFaction = {EFaction::Neutral};
-	**/
 
 	UPROPERTY()
 	UMaterialInstanceDynamic* DynamicOverlayMaterial;

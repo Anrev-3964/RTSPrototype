@@ -29,6 +29,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Configuration")
 	FText TitleText;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Configuration")
+	TSubclassOf<AActor> TierableActor;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh")
 	TSoftObjectPtr<UStaticMesh> MeshReference;
