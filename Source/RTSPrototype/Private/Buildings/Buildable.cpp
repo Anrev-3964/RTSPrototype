@@ -266,10 +266,27 @@ void ABuildable::UpdateBuildProgressionMesh()
 	const int32 BuildMeshIndex = FMath::FloorToInt(BuildProgression * BuildData->BuildMeshes.Num());
 	if (BuildData->BuildMeshes.IsValidIndex(BuildMeshIndex))
 	{
+		/**
 		if (UStaticMesh* DisplayMesh = BuildData->BuildMeshes[BuildMeshIndex].LoadSynchronous())
 		{
 			StaticMesh->SetStaticMesh(DisplayMesh);
 			StaticMesh->SetRelativeScale3D(BuildData->DesiredScale);
+		}
+		**/
+		if (UStaticMesh* DisplayMesh = BuildData->BuildMeshes[BuildMeshIndex].LoadSynchronous())
+		{
+			if (UStaticMeshComponent* NewMeshComponent = NewObject<UStaticMeshComponent>(this))
+			{
+				NewMeshComponent->AttachToComponent(BoxCollider, FAttachmentTransformRules::KeepRelativeTransform);
+				NewMeshComponent->SetStaticMesh(DisplayMesh);
+				FVector NewScale(0.5f, 0.5f, 0.5f); // Scala su tutti gli assi X, Y e Z
+
+				NewMeshComponent->SetRelativeScale3D(NewScale);
+				NewMeshComponent->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
+				NewMeshComponent->SetCollisionResponseToChannel(ECC_Camera, ECR_Block);
+				NewMeshComponent->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Ignore);
+				NewMeshComponent->RegisterComponent();
+			}
 		}
 	}
 }
