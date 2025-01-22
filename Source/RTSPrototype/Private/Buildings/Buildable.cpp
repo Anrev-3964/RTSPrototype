@@ -63,63 +63,42 @@ void ABuildable::InitBuildPreview()
 {
 	if (!BuildData || !BoxCollider) return;
 
-	// load Actor from soft pointer
-	TSubclassOf<AActor> BuildingActorClass = BuildData->PreviewBuildingActor;
-	if (!BuildingActorClass) return;
-
-	//instantiate Actor
-	AActor* BuildingActorComplete = GetWorld()->SpawnActor<AActor>(BuildingActorClass);
-	if (!BuildingActorComplete) return;
-
 	// remove already existing meshComponents
 	TArray<UStaticMeshComponent*> PreviewComponents;
 	GetComponents<UStaticMeshComponent>(PreviewComponents);
 
 	for (UStaticMeshComponent* Comp : PreviewComponents)
 	{
-		if (Comp && Comp != StaticMesh)
+		if (Comp)
 		{
 			Comp->DestroyComponent();
 		}
 	}
 
-	// Get al  UStaticMeshComponent from BuildingActorComplete
-	TArray<UStaticMeshComponent*> MeshComponents;
-	BuildingActorComplete->GetComponents<UStaticMeshComponent>(MeshComponents);
-	if (MeshComponents.Num() <= 0) return;
+	//intirerate for evey mesh and create a new mesh component with that mesh
+	TArray<TSoftObjectPtr<UStaticMesh>> PreviewBuildMeshes = BuildData->BuildMeshes;
 	
-	for (UStaticMeshComponent* MeshComp : MeshComponents)
+	if (PreviewBuildMeshes.Num() <= 0) return;
+	
+	for (const TSoftObjectPtr<UStaticMesh>& SoftMeshPtr : PreviewBuildMeshes)
 	{
-		if (MeshComp && MeshComp->GetStaticMesh())
+		if (UStaticMesh* LoadedMesh = SoftMeshPtr.LoadSynchronous())
 		{
-			// For every UStaticMeshComponent in ABuildingActorComplete, create a new mesh 
-			UStaticMeshComponent* NewPreviewComp = NewObject<UStaticMeshComponent>(this);
-			if (NewPreviewComp)
+			if (UStaticMeshComponent* NewMeshComponent = NewObject<UStaticMeshComponent>(this))
 			{
-				NewPreviewComp->SetStaticMesh(MeshComp->GetStaticMesh());
-				NewPreviewComp->SetRelativeTransform(MeshComp->GetRelativeTransform());
-				NewPreviewComp->AttachToComponent(BoxCollider, FAttachmentTransformRules::KeepRelativeTransform);
+				NewMeshComponent->AttachToComponent(BoxCollider, FAttachmentTransformRules::KeepRelativeTransform);
+				NewMeshComponent->SetStaticMesh(LoadedMesh);
 
-				NewPreviewComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-				
-				NewPreviewComp->RegisterComponent();
+				NewMeshComponent->SetRelativeScale3D(BuildData->DesiredScale);
+				NewMeshComponent->SetCollisionResponseToChannel(ECC_Visibility, ECR_Ignore);
+				NewMeshComponent->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+				NewMeshComponent->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Ignore);
+				NewMeshComponent->RegisterComponent();
 			}
 		}
 	}
-
-	// Aggiorna il collider e il materiale di overlay
-	BuildingActorComplete->Destroy();
 	UpdateCollider();
 	SetOverlayMaterial();
-	
-	/**
-	if (UStaticMesh* PreviewMesh = BuildData->BuildingMeshComplete.LoadSynchronous())
-	{
-		StaticMesh->SetStaticMesh(PreviewMesh);
-		UpdateCollider();
-		SetOverlayMaterial();
-	}
-	**/
 }
 
 void ABuildable::StartBuild()
@@ -266,22 +245,15 @@ void ABuildable::UpdateBuildProgressionMesh()
 	const int32 BuildMeshIndex = FMath::FloorToInt(BuildProgression * BuildData->BuildMeshes.Num());
 	if (BuildData->BuildMeshes.IsValidIndex(BuildMeshIndex))
 	{
-		/**
-		if (UStaticMesh* DisplayMesh = BuildData->BuildMeshes[BuildMeshIndex].LoadSynchronous())
-		{
-			StaticMesh->SetStaticMesh(DisplayMesh);
-			StaticMesh->SetRelativeScale3D(BuildData->DesiredScale);
-		}
-		**/
+
 		if (UStaticMesh* DisplayMesh = BuildData->BuildMeshes[BuildMeshIndex].LoadSynchronous())
 		{
 			if (UStaticMeshComponent* NewMeshComponent = NewObject<UStaticMeshComponent>(this))
 			{
 				NewMeshComponent->AttachToComponent(BoxCollider, FAttachmentTransformRules::KeepRelativeTransform);
 				NewMeshComponent->SetStaticMesh(DisplayMesh);
-				FVector NewScale(0.5f, 0.5f, 0.5f); // Scala su tutti gli assi X, Y e Z
 
-				NewMeshComponent->SetRelativeScale3D(NewScale);
+				NewMeshComponent->SetRelativeScale3D(BuildData->DesiredScale);
 				NewMeshComponent->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 				NewMeshComponent->SetCollisionResponseToChannel(ECC_Camera, ECR_Block);
 				NewMeshComponent->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Ignore);

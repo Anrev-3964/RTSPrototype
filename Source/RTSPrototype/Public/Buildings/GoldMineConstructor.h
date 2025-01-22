@@ -16,7 +16,7 @@ class RTSPROTOTYPE_API AGoldMineConstructor : public ABuildable
 
 public:
 	UFUNCTION()
-	UStaticMesh* GetFinalMesh();
+	//UStaticMesh* GetFinalMesh();
 
 	virtual void BeginPlay() override;
 

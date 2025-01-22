@@ -6,6 +6,7 @@
 #include "Framework/DataAssets/BuildItemDataAsset.h"
 #include "UObject/FastReferenceCollector.h"
 
+/**
 UStaticMesh* AGoldMineConstructor::GetFinalMesh()
 {
 	if (BuildData)
@@ -16,8 +17,9 @@ UStaticMesh* AGoldMineConstructor::GetFinalMesh()
 		// Restituisci la mesh
 		return FinalMesh;
 	}
-	return nullptr;
+	return nullptr; 
 }
+**/
 
 void AGoldMineConstructor::BeginPlay()
 {

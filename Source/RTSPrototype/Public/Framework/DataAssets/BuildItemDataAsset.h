@@ -46,10 +46,6 @@ public:
 	TArray<TSoftObjectPtr<UStaticMesh>> BuildMeshes;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Display")
 	FVector DesiredScale = FVector{1, 1, 1};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Configuration")
-	TSoftObjectPtr<UStaticMesh> BuildingMeshComplete;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Configuration")
-	TSubclassOf<AActor> PreviewBuildingActor;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Building In Progress Effect Configuration")
 	UNiagaraSystem* BuildingInProgressNiagaraSystem;
