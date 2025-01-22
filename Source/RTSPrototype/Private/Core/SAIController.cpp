@@ -97,7 +97,7 @@ void ASAIController::HandleCurrentOrder()
 			//is doing nothing : if it finds an enemy, try to attack it
 		case EUnitState::WaitingForOrders: 
 			Target = FindClosetTarget();
-			if (Target)
+			if (IsValid(Target))
 			{
 				GetBlackboardComponent()->SetValueAsObject("TargetActor", Target);
 				GetBlackboardComponent()->SetValueAsVector("TargetLocation",Target->GetActorLocation());
@@ -111,14 +111,22 @@ void ASAIController::HandleCurrentOrder()
 
 			//is attacking a specific target: just keep track of enemy
 		case EUnitState::AttackingTarget:
-			if (Target)
+			if (IsValid(Target))
 			{
 				GetBlackboardComponent()->SetValueAsVector("TargetLocation",Target->GetActorLocation());
+			}
+			else
+			{
+				if (GEngine)
+				{
+					GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, "il bersaglio e morto");
+				}
+				GetBlackboardComponent()->SetValueAsEnum("CurrentState",WaitingForOrder);
 			}
 			break;
 
 		case EUnitState::MiningGold:
-			if (Target)
+			if (IsValid(Target))
 			{
 				if (const AGoldMine* Mine = Cast<AGoldMine>(Target))
 				{
