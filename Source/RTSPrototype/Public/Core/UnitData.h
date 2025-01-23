@@ -50,12 +50,6 @@ class RTSPROTOTYPE_API UUnitData : public UDataAsset
 	UPROPERTY(EditDefaultsOnly, Category = "Unit AI ",meta = (Tooltip = "Range tolleranza per il navmesh dell'unita (UnitAcceptanceRadius = 100 se : UnitAcceptanceRadius < 100)"))
 	float UnitAcceptableRadius;
 
-	UPROPERTY(EditDefaultsOnly,Category = "Audio")
-	float RandomMaxPitch;
-	
-	UPROPERTY(EditDefaultsOnly,Category = "Audio")
-	float RandomMinPitch;
-
 public:
 	/**Get Fuctions**/
 

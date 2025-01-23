@@ -8,6 +8,8 @@
 #include "Framework/DataAssets/BuildItemDataAsset.h"
 #include "GameFramework/GameStateBase.h"
 #include "Kismet/GameplayStatics.h"
+#include "Perception/AISenseConfig_Sight.h"
+#include "Perception/AISense_Sight.h"
 
 
 AGoldMine::AGoldMine(const FObjectInitializer& ObjectInitializer)
@@ -29,6 +31,8 @@ AGoldMine::AGoldMine(const FObjectInitializer& ObjectInitializer)
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
 	StaticMesh->SetupAttachment(RootComponent);
 	StaticMesh->SetCollisionProfileName("OverlapAll");
+
+	PerceptionStimuliSource = CreateDefaultSubobject<UAIPerceptionStimuliSourceComponent>(TEXT("PerceptionStimuliSource"));
 }
 
 void AGoldMine::BeginPlay()

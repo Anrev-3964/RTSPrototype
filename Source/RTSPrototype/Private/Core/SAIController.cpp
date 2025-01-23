@@ -69,7 +69,9 @@ AActor* ASAIController::FindClosetTarget() const
 			{
 				if (IFactionsUtils* FactionsUtils = Cast<IFactionsUtils>(Actor))
 				{
-					if (PawnFaction != FactionsUtils->GetFaction())
+					EFaction TargetFaction = FactionsUtils->GetFaction();
+					
+					if (PawnFaction != TargetFaction && TargetFaction != EFaction::Neutral)
 					{
 						float ActorDistance = FVector::DistSquared(GetPawn()->GetActorLocation(), Actor->GetActorLocation());
 

@@ -11,6 +11,7 @@
 #include "Core/Selectable.h"
 #include "Framework/RTSPlayerState.h"
 #include "Framework/DataAssets/BuildData.h"
+#include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "GoldMine.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnMineUpgradedStart);
@@ -124,5 +125,9 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnBuildCompleteEvent OnBuildComplete;
 	FOnBuildDestroyed OnBuildDestroyed;
+
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
+	UAIPerceptionStimuliSourceComponent* PerceptionStimuliSource;
 };
 
