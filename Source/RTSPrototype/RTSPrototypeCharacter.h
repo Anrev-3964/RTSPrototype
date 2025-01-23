@@ -22,6 +22,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDeath);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnUnitSelected,bool, UnitSelected);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnOrderChanged,EUnitState, NewOrder);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGoldEstracted,int, GoldEstracted);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPeonSelected,FVector, PeonPosition);
 
 UCLASS(Blueprintable)
 class ARTSPrototypeCharacter : public ACharacter, public ISelectable, public ICommandable, public IFactionsUtils
@@ -171,6 +172,9 @@ protected:
 
 	UPROPERTY(BlueprintAssignable, Category = "Events")
 	FOnGoldEstracted OnGoldEstracted;
+
+	UPROPERTY(BlueprintAssignable, Category = "Events")
+	FOnPeonSelected OnPeonSelected;
 	
 	UFUNCTION()
 	void DestroyCharacter();
