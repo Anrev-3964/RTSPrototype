@@ -69,6 +69,15 @@ UAnimMontage* UUnitData::GetAttackMontage() const
 	return nullptr;
 }
 
+float UUnitData::GetAttackSpeed() const
+{
+	if (AttackSpeed >0.1)
+	{
+		return  AttackSpeed;
+	}
+	return 0.1f;
+}
+
 UAnimMontage* UUnitData::GetMiningMontage() const
 {
 	if (MiningMontage)
@@ -76,6 +85,15 @@ UAnimMontage* UUnitData::GetMiningMontage() const
 		return MiningMontage;
 	}
 	return nullptr;
+}
+
+float UUnitData::GetMiningSpeed() const
+{
+	if (MiningSpeed >0.1)
+	{
+		return  MiningSpeed;
+	}
+	return 0.1f;
 }
 
 float UUnitData::GetAttackDelay() const

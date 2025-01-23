@@ -421,9 +421,11 @@ void ARTSPrototypeCharacter::MoveToDestination(const FVector Destination)
 //Ordinare all'Unita di attacare (Prende il bersaglio dirretamente dal Behaivor Tree)
 void ARTSPrototypeCharacter::Attack()
 {
-	if (AttackMontage)
+	if (AttackMontage && UnitData)
 	{
-		PlayAnimMontage(AttackMontage);
+		float MontageDuration = AttackMontage->GetPlayLength();
+		float PlayRate = UnitData->GetAttackSpeed() * MontageDuration;
+		PlayAnimMontage(AttackMontage, PlayRate);
 		PlayAudioClip(UnitData->UnitAttackAudioClip);
 		
 		//Try to get the targe from behaivor tree
@@ -515,9 +517,11 @@ void ARTSPrototypeCharacter::StartMiningGold(AActor* Target)
 //quasi identico ad "Attack", con la differenza che interagisce con una miniera
 void ARTSPrototypeCharacter::EstractGoldFromMine(AActor* Target)
 {
-	if (MiningMontage)
+	if (MiningMontage && UnitData)
 	{
-		PlayAnimMontage(MiningMontage);
+		float MontageDuration = MiningMontage->GetPlayLength();
+		float PlayRate = UnitData->GetMiningSpeed() * MontageDuration;
+		PlayAnimMontage(MiningMontage,PlayRate);
 
 		//Try to get the Mine from behaivor tree
 		if (Tree)

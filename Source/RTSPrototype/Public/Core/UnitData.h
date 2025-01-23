@@ -37,8 +37,12 @@ class RTSPROTOTYPE_API UUnitData : public UDataAsset
     float SpawnDelay;
 	UPROPERTY(EditDefaultsOnly, Category = "Unit Settings",meta = (Tooltip = "l'animazione usata dal unita quando attaca"))
 	UAnimMontage* AttackMontage;
+	UPROPERTY(EditDefaultsOnly, Category = "Unit Settings",meta = (Tooltip = "quante volte l'animazione viene fatta al secondo (non puo esser inferiore a 0.1)"))
+	float AttackSpeed;
 	UPROPERTY(EditDefaultsOnly, Category = "Unit Settings",meta = (Tooltip = "l'animazione usata dal unita quando Raccoglie oro"))
     UAnimMontage* MiningMontage;
+	UPROPERTY(EditDefaultsOnly, Category = "Unit Settings",meta = (Tooltip = "quante volte l'animazione viene fatta al secondo (non puo esser inferiore a 0.1)"))
+	float MiningSpeed;
 	UPROPERTY(EditDefaultsOnly, Category = "Unit Settings",meta = (Tooltip = "True : l'unita puo interagire con la miniera e raccogliere oro"))
     bool CanMineGold;
 	UPROPERTY(EditDefaultsOnly, Category = "Unit AI ",meta = (Tooltip = "Range di attaco per l'unita (AttackRange = 200 se : AttackRange < 200)"))
@@ -78,9 +82,14 @@ public:
     
 	UFUNCTION(BlueprintCallable, Category = "Get Unit Data")
 	UAnimMontage* GetAttackMontage() const;
+	
+	UFUNCTION(BlueprintCallable, Category = "Get Unit Data")
+	float GetAttackSpeed() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Get Unit Data")
 	UAnimMontage* GetMiningMontage()  const;
+	UFUNCTION(BlueprintCallable, Category = "Get Unit Data")
+	float GetMiningSpeed() const;
 	UFUNCTION(BlueprintCallable, Category = "Get Unit Data")
 	float GetAttackDelay()  const;
 	UFUNCTION(BlueprintCallable, Category = "Get Unit Data")
