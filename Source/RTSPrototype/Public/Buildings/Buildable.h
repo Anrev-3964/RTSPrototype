@@ -9,6 +9,7 @@
 #include "GameFramework/Actor.h"
 #include "Framework/DataAssets/BuildData.h"
 #include "Framework/DataAssets/BuildItemDataAsset.h"
+#include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "RTSPrototype/RTSPrototypeCharacter.h"
 #include "Buildable.generated.h"
 
@@ -129,6 +130,9 @@ protected:
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	UAudioComponent* AudioComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UAIPerceptionStimuliSourceComponent* PerceptionStimuliSource;
 
 private:
 

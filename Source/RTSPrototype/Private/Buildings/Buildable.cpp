@@ -12,6 +12,7 @@
 #include "Framework/DataAssets/BuildItemDataAsset.h"
 #include "GameFramework/GameStateBase.h"
 #include "Kismet/GameplayStatics.h"
+#include "Perception/AIPerceptionStimuliSourceComponent.h"
 
 // Sets default values
 ABuildable::ABuildable()
@@ -33,6 +34,8 @@ ABuildable::ABuildable()
 	AudioComponent->SetupAttachment(RootComponent);
 
 	BuildingCurrentHealth = 1.0f;
+	
+	PerceptionStimuliSource = CreateDefaultSubobject<UAIPerceptionStimuliSourceComponent>(TEXT("PerceptionStimuliSource"));
 }
 
 void ABuildable::Init(UBuildItemDataAsset* BuildItemData, const TEnumAsByte<EBuildState> NewBuildState)
