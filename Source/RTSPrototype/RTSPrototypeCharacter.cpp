@@ -53,6 +53,9 @@ ARTSPrototypeCharacter::ARTSPrototypeCharacter()
 	// Activate ticking in order to update the cursor every frame.
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
+
+	//other components
+	ActorAIBehaivorComponent = CreateDefaultSubobject<UAIBehaivorComponent>(TEXT("ActorAIBehaivorComponent"));
 }
 
 void ARTSPrototypeCharacter::Tick(float DeltaSeconds)
@@ -358,6 +361,19 @@ float ARTSPrototypeCharacter::GetHealth() const
 float ARTSPrototypeCharacter::GetSpawnDelay() const
 {
 	return SpawnDelay;
+}
+
+//restituisce "TRUE" se ActorAIBehaivorComponent ha almeno un patrol point
+bool ARTSPrototypeCharacter::HasToPatrol() const
+{
+	if (ActorAIBehaivorComponent)
+	{
+		if (ActorAIBehaivorComponent->PatrolPoints.Num() > 0)
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
 void ARTSPrototypeCharacter::SetHealth(const float NewHealth)

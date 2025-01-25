@@ -24,7 +24,7 @@ ASAIController::ASAIController(FObjectInitializer const& FObjectInitializer)
 		SightConfig->SightRadius = 1200.0f;
 		SightConfig->LoseSightRadius = 1300.0f;
 		SightConfig->PeripheralVisionAngleDegrees = 360.0f;
-		SightConfig->SetMaxAge(0.1f);
+		SightConfig->SetMaxAge(1.0f);
 
 		// Configura il canale di collisione per il senso
 		SightConfig->DetectionByAffiliation.bDetectEnemies = true;
@@ -35,6 +35,8 @@ ASAIController::ASAIController(FObjectInitializer const& FObjectInitializer)
 		AIPerceptionComponent->ConfigureSense(*SightConfig);
 		AIPerceptionComponent->SetDominantSense(SightConfig->GetSenseImplementation());
 	}
+
+	//SetActorTickInterval() -> //da usare per limitare il numero di event tick 
 }
 
 void ASAIController::Tick(float DeltaSeconds)
@@ -51,8 +53,8 @@ void ASAIController::Tick(float DeltaSeconds)
 
 void ASAIController::OnPerceptionUpdated(AActor* UpdatedActor, const FAIStimulus Stimulus)
 {
+	
 }
-
 AActor* ASAIController::FindClosetTarget() const
 {
 	if (const UAIPerceptionComponent* perceptionComponent = GetAIPerceptionComponent())
@@ -65,7 +67,7 @@ AActor* ASAIController::FindClosetTarget() const
 
 		for (AActor* Actor : PerceivedActors)
 		{
-			if (Actor)
+			if (IsValid(Actor))
 			{
 				if (IFactionsUtils* FactionsUtils = Cast<IFactionsUtils>(Actor))
 				{
@@ -89,6 +91,21 @@ AActor* ASAIController::FindClosetTarget() const
 	return nullptr;
 }
 
+void ASAIController::PatrolAndWaitingState()
+{
+	Target = FindClosetTarget();
+	if (IsValid(Target))
+	{
+		//ha trovato un bersaglio-> passa all attacco
+		GetBlackboardComponent()->SetValueAsBool("EnemyInSight",true);
+		GetBlackboardComponent()->SetValueAsObject("TargetActor", Target);
+		GetBlackboardComponent()->SetValueAsVector("TargetLocation",Target->GetActorLocation());
+	}
+	else
+	{
+		GetBlackboardComponent()->SetValueAsBool("EnemyInSight",false);
+	}
+}
 void ASAIController::HandleCurrentOrder()
 {
 	if (UBlackboardComponent* BlackboardComponent = GetBlackboardComponent())
@@ -96,15 +113,8 @@ void ASAIController::HandleCurrentOrder()
 		EUnitState CurrentUnitState = static_cast<EUnitState>(BlackboardComponent->GetValueAsEnum("CurrentState"));
 		switch (CurrentUnitState)
 		{
-			//is doing nothing : if it finds an enemy, try to attack it
-		case EUnitState::WaitingForOrders: 
-			Target = FindClosetTarget();
-			if (IsValid(Target))
-			{
-				GetBlackboardComponent()->SetValueAsObject("TargetActor", Target);
-				GetBlackboardComponent()->SetValueAsVector("TargetLocation",Target->GetActorLocation());
-				GetBlackboardComponent()->SetValueAsBool("EnemyInSight",true);
-			}
+		case EUnitState::WaitingForOrders:
+			PatrolAndWaitingState();
 			break;
 
 			//moving to destination : doesent care about enemies
@@ -113,18 +123,7 @@ void ASAIController::HandleCurrentOrder()
 
 			//is attacking a specific target: just keep track of enemy
 		case EUnitState::AttackingTarget:
-			if (IsValid(Target))
-			{
-				GetBlackboardComponent()->SetValueAsVector("TargetLocation",Target->GetActorLocation());
-			}
-			else
-			{
-				if (GEngine)
-				{
-					GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, "il bersaglio e morto");
-				}
-				GetBlackboardComponent()->SetValueAsEnum("CurrentState",WaitingForOrder);
-			}
+			PatrolAndWaitingState();
 			break;
 
 		case EUnitState::MiningGold:
@@ -141,6 +140,22 @@ void ASAIController::HandleCurrentOrder()
 				}
 			}
 			break;
+
+		case  EUnitState::Patroling:
+			{
+				Target = FindClosetTarget();
+				if (IsValid(Target))
+				{
+					//ha trovato un bersaglio-> passa all attacco
+					GetBlackboardComponent()->SetValueAsBool("EnemyInSight",true);
+					GetBlackboardComponent()->SetValueAsObject("TargetActor", Target);
+					GetBlackboardComponent()->SetValueAsVector("TargetLocation",Target->GetActorLocation());
+				}
+				else
+				{
+					GetBlackboardComponent()->SetValueAsBool("EnemyInSight",false);
+				}
+			}
 
 		default:
 			break;
@@ -160,11 +175,11 @@ void ASAIController::OnPossess(APawn* InPawn)
 		CrowdFollowingComponent->SetCrowdAvoidanceRangeMultiplier(1.15f);
 	}
 	
-
 	
 	LastInteractionTime = GetWorld()->GetTimeSeconds();
 	if (ARTSPrototypeCharacter* const Unit =Cast<ARTSPrototypeCharacter>(InPawn))
 	{
+		ControlledUnit = Unit;
 		//get the behaivor tree and it's own blackboard and apply it to the AI controller
 		if (UBehaviorTree* const Tree = Unit->GetBehaviorTree())
 		{
@@ -174,7 +189,6 @@ void ASAIController::OnPossess(APawn* InPawn)
 			Blackboard = b;
 			//start the behaivor tree
 			RunBehaviorTree(Tree);
-			UE_LOG(LogTemp, Warning, TEXT("Blackboard assigned to %s: %p"), *GetName(), b);
 		}
 		
 		if (APawn* ControlledPawn = GetPawn())
@@ -195,7 +209,19 @@ void ASAIController::OnPossess(APawn* InPawn)
 			Blackboard->SetValueAsFloat("AcceptableRadius", UnitData->GetUnitAcceptableRadius());
 		}
 
-		UnitState = EUnitState::WaitingForOrders;
+		if (UAIBehaivorComponent* BehaivorComponentUnit = Unit->FindComponentByClass<UAIBehaivorComponent>())
+		{
+			PatrolPointsNum = BehaivorComponentUnit->GetPatrolPointsMapLenght();
+			if (PatrolPointsNum > 0)
+			{
+				Blackboard->SetValueAsEnum("CurrentState",Patroling);
+			}
+			else
+			{
+				Blackboard->SetValueAsEnum("CurrentState",WaitingForOrder);
+			}
+		}
+		
 	}
 }
 //mainly called when his pawn get destroyed
@@ -266,6 +292,25 @@ void ASAIController::StartMiningGold(AActor* TargetActor)
 			BlackboardComponent->SetValueAsEnum("CurrentState",WaitingForOrder);
 		}
 	}
+}
+
+void ASAIController::StartPatrol()
+{
+	
+}
+
+void ASAIController::IncrementPatrolIndex()
+{
+	++CurrentPatrolPointIndex;
+	if (CurrentPatrolPointIndex >= PatrolPointsNum)
+	{
+		CurrentPatrolPointIndex = 0;
+	}
+}
+
+int ASAIController::GetCurrentPatrolIndex() const 
+{
+	return CurrentPatrolPointIndex;
 }
 
 

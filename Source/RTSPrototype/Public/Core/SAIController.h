@@ -11,6 +11,7 @@
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AISense_Sight.h"
 #include "Perception/AISenseConfig_Sight.h" 
+#include "RTSPrototype/RTSPrototypeCharacter.h"
 #include "SAIController.generated.h"
 
 UCLASS()
@@ -39,7 +40,11 @@ class RTSPROTOTYPE_API ASAIController : public ADetourCrowdAIController
 	UFUNCTION()
 	void ChaseAndAttackTarget(AActor* TargetActor);
 	void StartMiningGold(AActor* TargetActor);
-	
+	void StartPatrol();
+    UFUNCTION(BlueprintCallable)
+	void IncrementPatrolIndex();
+	int GetCurrentPatrolIndex() const;
+
 private:
 
 	UPROPERTY()
@@ -60,18 +65,28 @@ private:
 	int AttackingTarget = 2;
 	UPROPERTY()
 	int MiningGold = 3;
+	UPROPERTY()
+	int Patroling = 4;
 	/** UnitStateEnum : rappresent current task from player **/
-	
+
+	UPROPERTY()
+	int CurrentPatrolPointIndex = 0;
+	UPROPERTY()
+	int PatrolPointsNum = 0;
 	UPROPERTY()
 	AActor* Target;
 
 	UPROPERTY()
 	UUnitData* UnitData;
+
+	UPROPERTY()
+	ARTSPrototypeCharacter* ControlledUnit;
 	
 	UFUNCTION(BlueprintCallable, Category = "AI Perception")
 	void OnPerceptionUpdated(AActor* UpdatedActor, const FAIStimulus Stimulus);
 	UFUNCTION()
 	AActor* FindClosetTarget() const ;
+	void PatrolAndWaitingState();
 	UFUNCTION()
 	void HandleCurrentOrder();
 

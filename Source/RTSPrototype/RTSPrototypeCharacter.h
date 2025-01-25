@@ -11,6 +11,7 @@
 #include "Core/FactionsEnum.h"
 #include "Core/FactionsUtils.h"
 #include "Animation/AnimMontage.h"
+#include "Core/AIBehaivorComponent.h"
 #include "Core/UnitData.h"
 #include "RTSPrototypeCharacter.generated.h"
 
@@ -49,6 +50,9 @@ private:
 
 
 protected:
+	/**Actor Compoennts **/
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	UAIBehaivorComponent* ActorAIBehaivorComponent;
 	virtual void BeginPlay() override;
 	/** Data Management **/
 	void LoadData() const;
@@ -137,6 +141,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	float GetSpawnDelay() const;
+	UFUNCTION(BlueprintCallable)
+	bool HasToPatrol() const;
 	/** GetFunctions**/
 
 	/** Set Functions**/
