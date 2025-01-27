@@ -14,6 +14,7 @@ UBTTask_MoveToPatrolPoint::UBTTask_MoveToPatrolPoint()
 
 EBTNodeResult::Type UBTTask_MoveToPatrolPoint::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
+	//TO DO :prendere l'array di patrolpoints solo la prima volta che la task viene chiamata
 	CachedOwnerComp = &OwnerComp;
 	//Ottenere l'unita
 	auto UnitController = OwnerComp.GetAIOwner();
