@@ -84,6 +84,7 @@ void ARTSPrototypeCharacter::BeginPlay()
 	Super::BeginPlay();
 	LoadData();
 	AssignUnitStatsFromDataAsset();
+	ReceiveBeginPlay(); //ffar eseguire il begin play del blueprint sempre dopo quello del c++
 }
 
 void ARTSPrototypeCharacter::AssignUnitStatsFromDataAsset()
@@ -476,25 +477,6 @@ void ARTSPrototypeCharacter::Attack()
 							TargetCharacter->AttackSelectable(AttackValue);
 							OnAttack.Broadcast();
 						}
-						/**
-						if (ARTSPrototypeCharacter* TargetCharacter = Cast<ARTSPrototypeCharacter>(TargetObject))
-						{
-							FVector DirectionToTarget = TargetCharacter->GetActorLocation() - GetActorLocation();
-							DirectionToTarget.Z = 0; // Ignora l'altezza per considerare solo l'asse Z
-							
-							if (!DirectionToTarget.IsNearlyZero())
-							{
-								// Calcola la rotazione in base alla direzione
-								FRotator LookAtRotation = DirectionToTarget.Rotation();
-
-								// Imposta solo la rotazione lungo l'asse Z (Yaw)
-								FRotator NewRotation = FRotator(0.0f, LookAtRotation.Yaw, 0.0f);
-								SetActorRotation(NewRotation);
-							}
-							TargetCharacter->InflictDamage(AttackValue);
-							OnAttack.Broadcast();
-						}
-						**/
 					} 
 				} 
 			}
