@@ -107,7 +107,7 @@ protected:
 	UAssetManager* AssetManager;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Buildable Data")
 	UBuildItemDataAsset* BuildData;
-
+	
 	UPROPERTY()
 	TWeakObjectPtr<AActor> WeakActorPtr;
 
