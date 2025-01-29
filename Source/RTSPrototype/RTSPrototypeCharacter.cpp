@@ -84,7 +84,7 @@ void ARTSPrototypeCharacter::BeginPlay()
 	Super::BeginPlay();
 	LoadData();
 	AssignUnitStatsFromDataAsset();
-	ReceiveBeginPlay(); //ffar eseguire il begin play del blueprint sempre dopo quello del c++
+	ReceiveBeginPlay(); //far eseguire il begin play del blueprint sempre dopo quello del c++
 }
 
 void ARTSPrototypeCharacter::AssignUnitStatsFromDataAsset()

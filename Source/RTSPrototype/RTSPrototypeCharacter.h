@@ -155,12 +155,6 @@ public:
 	UPROPERTY()
 	bool bSelected;
 
-protected:
-	//must be set in editor
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Settings", meta=(AllowPrivateAccess="true"))
-	UBehaviorTree* Tree;
-	//Delegate variable. it can be called by blueprint
-
 	UPROPERTY(BlueprintAssignable, Category = "Events")
 	FOnDamageTaken OnDamageTakenEvent;
 
@@ -181,7 +175,35 @@ protected:
 
 	UPROPERTY(BlueprintAssignable, Category = "Events")
 	FOnPeonSelected OnPeonSelected;
+
+protected:
+	//must be set in editor
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Settings", meta=(AllowPrivateAccess="true"))
+	UBehaviorTree* Tree;
+	//Delegate variable. it can be called by blueprint
+
+	/**
+	UPROPERTY(BlueprintAssignable, Category = "Events")
+	FOnDamageTaken OnDamageTakenEvent;
+
+	UPROPERTY(BlueprintAssignable, Category = "Events")
+	FOnAttack OnAttack;
+
+	UPROPERTY(BlueprintAssignable, Category = "Events")
+	FOnDeath OnDeath;
 	
+	UPROPERTY(BlueprintAssignable, Category = "Events")
+	FOnUnitSelected OnUnitSelected;
+
+	UPROPERTY(BlueprintAssignable, Category = "Events")
+	FOnOrderChanged OnOrderChanged;
+
+	UPROPERTY(BlueprintAssignable, Category = "Events")
+	FOnGoldEstracted OnGoldEstracted;
+
+	UPROPERTY(BlueprintAssignable, Category = "Events")
+	FOnPeonSelected OnPeonSelected;
+	**/
 	UFUNCTION()
 	void DestroyCharacter();
 };

@@ -89,6 +89,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	void InitBuildPreview();
+	UFUNCTION(BlueprintCallable)
 	void StartBuild();
 	void EndBuild();
 	void UpdateCollider();

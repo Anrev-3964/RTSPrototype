@@ -7,7 +7,7 @@
 #include "FactionsEnum.h"
 #include "FactionsUtils.generated.h"
 
-UINTERFACE(MinimalAPI)
+UINTERFACE(MinimalAPI,Blueprintable)
 //make the Interface visible to unreal reflection system 
 class UFactionsUtils : public  UInterface 
 {
