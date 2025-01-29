@@ -151,7 +151,7 @@ void ABuildable::StartBuild()
 
 void ABuildable::EndBuild()
 {
-	CurrentFaction = EFaction::Team1;
+	CurrentFaction = EFaction::Team1; //TO DO : passare in input prima di costruire
 	if (AudioComponent)
 	{
 		AudioComponent->Stop();
