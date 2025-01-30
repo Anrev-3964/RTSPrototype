@@ -21,7 +21,7 @@ void UTrainingComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	PrimaryComponentTick.bCanEverTick = true;
-	PrimaryComponentTick.TickInterval = 5.0f;
+	PrimaryComponentTick.TickInterval = 10.0f;
 }
 
 
@@ -30,11 +30,10 @@ void UTrainingComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	RemoveDeadUnits();
-	if (TrainedUnits.Num() < MaxUnits && !bIsTraining)
+	if (TrainedUnits.Num() < MaxUnits && !bIsTraining && bCanTrainUnits)
 	{
 		TrainNewUnits();
 	}
-	
 	//FString Message = FString::Printf(TEXT("Unita ancora vive è: %d"), TrainedUnits.Num());
 	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, Message);
 }
@@ -75,7 +74,7 @@ void UTrainingComponent::SpawnUnit(TSubclassOf<ARTSPrototypeCharacter> UnitToSpa
 
 	if (!SpawnedUnit) return;
 	TrainedUnits.Add(SpawnedUnit);
-
+	SpawnedUnit->SetCurrentFaction(EFaction::Team2);
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Orange, "Spawno l'unita");
 	
 	bIsTraining = false;
