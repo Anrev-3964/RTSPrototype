@@ -418,7 +418,11 @@ EFaction ARTSPrototypeCharacter::GetFaction() const
 //Impostare una nuova fazione per l'unita (attualmente non utilizata)
 void ARTSPrototypeCharacter::SetCurrentFaction(EFaction NewFaction)
 {
-	CurrentFaction = NewFaction;	
+	CurrentFaction = NewFaction;
+	if (ASAIController* AIController = Cast<ASAIController>(GetController()))
+	{
+		AIController->SetPawnFaction(CurrentFaction);
+	}
 }
 
 //Ordinare all'unita di andare a destinazione

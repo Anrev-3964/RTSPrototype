@@ -44,6 +44,7 @@ class RTSPROTOTYPE_API ASAIController : public ADetourCrowdAIController
     UFUNCTION(BlueprintCallable)
 	void IncrementPatrolIndex();
 	int GetCurrentPatrolIndex() const;
+	void SetPawnFaction(EFaction NewFaction);
 
 private:
 

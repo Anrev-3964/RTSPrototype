@@ -36,19 +36,23 @@ ASAIController::ASAIController(FObjectInitializer const& FObjectInitializer)
 		AIPerceptionComponent->SetDominantSense(SightConfig->GetSenseImplementation());
 	}
 
-	//SetActorTickInterval() -> //da usare per limitare il numero di event tick 
+	//SetActorTickInterval() -> //da usare per limitare il numero di event tick
+	PrimaryActorTick.TickInterval = 0.5f;
 }
 
 void ASAIController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
+	/**
 	//Update the Target Variable over time 
 	if (GetWorld()->GetTimeSeconds() >(LastInteractionTime + InteractionCooldown))
 	{
 		HandleCurrentOrder();
 		LastInteractionTime = GetWorld()->GetTimeSeconds();
 	}
+	**/
+	HandleCurrentOrder();
 }
 
 void ASAIController::OnPerceptionUpdated(AActor* UpdatedActor, const FAIStimulus Stimulus)
@@ -167,6 +171,13 @@ void ASAIController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 
+	if (APawn* ControlledPawn = GetPawn())
+	{
+		if (IFactionsUtils* FactionsUtils = Cast<IFactionsUtils>(ControlledPawn))
+		{
+			PawnFaction = FactionsUtils->GetFaction();
+		}
+	}
 	//Set Crowd Manager
 	if (UCrowdFollowingComponent* CrowdFollowingComponent = FindComponentByClass<UCrowdFollowingComponent>())
 	{
@@ -174,7 +185,6 @@ void ASAIController::OnPossess(APawn* InPawn)
 		CrowdFollowingComponent->SetCrowdSeparationWeight(50.0f);
 		CrowdFollowingComponent->SetCrowdAvoidanceRangeMultiplier(1.15f);
 	}
-	
 	
 	LastInteractionTime = GetWorld()->GetTimeSeconds();
 	if (ARTSPrototypeCharacter* const Unit =Cast<ARTSPrototypeCharacter>(InPawn))
@@ -190,15 +200,6 @@ void ASAIController::OnPossess(APawn* InPawn)
 			//start the behaivor tree
 			RunBehaviorTree(Tree);
 		}
-		
-		if (APawn* ControlledPawn = GetPawn())
-		{
-			if (IFactionsUtils* FactionsUtils = Cast<IFactionsUtils>(ControlledPawn))
-			{
-				PawnFaction = FactionsUtils->GetFaction();
-			}
-		}
-		
 		UnitData = Unit->GetUnitData();
 
 		//Set BlackBoard values
@@ -221,8 +222,14 @@ void ASAIController::OnPossess(APawn* InPawn)
 				Blackboard->SetValueAsEnum("CurrentState",WaitingForOrder);
 			}
 		}
-		
 	}
+	if (APawn* ControlledPawn = GetPawn())
+	{
+		if (IFactionsUtils* FactionsUtils = Cast<IFactionsUtils>(ControlledPawn))
+		{
+			PawnFaction = FactionsUtils->GetFaction();
+		}
+	} 
 }
 //mainly called when his pawn get destroyed
 void ASAIController::OnUnPossess()
@@ -230,8 +237,6 @@ void ASAIController::OnUnPossess()
 	Super::OnUnPossess();
 	Destroy();
 }
-
-
 
 void ASAIController::BeginPLay()
 {
@@ -311,6 +316,11 @@ void ASAIController::IncrementPatrolIndex()
 int ASAIController::GetCurrentPatrolIndex() const 
 {
 	return CurrentPatrolPointIndex;
+}
+
+void ASAIController::SetPawnFaction(EFaction NewFaction)
+{
+	PawnFaction = NewFaction;
 }
 
 
