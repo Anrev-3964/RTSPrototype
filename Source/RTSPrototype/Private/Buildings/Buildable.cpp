@@ -38,13 +38,14 @@ ABuildable::ABuildable()
 	PerceptionStimuliSource = CreateDefaultSubobject<UAIPerceptionStimuliSourceComponent>(TEXT("PerceptionStimuliSource"));
 }
 
-void ABuildable::Init(UBuildItemDataAsset* BuildItemData, const TEnumAsByte<EBuildState> NewBuildState)
+void ABuildable::Init(UBuildItemDataAsset* BuildItemData, const TEnumAsByte<EBuildState> NewBuildState,const EFaction BuildingFaction)
 {
 	if (!BuildItemData) return;
 
 	BuildState = NewBuildState;
 	BuildData = BuildItemData;
 	BuildID = BuildData->BuildID;
+	CurrentFaction = BuildingFaction;
 	UE_LOG(LogTemp, Error, TEXT("BuildID: %u"), BuildID);
 
 	if (BuildState == EBuildState::Building)
@@ -57,6 +58,7 @@ void ABuildable::Init(UBuildItemDataAsset* BuildItemData, const TEnumAsByte<EBui
 	}
 }
 
+
 void ABuildable::UpdateOverlayMaterial(const bool bCanPlace) const
 {
 	DynamicOverlayMaterial->SetScalarParameterValue("Status", bCanPlace? 1.0f:0.0f);
@@ -67,16 +69,7 @@ void ABuildable::InitBuildPreview()
 	if (!BuildData || !BoxCollider) return;
 
 	// remove already existing meshComponents
-	TArray<UStaticMeshComponent*> PreviewComponents;
-	GetComponents<UStaticMeshComponent>(PreviewComponents);
-
-	for (UStaticMeshComponent* Comp : PreviewComponents)
-	{
-		if (Comp)
-		{
-			Comp->DestroyComponent();
-		}
-	}
+	DestroyMeshComponents();
 
 	//intirerate for evey mesh and create a new mesh component with that mesh
 	TArray<TSoftObjectPtr<UStaticMesh>> PreviewBuildMeshes = BuildData->BuildMeshes;
@@ -106,8 +99,9 @@ void ABuildable::InitBuildPreview()
 
 void ABuildable::StartBuild()
 {
+	DestroyMeshComponents();
 	BuildProgression = 0.0f;
-	UpdateBuildProgressionMesh();
+	UpdateBuildProgressionMesh(); 
 	GetWorldTimerManager().SetTimer(BuildTimer, this, &ABuildable::UpdateBuildProgression, 2.0f, true, 2.0f);
 
 	BuildState = EBuildState::Building;
@@ -151,7 +145,6 @@ void ABuildable::StartBuild()
 
 void ABuildable::EndBuild()
 {
-	CurrentFaction = EFaction::Team1; //TO DO : passare in input prima di costruire
 	if (AudioComponent)
 	{
 		AudioComponent->Stop();
@@ -216,6 +209,7 @@ void ABuildable::UpdateCollider()
 
 void ABuildable::SetOverlayMaterial()
 {
+	
 	if (!BuildData) return;
 	const FSoftObjectPath AssetPath = BuildData->PlaceMaterial.ToSoftObjectPath();
 	if (UMaterialInstance* OverlayMaterial = Cast<UMaterialInstance>(AssetPath.TryLoad()))
@@ -331,6 +325,7 @@ int ABuildable::GetBuildID() const
 {
 	return BuildID;
 }
+
 
 void ABuildable::InflictDamage(const float AttackValue)
 {
@@ -470,6 +465,20 @@ void ABuildable::SetCurrentFaction(EFaction NewFaction)
 	if (CurrentFaction != NewFaction)
 	{
 		CurrentFaction = NewFaction;
+	}
+}
+
+void ABuildable::DestroyMeshComponents()
+{
+	TArray<UStaticMeshComponent*> PreviewComponents;
+	GetComponents<UStaticMeshComponent>(PreviewComponents);
+
+	for (UStaticMeshComponent* Comp : PreviewComponents)
+	{
+		if (Comp)
+		{
+			Comp->DestroyComponent();
+		}
 	}
 }
 

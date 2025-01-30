@@ -21,7 +21,7 @@ void UTrainingComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	PrimaryComponentTick.bCanEverTick = true;
-	PrimaryComponentTick.TickInterval = 10.0f;
+	PrimaryComponentTick.TickInterval = 5.0f;
 }
 
 

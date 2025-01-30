@@ -31,7 +31,7 @@ public:
 
 	//Data Management
 	UFUNCTION(BlueprintCallable)
-	void Init(UBuildItemDataAsset* BuildItemData, const TEnumAsByte<EBuildState> NewBuildState = EBuildState::NoBuild);
+	void Init(UBuildItemDataAsset* BuildItemData, const TEnumAsByte<EBuildState> NewBuildState = EBuildState::NoBuild, const EFaction BuildingFaction = EFaction::Team1);
 	
 	UBuildItemDataAsset* GetBuildItemData() const {return BuildData;}
 	void UpdateOverlayMaterial(const bool bCanPlace = true) const;
@@ -102,6 +102,7 @@ protected:
 	/**IFaction Utils **/
 	UFUNCTION()
 	virtual void SetCurrentFaction(EFaction NewFaction) override;
+	void DestroyMeshComponents();
 
 	UPROPERTY()
 	UAssetManager* AssetManager;
@@ -111,7 +112,7 @@ protected:
 	UPROPERTY()
 	TWeakObjectPtr<AActor> WeakActorPtr;
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	float BuildProgression = 0.0f;
 
 	UPROPERTY()
