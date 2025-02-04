@@ -46,6 +46,7 @@ void AGoldMine::SetMineFromDataAsset()
 	if (!GoldMineData) return;
 
 	GoldAmount = GoldMineData->GetMineGoldAmount();
+	GoldEstractAmount = GoldMineData->TierOneGoldEstractionAmount;
 	if (StaticMesh)
 	{
 		if (UStaticMesh* Mesh = GoldMineData->MeshReference.LoadSynchronous())
