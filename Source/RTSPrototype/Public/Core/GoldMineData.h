@@ -43,6 +43,8 @@ public:
 	int TierOneMaxHP = {1};
 
 	/** Tier 2 settings **/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tier 2 Settings")
+	TSoftObjectPtr<UTexture2D> TierTwoImage;
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly, Category = "Tier 2 Settings")
 	int TierTwoMaxHP = {1};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tier 2 Settings")
@@ -61,7 +63,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly , Category = "General Settings")
 	USoundBase* MineUpgradingAudioClip;
 	/** Tier 3 settings **/
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tier 3 Settings")
+	TSoftObjectPtr<UTexture2D> TierThreeImage;
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly, Category = "Tier 3 Settings")
 	int TierThreeMaxHP = {1};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tier 3 Settings")

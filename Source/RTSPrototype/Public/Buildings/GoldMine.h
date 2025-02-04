@@ -74,7 +74,7 @@ private:
 
 public:
 	
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	int GetGoldAmount() const ;
 	UFUNCTION()
 	int GetCurrentGoldAmount() const;
@@ -114,7 +114,7 @@ public:
 	virtual void DeSelect() override;
 	UFUNCTION()
 	virtual void Highlight(const bool Highlight) override;
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	virtual void AttackSelectable(const float DamageAmount) override;
 	/** ITriggerBoxArea **/
 	virtual bool ActorIsATriggerArea() override;

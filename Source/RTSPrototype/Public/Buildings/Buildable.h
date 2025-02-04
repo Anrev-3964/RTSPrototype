@@ -42,6 +42,7 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnDamageTaken OnDamageTaken;
 	FOnBuildStarted OnBuildStarted;
+	UPROPERTY(BlueprintAssignable)
 	FOnBuildDestroyed OnBuildDestroyed;
 
 	UPROPERTY(BlueprintAssignable, Category = "Events")
@@ -150,7 +151,6 @@ private:
 
 	UPROPERTY()
 	ARTSPlayerState* OwnerPlayerState;
-	
 };
 
 
